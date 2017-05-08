@@ -1,0 +1,549 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.carrotsearch.progresso</groupId>
+  <artifactId>progresso-parent</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>Progresso Parent (POM)</name>
+  
+  <url>https://github.com/carrotsearch/progresso</url>
+  <description>
+    A task management/ reporting library with console progress tracking facilities.
+  </description>
+  <inceptionYear>2017</inceptionYear>
+
+  <organization>
+    <name>Carrot Search s.c.</name>
+    <url>http://www.carrotsearch.com</url>
+  </organization>
+
+  <developers>
+    <developer>
+      <name>Carrot Search s.c.</name>
+      <email>info@carrotsearch.com</email>
+      <organization>Carrot Search s.c.</organization>
+      <organizationUrl>http://www.carrotsearch.com</organizationUrl>
+    </developer>
+  </developers>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <distributionManagement>
+    <site>
+      <id>site</id>
+      <url>scm:git:git@github.com:carrotsearch/progresso.git</url>
+    </site>
+  </distributionManagement>
+
+  <scm>
+    <connection>scm:git:git@github.com:randomizedtesting/randomizedtesting.git</connection>
+    <developerConnection>scm:git:git@github.com:randomizedtesting/randomizedtesting.git</developerConnection>
+    <url>git@github.com:randomizedtesting/randomizedtesting.git</url>
+  </scm>  
+  
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+
+    <version.log4j>2.7</version.log4j> 
+
+    <version.assertj>3.5.2</version.assertj>
+    <version.randomizedtesting>2.5.0</version.randomizedtesting>
+    <version.junit>4.12</version.junit>
+    <version.forbiddenapis>2.2</version.forbiddenapis>    
+    <version.slf4j>1.7.21</version.slf4j> 
+
+    <version.maven.api>3.2.3</version.maven.api>
+    <version.maven-assembly-plugin>2.6</version.maven-assembly-plugin>
+    <version.maven-clean-plugin>2.5</version.maven-clean-plugin>
+    <version.maven-compiler-plugin>3.1</version.maven-compiler-plugin>
+    <version.maven-dependency-plugin>2.10</version.maven-dependency-plugin>
+    <version.maven-deploy-plugin>2.8.2</version.maven-deploy-plugin>
+    <version.maven-install-plugin>2.5.2</version.maven-install-plugin>
+    <version.maven-jar-plugin>2.5</version.maven-jar-plugin>
+    <version.maven-resources-plugin>2.6</version.maven-resources-plugin>
+    <version.maven-site-plugin>3.4</version.maven-site-plugin>
+    <version.maven-eclipse-plugin>2.9</version.maven-eclipse-plugin>
+    <version.maven-antrun-plugin>1.7</version.maven-antrun-plugin>
+    <version.maven-enforcer-plugin>1.3.1</version.maven-enforcer-plugin>
+    <version.maven-surefire-plugin>2.17</version.maven-surefire-plugin>
+
+    <tests.jvms>auto</tests.jvms>
+    <tests.shuffle>true</tests.shuffle>
+    <tests.output>onerror</tests.output>
+    <tests.heap.size>512m</tests.heap.size>
+    <tests.filter>default or @slow</tests.filter>
+    <tests.timestamps>true</tests.timestamps>
+    <tests.useSimpleNames>true</tests.useSimpleNames>
+    <tests.maxClassNameColumns>10000</tests.maxClassNameColumns>
+    <tests.execution.hint.file>${project.build.directory}/.local-${project.version}-execution-hints.log</tests.execution.hint.file>
+    <tests.extraJvmArgs></tests.extraJvmArgs>
+    <tests.asserts>true</tests.asserts>
+    <tests.asserts.value>-ea -esa</tests.asserts.value>
+  </properties>
+
+  <modules>
+    <module>progresso</module>
+    <module>progresso-log4j</module>
+    <module>progresso-consolewidth-autodetect</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${version.log4j}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${version.slf4j}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.carrotsearch.randomizedtesting</groupId>
+        <artifactId>randomizedtesting-runner</artifactId>
+        <version>${version.randomizedtesting}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${version.junit}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>${version.assertj}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement> 
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>${version.maven-clean-plugin}</version>
+          <configuration>
+            <failOnError>false</failOnError>
+            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+            <filesets>
+              <fileset>
+                <directory>${project.build.directory}</directory>
+                <excludes>
+                  <exclude>eclipse/**</exclude>
+                  <exclude>idea/**</exclude>
+                </excludes>
+              </fileset>
+            </filesets>            
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${version.maven-compiler-plugin}</version>
+          <configuration>
+            <source>${maven.compiler.source}</source>
+            <target>${maven.compiler.target}</target>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>${version.maven-install-plugin}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${version.maven-jar-plugin}</version>
+          <configuration>
+            <archive>
+              <addMavenDescriptor>false</addMavenDescriptor>
+              <manifestEntries>
+                <Project-GroupId>${project.groupId}</Project-GroupId>
+                <Project-ArtifactId>${project.artifactId}</Project-ArtifactId>
+                <Project-Version>${project.version}</Project-Version>
+                <Project-Name>${project.name}</Project-Name>
+              </manifestEntries>
+            </archive>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${version.maven-resources-plugin}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>${version.maven-assembly-plugin}</version>
+
+          <dependencies>
+            <dependency>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-archiver</artifactId>
+              <version>3.0.3</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>${version.maven-deploy-plugin}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>${version.maven-dependency-plugin}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>${version.maven-site-plugin}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${version.maven-surefire-plugin}</version>
+          <executions>
+            <execution>
+              <id>default-test</id>
+              <phase>none</phase>
+            </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
+          <groupId>com.carrotsearch.randomizedtesting</groupId>
+          <artifactId>junit4-maven-plugin</artifactId>
+          <version>${version.randomizedtesting}</version>
+
+          <configuration>
+            <heartbeat>60</heartbeat>
+            <jvmOutputAction>pipe,warn</jvmOutputAction>
+            <leaveTemporary>false</leaveTemporary>
+
+            <parallelism>${tests.jvms}</parallelism>
+
+            <balancers>
+              <execution-times>
+                <filelist>
+                  <file name="${tests.execution.hint.file}" />
+                </filelist>
+              </execution-times>
+            </balancers>
+
+            <excludes>
+              <exclude>**/Abstract*.class</exclude>
+              <exclude>**/*$*.class</exclude>
+            </excludes>
+
+            <jvmArgs>
+              <param>-Xmx${tests.heap.size}</param>
+              <param>-Xms${tests.heap.size}</param>
+            </jvmArgs>
+            <argLine>${tests.asserts.value}</argLine> 
+
+            <shuffleOnSlave>${tests.shuffle}</shuffleOnSlave>
+            <sysouts>${tests.verbose}</sysouts>
+            <seed>${tests.seed}</seed>
+            <haltOnFailure>${tests.failfast}</haltOnFailure>
+            <uniqueSuiteNames>true</uniqueSuiteNames>
+
+            <systemProperties>
+              <java.io.tmpdir>.</java.io.tmpdir>
+              <java.awt.headless>true</java.awt.headless>
+              <junit4.tempDir>${project.build.directory}</junit4.tempDir>
+              <tests.filter>${tests.filter}</tests.filter>
+              <tests.class>${tests.class}</tests.class>
+              <tests.method>${tests.method}</tests.method>
+              <tests.asserts>${tests.asserts}</tests.asserts>
+            </systemProperties>
+          </configuration>
+
+          <executions>
+            <execution>
+              <id>tests</id>
+              <phase>test</phase>
+              <goals>
+                <goal>junit4</goal>
+              </goals>
+              <configuration>
+                <skipTests>${skip.UTs}</skipTests>
+                <listeners>
+                  <report-ant-xml mavenExtensions="true" dir="${project.build.directory}/surefire-reports" />
+                  <report-json file="${project.build.directory}/test-results.html" />
+                  <report-text showThrowable="true" 
+                               showStackTraces="true" 
+                               showOutput="${tests.output}"
+                               showStatusOk="false" 
+                               showStatusError="true" 
+                               showStatusFailure="true" 
+                               showStatusIgnored="true" 
+                               showSuiteSummary="true" 
+                               timestamps="${tests.timestamps}" 
+                               useSimpleNames="${tests.useSimpleNames}" 
+                               maxClassNameColumns="${tests.maxClassNameColumns}">
+                  </report-text>
+                  <report-execution-times historyLength="20" file="${tests.execution.hint.file}" />
+                </listeners>
+
+                <includes>
+                  <include>**/*Tests.class</include>
+                  <include>**/*Test.class</include>
+                  <include>**/Test*.class</include>
+                </includes>
+                
+                <excludes combine.children="append">
+                  <exclude>**/*IT.class</exclude>
+                </excludes>
+              </configuration>
+            </execution>
+
+            <execution>
+              <id>integration-test</id>
+              <phase>integration-test</phase>
+              <goals>
+                <goal>junit4</goal>
+              </goals>
+              <configuration>
+                <parallelism>2</parallelism>
+                <skipTests>${skip.ITs}</skipTests>
+
+                <listeners>
+                  <report-ant-xml mavenExtensions="true" dir="${project.build.directory}/failsafe-reports" />
+                  <report-json file="${project.build.directory}/itest-results.html" />
+                  <report-text showThrowable="true" 
+                               showStackTraces="true" 
+                               showOutput="${tests.output}"
+                               showStatusOk="false" 
+                               showStatusError="true" 
+                               showStatusFailure="true" 
+                               showStatusIgnored="true" 
+                               showSuiteSummary="true" 
+                               timestamps="${tests.timestamps}" 
+                               useSimpleNames="${tests.useSimpleNames}" 
+                               maxClassNameColumns="${tests.maxClassNameColumns}">
+                  </report-text>
+                  <report-execution-times historyLength="20" file="${tests.execution.hint.file}" />
+                </listeners>
+
+                <includes combine.self="replace">
+                  <include>**/*IT.class</include>
+                </includes>
+              </configuration>
+            </execution>            
+          </executions>          
+        </plugin>
+
+        <plugin>
+          <groupId>de.thetaphi</groupId>
+          <artifactId>forbiddenapis</artifactId>
+          <version>${version.forbiddenapis}</version>
+
+          <executions>
+            <execution>
+              <id>check-forbidden-apis</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <configuration>
+                <targetVersion>1.8</targetVersion>
+                <failOnUnsupportedJava>false</failOnUnsupportedJava>
+                <failOnUnresolvableSignatures>false</failOnUnresolvableSignatures>
+                <failOnMissingClasses>true</failOnMissingClasses>
+                <excludes><!-- Override in subprojects. --></excludes>
+                <suppressAnnotations>
+                  <suppressAnnotation>**.SuppressForbidden</suppressAnnotation>
+                </suppressAnnotations>
+                <bundledSignatures>
+                  <bundledSignature>jdk-unsafe</bundledSignature>
+                  <bundledSignature>jdk-deprecated</bundledSignature>
+                  <bundledSignature>jdk-system-out</bundledSignature>
+                  <bundledSignature>jdk-non-portable</bundledSignature>
+                </bundledSignatures>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>${version.maven-enforcer-plugin}</version>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <id>enforce-environment</id>
+            <phase>package</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>1.8.0</version>
+                </requireJavaVersion>
+                <requireMavenVersion>
+                  <version>${version.maven.api}</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>de.thetaphi</groupId>
+        <artifactId>forbiddenapis</artifactId>
+      </plugin> 
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-test</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>ide-eclipse-m2e</id>
+      <activation>
+        <property>
+          <name>m2e.version</name>
+        </property>
+      </activation>
+      <build>
+        <directory>target/eclipse</directory>
+
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.eclipse.m2e</groupId>
+              <artifactId>lifecycle-mapping</artifactId>
+              <version>1.0.0</version>
+              <configuration>
+                <lifecycleMappingMetadata>
+                  <pluginExecutions>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <versionRange>[2.0,)</versionRange>
+                        <goals>
+                          <goal>compile</goal>
+                          <goal>testCompile</goal>
+                        </goals>
+                        <parameters>
+                          <compilerId>jdt</compilerId>
+                        </parameters>
+                      </pluginExecutionFilter>
+                      <action>
+                        <configurator>
+                          <id>org.eclipse.m2e.jdt.javaConfigurator</id>
+                        </configurator>
+                      </action>
+                    </pluginExecution>
+
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>de.thetaphi</groupId>
+                        <artifactId>forbiddenapis</artifactId>
+                        <versionRange>[1.0.0,)</versionRange>
+                        <goals>
+                          <goal>testCheck</goal>
+                          <goal>check</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <ignore />
+                      </action>
+                    </pluginExecution>
+                  </pluginExecutions>
+                </lifecycleMappingMetadata>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  </profiles>
+  
+  <repositories>
+    <repository>
+      <id>sonatype-nexus-public</id>
+      <name>SonaType public snapshots and releases repository</name>
+      <url>https://oss.sonatype.org/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+
+    <repository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>sonatype-nexus-public</id>
+      <name>SonaType public snapshots and releases repository</name>
+      <url>https://oss.sonatype.org/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>  
+</project> 
