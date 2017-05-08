@@ -4,7 +4,7 @@
 
   <groupId>com.carrotsearch.progresso</groupId>
   <artifactId>progresso-parent</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
 
   <name>Progresso Parent (POM)</name>
@@ -96,7 +96,7 @@
   <modules>
     <module>progresso</module>
     <module>progresso-log4j</module>
-    <module>progresso-consolewidth-autodetect</module>
+    <module>progresso-consolewidth-unixish</module>
   </modules>
 
   <dependencyManagement>
