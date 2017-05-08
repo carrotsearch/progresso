@@ -91,7 +91,7 @@ public class ConsoleAware {
   /**
    * Provide the default console width hint (in columns).
    * 
-   * @throws IllegalArgumentException If console width < 1.
+   * @throws IllegalArgumentException If console width &lt; 1.
    */
   public static void setDefaultConsoleWidth(int widthHint) throws IllegalArgumentException {
     checkWidth(widthHint);
