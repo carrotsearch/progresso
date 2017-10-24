@@ -15,10 +15,10 @@ public class RangeTask extends Task<RangeTracker> {
   }
 
   public RangeTracker start(long fromInclusive, long toExclusive) {
-    return super.start(new RangeTracker(this, new MinMax(fromInclusive, toExclusive)));
+    return start(new RangeTracker(this, new MinMax(fromInclusive, toExclusive)));
   }
   
   public RangeTracker start(long fromInclusive, long toExclusive, LongSupplier atSupplier) {
-    return super.start(new RangeTracker(this, new MinMax(fromInclusive, toExclusive), atSupplier));
+    return start(new RangeTracker(this, new MinMax(fromInclusive, toExclusive), atSupplier));
   }
 }

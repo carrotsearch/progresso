@@ -3,6 +3,7 @@ package com.carrotsearch.progresso;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Formatter;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -71,7 +72,29 @@ public final class TaskStats {
     return breakdown(tasks.toArray(new Task<?>[tasks.size()]));
   }
 
+  private final static Comparator<? super Task<?>> BY_START_TIME = (a, b) -> {
+    if (a.hasTracker() && b.hasTracker()) {
+      Tracker ta = a.getTracker();
+      Tracker tb = b.getTracker();
+      int value = Long.compare(ta.startTime(), tb.startTime());
+      if (value == 0) {
+        value = Long.compare(ta.elapsedMillis(), tb.elapsedMillis());
+      }
+      return value;
+    } else {
+      if (a.hasTracker()) {
+        return -1;
+      } else {
+        return 1;
+      }
+    }
+  };
+
   public static String breakdown(Task<?>... taskList) {
+    return breakdown(BY_START_TIME, taskList);
+  }
+
+  public static String breakdown(Comparator<? super Task<?>> taskOrdering, Task<?>... taskList) {
     HashSet<Task<?>> all = new HashSet<>(Arrays.asList(taskList));
     LinkedHashSet<Task<?>> tasks = Arrays.stream(taskList)
         .filter((t) -> {
@@ -82,27 +105,33 @@ public final class TaskStats {
           }
           return true;
         })
+        .sorted(taskOrdering)
         .collect(Collectors.toCollection(LinkedHashSet::new));
 
     List<String[]> lines = new ArrayList<String[]>();
     lines.add(new String [] {
         "[Task]",
         "[Time]",
-        "[%]"
+        "[%]",
+        "[+T₀]"
     });
     
     long total = 0;
+    long t0 = Long.MAX_VALUE;
     for (Task<?> task : tasks) {
-      if (task.hasTracker() && task.isDone()) {
-        total += task.getTracker().elapsedMillis();
+      if (task.hasTracker()) {
+        t0 = Math.min(t0, task.getTracker().startTime());
+        if (task.isDone()) {
+          total += task.getTracker().elapsedMillis();
+        }
       }
     }
 
     for (Task<?> task : tasks) {
-      breakdownTask(lines, 0, task, total);
+      breakdownTask(lines, 0, task, taskOrdering, total, t0);
     }
-    
-    int [] widths = new int [3];
+
+    int [] widths = new int [lines.get(0).length];
     for (String [] line : lines) {
       for (int c = 0; c < line.length; c++) {
         widths[c] = Math.max(line[c].length(), widths[c]);
@@ -114,7 +143,8 @@ public final class TaskStats {
       String pattern = 
           "%-" + widths[0] + "s  " +
           "%"  + widths[1] + "s  " +
-          "%"  + widths[2] + "s\n";
+          "%"  + widths[2] + "s  " +
+          "%"  + widths[3] + "s\n";
       for (String [] line : lines) {
         fmt.format(pattern, (Object[]) line);
       }
@@ -122,28 +152,43 @@ public final class TaskStats {
     return b.toString();
   }
 
-  private static void breakdownTask(List<String[]> lines, int indent, Task<?> task, long total) {
+  private static void breakdownTask(List<String[]> lines, 
+                                    int indent, 
+                                    Task<?> task, 
+                                    Comparator<? super Task<?>> taskOrdering, 
+                                    long total, 
+                                    long t0) {
     String padding = repeat(indent, "  ");
 
     lines.add(new String [] {
         padding + taskName(task),
         taskTime(task),
-        taskTimeFraction(task, total)
+        taskTimeFraction(task, total),
+        taskTimeT0(task, t0)
     });
 
     for (Attribute a : task.attributes()) {
       lines.add(new String [] {
           String.format(Locale.ROOT, "%s @ %s: %s", padding, a.key, a.value),
           "",
+          "",
           ""
       });
     }
 
-    List<Task<?>> subtasks = task.subtasks();
-    if (!subtasks.isEmpty()) {
-      for (Task<?> subtask : subtasks) {
-        breakdownTask(lines, indent + 1, subtask, total);
-      }
+    task.subtasks()
+      .stream()
+      .sorted(taskOrdering)
+      .forEachOrdered((subtask) -> {
+        breakdownTask(lines, indent + 1, subtask, taskOrdering, total, t0);
+      });
+  }
+
+  private static String taskTimeT0(Task<?> task, long t0) {
+    if (task.hasTracker()) {
+      return UnitFormatter.DURATION_COMPACT.format(task.getTracker().startTime() - t0);
+    } else {
+      return "";
     }
   }
 

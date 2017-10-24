@@ -40,6 +40,6 @@ public class PathScanningTask extends Task<PathTracker> {
   }
 
   public PathTracker start() {
-    return super.start(new PathTracker());
+    return start(new PathTracker());
   }  
 }

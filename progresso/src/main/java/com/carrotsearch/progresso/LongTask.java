@@ -12,10 +12,10 @@ public class LongTask extends Task<LongTracker> {
   }
 
   public LongTracker start(long initialValue) {
-    return super.start(new LongTracker(this, initialValue));
+    return start(new LongTracker(this, initialValue));
   }
   
   public LongTracker start(long initialValue, LongSupplier supplier) {
-    return super.start(new LongTracker(this, initialValue, supplier));
+    return start(new LongTracker(this, initialValue, supplier));
   }
 }

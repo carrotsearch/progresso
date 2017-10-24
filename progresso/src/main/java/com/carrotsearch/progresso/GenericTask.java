@@ -10,7 +10,7 @@ public class GenericTask extends Task<Tracker> {
   }
 
   public Tracker start() {
-    return super.start(new Tracker(this) {
+    return start(new Tracker(this) {
       @Override
       public long modHash() {
         return 0L;

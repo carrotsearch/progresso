@@ -58,10 +58,10 @@
 
     <version.log4j>2.7</version.log4j> 
 
-    <version.assertj>3.5.2</version.assertj>
-    <version.randomizedtesting>2.5.0</version.randomizedtesting>
+    <version.assertj>3.8.0</version.assertj>
+    <version.randomizedtesting>2.5.3</version.randomizedtesting>
     <version.junit>4.12</version.junit>
-    <version.forbiddenapis>2.2</version.forbiddenapis>    
+    <version.forbiddenapis>2.4.1</version.forbiddenapis>    
     <version.slf4j>1.7.21</version.slf4j> 
 
     <version.maven.api>3.2.3</version.maven.api>

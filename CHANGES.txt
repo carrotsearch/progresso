@@ -1,0 +1,12 @@
+
+[1.1.0]
+
+  GH-1: Sort tasks by their start time in stats (breakdowns).
+
+  GH-2: Task implementations call super.start which makes overriding the 
+        behavior of start(Tracker) impossible.
+
+[1.0.0]
+
+  Initial open source release.
+

@@ -39,6 +39,40 @@ public class TaskStatsTest extends RandomizedTest {
       .containsOnlyOnce("task_a")
       .containsOnlyOnce("subtask_1")
       .containsOnlyOnce("subtask_2")
-      .containsOnlyOnce("task_b");    
+      .containsOnlyOnce("task_b");
   }
+  
+  @Test
+  public void taskBreakdownOrdering() throws Exception {
+    GenericTask t1 = Tasks.newGenericTask("task_a");
+    GenericTask s1 = t1.newGenericSubtask("subtask_1");
+    GenericTask t2 = Tasks.newGenericTask("task_b");
+    GenericTask s2 = t2.newGenericSubtask("subtask_2");
+    GenericTask s3 = t2.newGenericSubtask("subtask_3");
+
+    Tracker tr2 = t2.start();
+    Thread.sleep(10);
+    
+    Tracker tr1 = t1.start();
+    s1.start().close();
+    
+    Thread.sleep(10);
+    s3.start().close();
+    Thread.sleep(10);
+    s2.start().close();
+    
+    tr2.close();
+    Thread.sleep(10);
+    
+    tr1.close();
+
+    String breakdown = TaskStats.breakdown(t1, t2);
+    System.out.println(breakdown);
+
+    Assertions.assertThat(breakdown.indexOf("task_b"))
+              .isLessThan(breakdown.indexOf("task_a"));
+
+    Assertions.assertThat(breakdown.indexOf("subtask_3"))
+              .isLessThan(breakdown.indexOf("subtask_2"));
+  }  
 }

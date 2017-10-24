@@ -14,10 +14,10 @@ public class ByteRangeTask extends Task<ByteRangeTracker> {
   }
 
   public ByteRangeTracker start(long fromInclusive, long toExclusive) {
-    return super.start(new ByteRangeTracker(this, new MinMax(fromInclusive, toExclusive)));
+    return start(new ByteRangeTracker(this, new MinMax(fromInclusive, toExclusive)));
   }
   
   public ByteRangeTracker start(long fromInclusive, long toExclusive, LongSupplier atSupplier) {
-    return super.start(new ByteRangeTracker(this, new MinMax(fromInclusive, toExclusive), atSupplier));
+    return start(new ByteRangeTracker(this, new MinMax(fromInclusive, toExclusive), atSupplier));
   }  
 }

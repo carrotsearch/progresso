@@ -63,6 +63,6 @@ public class CompositeTask extends Task<CompositeTask.WeightedTracker> {
   }
 
   public Tracker start() {
-    return super.start(new WeightedTracker());
+    return start(new WeightedTracker());
   }
 }
