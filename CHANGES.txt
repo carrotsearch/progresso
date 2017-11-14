@@ -1,4 +1,8 @@
 
+[1.2.0]
+
+  GH-3: Add support for non-range byte increment task (and ByteTracker formatter)
+
 [1.1.0]
 
   GH-1: Sort tasks by their start time in stats (breakdowns).

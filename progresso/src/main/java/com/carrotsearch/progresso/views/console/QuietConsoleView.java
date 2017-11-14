@@ -128,6 +128,7 @@ public class QuietConsoleView implements ProgressView {
     return Arrays.asList(
         new UpdateablePathTrackerFormatter(),
         new UpdateableByteRangeTrackerFormatter(),
+        new UpdateableByteTrackerFormatter(),
         new UpdateableCompletedRatioTrackerFormatter(),
         new UpdateableLongTrackerFormatter(),
         new UpdateableGenericTrackerFormatter());

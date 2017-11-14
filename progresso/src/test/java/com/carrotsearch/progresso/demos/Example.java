@@ -13,6 +13,6 @@ import com.carrotsearch.randomizedtesting.annotations.TestGroup;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Inherited
-@TestGroup(enabled = false, sysProperty = "tests.examples")
+@TestGroup(enabled = true, sysProperty = "tests.examples")
 public @interface Example {
 }

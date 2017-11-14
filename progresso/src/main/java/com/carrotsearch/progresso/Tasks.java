@@ -17,6 +17,10 @@ public interface Tasks {
   static  ByteRangeTask newByteRangeTask(String name) { return new ByteRangeTask(name); }
   static  ByteRangeTask newByteRangeTask() { return new ByteRangeTask(); }
 
+  default ByteTask newByteSubtask(String name) { return attach(newByteTask(name)); }
+  static  ByteTask newByteTask(String name) { return new ByteTask(name); }
+  static  ByteTask newByteTask() { return new ByteTask(); }
+
   default RangeTask newRangeSubtask(String name) { return attach(newRangeTask(name)); }
   static  RangeTask newRangeTask(String name) { return new RangeTask(name); }
   static  RangeTask newRangeTask() { return new RangeTask(); }
