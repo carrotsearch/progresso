@@ -10,15 +10,15 @@ import com.carrotsearch.progresso.Task.Status;
 /**
  * Simplifies status transition management a bit.
  */
-class TaskStatusRecovery {
-  static class State {
+public class TaskStatusRecovery {
+  private static class State {
     Task.Status status;
     
-    public State(Task<?> task) {
+    State(Task<?> task) {
       update(task);
     }
 
-    public void update(Task<?> task) {
+    void update(Task<?> task) {
       this.status = task.getStatus();
     }
   }
