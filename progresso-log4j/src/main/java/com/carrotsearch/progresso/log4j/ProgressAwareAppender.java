@@ -58,7 +58,7 @@ public class ProgressAwareAppender extends AbstractAppender {
     ThrowableProxy thrownProxy = event.getThrownProxy();
       if (thrownProxy != null) {
         builder.append(ConsoleWriter.LF);
-        builder.append(thrownProxy.getCauseStackTraceAsString());
+        builder.append(thrownProxy.getCauseStackTraceAsString(""));
       }
     }
 
