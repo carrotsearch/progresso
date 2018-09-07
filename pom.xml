@@ -56,13 +56,13 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
 
-    <version.log4j>2.10.0</version.log4j> 
+    <version.log4j>2.11.1</version.log4j> 
 
     <version.assertj>3.8.0</version.assertj>
-    <version.randomizedtesting>2.5.3</version.randomizedtesting>
+    <version.randomizedtesting>2.6.4</version.randomizedtesting>
     <version.junit>4.12</version.junit>
     <version.forbiddenapis>2.4.1</version.forbiddenapis>    
-    <version.slf4j>1.8.0-beta1</version.slf4j> 
+    <version.slf4j>1.8.0-beta2</version.slf4j> 
 
     <version.maven.api>3.2.3</version.maven.api>
     <version.maven-assembly-plugin>2.6</version.maven-assembly-plugin>
