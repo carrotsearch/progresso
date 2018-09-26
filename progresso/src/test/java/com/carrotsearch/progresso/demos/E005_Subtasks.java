@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.carrotsearch.progresso.ByteRangeTask;
-import com.carrotsearch.progresso.ByteRangeTracker;
 import com.carrotsearch.progresso.Progress;
+import com.carrotsearch.progresso.RangeTask;
+import com.carrotsearch.progresso.RangeTracker;
 import com.carrotsearch.progresso.Task;
 import com.carrotsearch.progresso.TaskStats;
 import com.carrotsearch.progresso.Tasks;
@@ -18,8 +18,8 @@ import com.carrotsearch.progresso.views.console.PlainConsoleView;
 public class E005_Subtasks extends AbstractExampleTest {
   @Test
   public void dynamicSubtask() throws Exception {
-    ByteRangeTask t1 = Tasks.newByteRangeTask("task1");
-    ByteRangeTask t2 = Tasks.newByteRangeTask("task2");
+    RangeTask t1 = Tasks.newByteRangeTask("task1");
+    RangeTask t2 = Tasks.newByteRangeTask("task2");
 
     List<Task<?>> topLevel = Arrays.asList(t1, t2);
 
@@ -38,12 +38,12 @@ public class E005_Subtasks extends AbstractExampleTest {
     }
   }
 
-  private void runTask(ByteRangeTask t) {
+  private void runTask(RangeTask t) {
     int max = 100;
-    try (ByteRangeTracker tracker = t.start(0, max)) {
+    try (RangeTracker tracker = t.start(0, max)) {
       tracker.at(5);
 
-      try (ByteRangeTracker sub = t.newByteRangeSubtask("Subtask1 of " + t.getName()).start(0, 100)) {
+      try (RangeTracker sub = t.newByteRangeSubtask("Subtask1 of " + t.getName()).start(0, 100)) {
         sub.at(10);
         sleep(6000);
         sub.at(99);
@@ -51,7 +51,7 @@ public class E005_Subtasks extends AbstractExampleTest {
         sub.attribute("foo", "%s", "bar");
       }
 
-      try (ByteRangeTracker sub = t.newByteRangeSubtask("Subtask2 of " + t.getName()).start(0, 100)) {
+      try (RangeTracker sub = t.newByteRangeSubtask("Subtask2 of " + t.getName()).start(0, 100)) {
         sub.at(10);
         sleep(500);
         sub.at(99);

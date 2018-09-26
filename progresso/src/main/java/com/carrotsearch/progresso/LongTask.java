@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.function.LongSupplier;
 
 import com.carrotsearch.progresso.util.UnitFormatter;
+import com.carrotsearch.progresso.util.Units;
 import com.carrotsearch.progresso.views.console.WithUnit;
 
 public class LongTask extends Task<LongTracker> implements WithUnit {
@@ -19,11 +20,11 @@ public class LongTask extends Task<LongTracker> implements WithUnit {
   }
 
   public LongTask() {
-    this(UnitFormatter.DECIMAL);
+    this(Units.DECIMAL);
   }
 
   public LongTask(String name) {
-    this(name, UnitFormatter.DECIMAL);
+    this(name, Units.DECIMAL);
   }
 
   public LongTracker start(long initialValue) {

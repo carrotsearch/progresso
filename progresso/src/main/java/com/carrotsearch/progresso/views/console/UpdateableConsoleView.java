@@ -181,7 +181,6 @@ public class UpdateableConsoleView implements ProgressView {
   public static List<AbstractTrackerFormatter<?>> defaultFormatters() {
     return Arrays.asList(
         new UpdateablePathTrackerFormatter(),
-        new UpdateableByteRangeTrackerFormatter(),
         new UpdateableCompletedRatioTrackerFormatter(),
         new UpdateableLongTrackerFormatter(),
         new UpdateableGenericTrackerFormatter());

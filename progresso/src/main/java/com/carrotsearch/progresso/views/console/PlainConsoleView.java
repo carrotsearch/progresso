@@ -30,7 +30,7 @@ public class PlainConsoleView implements ProgressView {
 
   private final ArrayList<? extends TrackerFormatter> formatters;
 
-  private static final long DELAY_INITIAL  = TimeUnit.SECONDS.toMillis(3); 
+  private static final long DELAY_INITIAL  = TimeUnit.SECONDS.toMillis(2); 
   private static final long DELAY_PROGRESS = TimeUnit.SECONDS.toMillis(2); 
 
   private final TaskStatusRecovery statusUpdater = new TaskStatusRecovery();
@@ -180,7 +180,6 @@ public class PlainConsoleView implements ProgressView {
   public static List<AbstractTrackerFormatter<?>> defaultFormatters() {
     return Arrays.asList(
         new UpdateablePathTrackerFormatter(),
-        new UpdateableByteRangeTrackerFormatter(),
         new UpdateableCompletedRatioTrackerFormatter(),
         new UpdateableLongTrackerFormatter(),
         new UpdateableGenericTrackerFormatter());

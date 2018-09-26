@@ -5,14 +5,14 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.carrotsearch.progresso.util.UnitFormatter.ByteFormatter;
-import com.carrotsearch.progresso.util.UnitFormatter.DecimalCompactFormatter;
+import com.carrotsearch.progresso.util.UnitFormatterImpl.ByteFormatter;
+import com.carrotsearch.progresso.util.UnitFormatterImpl.DecimalCompactFormatter;
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 
 public class UnitFormatterTest extends RandomizedTest {
   @Test
   public void testFormatBytes() {
-    UnitFormatter fmt = UnitFormatter.BYTES;
+    UnitFormatter fmt = Units.BYTES;
     assertThat(fmt.format(0)).isEqualTo("0B");
     assertThat(fmt.format(1023)).isEqualTo("1023B");
     assertThat(fmt.format(1024)).isEqualTo("1.00KB");
@@ -22,7 +22,7 @@ public class UnitFormatterTest extends RandomizedTest {
 
   @Test
   public void testParseBytes() {
-    ByteFormatter fmt = UnitFormatter.BYTES;
+    ByteFormatter fmt = Units.BYTES;
     assertThat(fmt.parse("0")).isEqualTo(0);
     assertThat(fmt.parse("1023")).isEqualTo(1023);
     assertThat(fmt.parse("1KB")).isEqualTo(1024);
@@ -58,7 +58,7 @@ public class UnitFormatterTest extends RandomizedTest {
 
   @Test
   public void testFormatDecimalCompact() {
-    DecimalCompactFormatter fmt = UnitFormatter.DECIMAL_COMPACT;
+    DecimalCompactFormatter fmt = Units.DECIMAL_COMPACT;
     assertThat(fmt.format(0)).isEqualTo("0");
     assertThat(fmt.format(9)).isEqualTo("9");
     assertThat(fmt.format(10)).isEqualTo("10");
@@ -70,7 +70,7 @@ public class UnitFormatterTest extends RandomizedTest {
 
   @Test
   public void testDecimalCompactParse() {
-    DecimalCompactFormatter fmt = UnitFormatter.DECIMAL_COMPACT;
+    DecimalCompactFormatter fmt = Units.DECIMAL_COMPACT;
 
     assertThat(fmt.parse("0")).isEqualTo(0);
     assertThat(fmt.parse("1023")).isEqualTo(1023);
@@ -88,7 +88,7 @@ public class UnitFormatterTest extends RandomizedTest {
   
   @Test
   public void testFormatDecimal() {
-    UnitFormatter fmt = UnitFormatter.DECIMAL;
+    UnitFormatter fmt = Units.DECIMAL;
     assertThat(fmt.format(0)).isEqualTo("0");
     assertThat(fmt.format(9)).isEqualTo("9");
     assertThat(fmt.format(10)).isEqualTo("10");
@@ -103,7 +103,7 @@ public class UnitFormatterTest extends RandomizedTest {
     final long H = M * 60;
     final long D = H * 24;
 
-    UnitFormatter fmt = UnitFormatter.DURATION;
+    UnitFormatter fmt = Units.DURATION;
     assertThat(fmt.format(0)).isEqualTo("0ms");
     assertThat(fmt.format(10)).isEqualTo("10ms");
     assertThat(fmt.format(S)).isEqualTo("1s");
@@ -130,7 +130,7 @@ public class UnitFormatterTest extends RandomizedTest {
     final long H = M * 60;
     final long D = H * 24;
 
-    UnitFormatter fmt = UnitFormatter.DURATION_COMPACT;
+    UnitFormatter fmt = Units.DURATION_COMPACT;
     assertThat(fmt.format(0)).isEqualTo("0ms");
     assertThat(fmt.format(10)).isEqualTo("10ms");
     assertThat(fmt.format(S)).isEqualTo("1s");
@@ -159,7 +159,7 @@ public class UnitFormatterTest extends RandomizedTest {
     final long H = M * 60;
     final long D = H * 24;
 
-    UnitFormatter fmt = UnitFormatter.DURATION_VERBOSE;
+    UnitFormatter fmt = Units.DURATION_VERBOSE;
     assertThat(fmt.format(0)).isEqualTo("0 milliseconds");
     assertThat(fmt.format(10)).isEqualTo("10 milliseconds");
     assertThat(fmt.format(S)).isEqualTo("1 second");

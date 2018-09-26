@@ -8,7 +8,6 @@ import java.util.function.Function;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.carrotsearch.progresso.ByteRangeTracker;
 import com.carrotsearch.progresso.GenericTask;
 import com.carrotsearch.progresso.LongTracker;
 import com.carrotsearch.progresso.Progress;
@@ -60,7 +59,7 @@ public class ViewsTest extends RandomizedTest {
   }
 
   void runMethods(Progress p) {
-    try (ByteRangeTracker t = p.newByteRangeSubtask("t").start(0, 10)) {
+    try (RangeTracker t = p.newByteRangeSubtask("t").start(0, 10)) {
       if (randomBoolean()) {
         t.at(randomIntBetween(0, 9));
       }

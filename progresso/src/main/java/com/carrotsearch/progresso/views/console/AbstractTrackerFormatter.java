@@ -2,7 +2,6 @@ package com.carrotsearch.progresso.views.console;
 
 import java.util.concurrent.TimeUnit;
 
-import com.carrotsearch.progresso.CompletedRatio;
 import com.carrotsearch.progresso.RangeTracker;
 import com.carrotsearch.progresso.Task;
 import com.carrotsearch.progresso.Tracker;
@@ -10,7 +9,7 @@ import com.carrotsearch.progresso.util.LineFormatter;
 import com.carrotsearch.progresso.util.LineFormatter.Alignment;
 import com.carrotsearch.progresso.util.LineFormatter.Trim;
 import com.carrotsearch.progresso.util.MinMax;
-import com.carrotsearch.progresso.util.UnitFormatter;
+import com.carrotsearch.progresso.util.Units;
 
 public abstract class AbstractTrackerFormatter<T> implements TrackerFormatter {
   /**
@@ -63,11 +62,11 @@ public abstract class AbstractTrackerFormatter<T> implements TrackerFormatter {
     String value = "";
     
     if (task.isDone() && task.hasTracker()) {
-      value = UnitFormatter.DURATION_COMPACT.format(tracker.elapsedMillis());
+      value = Units.DURATION_COMPACT.format(tracker.elapsedMillis());
     } else {
       // Don't display anything for the initial small period.
       if (duration > ETA_ESTIMATE_DELAY) {
-        value = UnitFormatter.DURATION_COMPACT.format(tracker.elapsedMillis());
+        value = Units.DURATION_COMPACT.format(tracker.elapsedMillis());
 
         if (tracker instanceof RangeTracker) {
           final RangeTracker rangeTracker = (RangeTracker) tracker;
@@ -76,7 +75,7 @@ public abstract class AbstractTrackerFormatter<T> implements TrackerFormatter {
 
           if (current > mm.minInclusive && current < mm.maxExclusive) {
             long etaMillis = (long) (((double) (mm.maxExclusive - mm.minInclusive)) * duration / (current - mm.minInclusive) - duration);
-            value = "~" + UnitFormatter.DURATION_COMPACT.format(etaMillis);
+            value = "~" + Units.DURATION_COMPACT.format(etaMillis);
           }
         }      
       }
@@ -85,7 +84,7 @@ public abstract class AbstractTrackerFormatter<T> implements TrackerFormatter {
     lf.cell(TIME_COL_WIDTH, TIME_COL_WIDTH, Alignment.RIGHT, Trim.RIGHT, LineFormatter.PRIORITY_DEFAULT, value);
   }
 
-  protected static String dots(int lineWidth, CompletedRatio tracker) {
+  protected static String dots(int lineWidth, double completedRatio) {
     final int progressBarWidth;
     if (lineWidth <= 80) {
       progressBarWidth = 4 * 5 + 1;
@@ -98,7 +97,7 @@ public abstract class AbstractTrackerFormatter<T> implements TrackerFormatter {
     final int tickModulo = (progressBarWidth - 1) / 4;
 
     final StringBuilder out = new StringBuilder();
-    final int atColumn = (int) (tracker.completedRatio() * (progressBarWidth - 1));
+    final int atColumn = (int) (completedRatio * (progressBarWidth - 1));
     for (int i = 0; i < progressBarWidth; i++) {
       char chr = '?';
 

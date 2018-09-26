@@ -7,6 +7,7 @@ import com.carrotsearch.progresso.Task;
 import com.carrotsearch.progresso.Tracker;
 import com.carrotsearch.progresso.util.LineFormatter;
 import com.carrotsearch.progresso.util.UnitFormatter;
+import com.carrotsearch.progresso.util.Units;
 import com.carrotsearch.progresso.util.LineFormatter.Alignment;
 import com.carrotsearch.progresso.util.LineFormatter.Trim;
 
@@ -26,22 +27,28 @@ public class UpdateableLongTrackerFormatter extends AbstractTrackerFormatter<Tra
     if (longTracker.task() instanceof WithUnit) {
       unit = ((WithUnit) longTracker.task()).unit();
     } else {
-      unit = UnitFormatter.DECIMAL;
+      unit = Units.DECIMAL;
     }
 
     appendTaskName(lf, task);
 
-    final long at = longTracker.at();
-    final String value = unit.format(at);
-    final int columns = lf.columns(value);
-    lf.cell(columns, columns, Alignment.RIGHT, Trim.RIGHT, LineFormatter.PRIORITY_OPTIONAL, value);
-
     if (!task.isDone()) {
+      final long at = longTracker.at();
+      final String value = unit.format(at);
+      if (value != null) {
+        final int columns = lf.columns(value);
+        lf.cell(columns, columns, Alignment.RIGHT, Trim.RIGHT, LineFormatter.PRIORITY_OPTIONAL, value);
+      }
+
       RateCalculator rateCalculator = 
           rateCalculators.computeIfAbsent(tracker, (key) -> new RateCalculator());
-      double bytesPerSec = rateCalculator.tick(System.currentTimeMillis(), at);
-      String speedRatio = " @" + unit.format((long) bytesPerSec) + "/s";
-      appendOptional(lf, speedRatio);
+      String itemsPerSec = unit.format((long) rateCalculator.tick(System.currentTimeMillis(), at));
+      if (itemsPerSec != null) {
+        String speedRatio = " @" + itemsPerSec + "/s";
+        appendOptional(lf, speedRatio);
+      }
+    } else {
+      lf.cell(" done");
     }
     appendTime(lf, task, tracker);
   }

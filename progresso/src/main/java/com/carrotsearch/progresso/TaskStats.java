@@ -12,7 +12,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.carrotsearch.progresso.util.UnitFormatter;
+import com.carrotsearch.progresso.util.Units;
 
 public final class TaskStats {
   public final static String TOTAL_TIME = "Total time:";
@@ -45,7 +45,7 @@ public final class TaskStats {
       return TOTAL_TIME + " (not done yet).";
     }
 
-    return TOTAL_TIME + " " + UnitFormatter.DURATION.format((end - start)) + ".";
+    return TOTAL_TIME + " " + Units.DURATION.format((end - start)) + ".";
   }
 
   public static long elapsedTimeMs(Collection<Task<?>> tasks) {
@@ -186,7 +186,7 @@ public final class TaskStats {
 
   private static String taskTimeT0(Task<?> task, long t0) {
     if (task.hasTracker()) {
-      return UnitFormatter.DURATION_COMPACT.format(task.getTracker().startTime() - t0);
+      return Units.DURATION_COMPACT.format(task.getTracker().startTime() - t0);
     } else {
       return "";
     }
@@ -208,7 +208,7 @@ public final class TaskStats {
 
   private static String taskTime(Task<?> task) {
     if (task.isDone() && task.hasTracker()) {
-      return UnitFormatter.DURATION.format(task.getTracker().elapsedMillis());
+      return Units.DURATION.format(task.getTracker().elapsedMillis());
     } else {
       return "[" + task.getStatus().name() + "]";
     }

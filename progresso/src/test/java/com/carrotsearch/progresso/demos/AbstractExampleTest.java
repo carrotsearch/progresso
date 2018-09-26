@@ -7,6 +7,7 @@ import org.junit.Before;
 
 import com.carrotsearch.progresso.Progress;
 import com.carrotsearch.progresso.views.console.ConsoleAware;
+import com.carrotsearch.progresso.views.console.UpdateableConsoleView;
 import com.carrotsearch.randomizedtesting.RandomizedContext;
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakAction;
@@ -33,6 +34,6 @@ public abstract class AbstractExampleTest extends RandomizedTest {
   }
   
   protected Progress defaultProgress() {
-    return new Progress(ConsoleAware.newConsoleProgressView(Collections.emptyList()));
+    return new Progress(new UpdateableConsoleView(ConsoleAware.writer(), Collections.emptyList()));
   }  
 }

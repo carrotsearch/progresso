@@ -3,9 +3,9 @@ package com.carrotsearch.progresso.demos;
 
 import org.junit.Test;
 
-import com.carrotsearch.progresso.ByteRangeTask;
-import com.carrotsearch.progresso.ByteRangeTracker;
 import com.carrotsearch.progresso.Progress;
+import com.carrotsearch.progresso.RangeTask;
+import com.carrotsearch.progresso.RangeTracker;
 import com.carrotsearch.progresso.Tasks;
 
 public class E001_OneTask extends AbstractExampleTest {
@@ -20,7 +20,7 @@ public class E001_OneTask extends AbstractExampleTest {
   public void subtaskAttachedToParent() {
     try (Progress progress = defaultProgress()) {
       // Early init of the task (for example during configuration collection).
-      ByteRangeTask task = Tasks.newByteRangeTask("Bytes");
+      RangeTask task = Tasks.newByteRangeTask("Bytes");
 
       // Attaching to parent.
       progress.attach(task);
@@ -30,9 +30,9 @@ public class E001_OneTask extends AbstractExampleTest {
     }
   }
 
-  private void runTask(ByteRangeTask task) {
+  private void runTask(RangeTask task) {
     int max = 1024 * 1024 * 10;
-    try (ByteRangeTracker t = task.start(0, max)) {
+    try (RangeTracker t = task.start(0, max)) {
       for (int i = 0; i <= max; i += max / 200) {
         sleep(10);
         t.at(i);
@@ -42,7 +42,7 @@ public class E001_OneTask extends AbstractExampleTest {
 
   private void runTask(Tasks parent) {
     int max = 1024 * 1024 * 10;
-    try (ByteRangeTracker t = parent.newByteRangeSubtask("Bytes").start(0, max)) {
+    try (RangeTracker t = parent.newByteRangeSubtask("Bytes").start(0, max)) {
       for (int i = 0; i < max; i += max / 200) {
         sleep(25);
         t.at(i);
