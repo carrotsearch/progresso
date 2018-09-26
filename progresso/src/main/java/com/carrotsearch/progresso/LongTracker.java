@@ -12,7 +12,7 @@ public class LongTracker extends Tracker {
     this.value = new AtomicLong(initialValue);
     this.atSupplier = atSupplier;
   }
-  
+
   public LongTracker(Task<?> task, long initialValue) {
     this(task, initialValue, null);
   }
@@ -28,7 +28,7 @@ public class LongTracker extends Tracker {
 
   public void at(long newValue) {
     ensureOpen();
-    checkSanity();
+    ensureNoSupplier();
 
     if (value.get() > newValue) {
       throw new IllegalArgumentException("New value must be >= old value: " + newValue + ", old: " + this.value);
@@ -37,18 +37,19 @@ public class LongTracker extends Tracker {
     value.set(newValue);
   }
 
-  private void checkSanity() {
+  public void increment() {
+    ensureNoSupplier();
+    this.value.incrementAndGet();
+  }
+
+  public void incrementBy(long value) {
+    ensureNoSupplier();
+    this.value.addAndGet(value);
+  }
+  
+  private void ensureNoSupplier() {
     if (atSupplier != null) {
       throw new RuntimeException("Can't set when supplier is provided.");      
     }
   }
-
-  public void increment() {
-    incrementBy(1);
-  }
-
-  public void incrementBy(long value) {
-    checkSanity();
-    this.value.addAndGet(value);
-  }  
 }

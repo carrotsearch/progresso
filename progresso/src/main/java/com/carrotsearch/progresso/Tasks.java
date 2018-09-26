@@ -3,6 +3,8 @@ package com.carrotsearch.progresso;
 import java.util.Arrays;
 import java.util.List;
 
+import com.carrotsearch.progresso.util.UnitFormatter;
+
 public interface Tasks {
   void attach(Iterable<? extends Task<?>> tasks);
 
@@ -17,9 +19,9 @@ public interface Tasks {
   static  ByteRangeTask newByteRangeTask(String name) { return new ByteRangeTask(name); }
   static  ByteRangeTask newByteRangeTask() { return new ByteRangeTask(); }
 
-  default ByteTask newByteSubtask(String name) { return attach(newByteTask(name)); }
-  static  ByteTask newByteTask(String name) { return new ByteTask(name); }
-  static  ByteTask newByteTask() { return new ByteTask(); }
+  default LongTask newByteSubtask(String name) { return attach(newByteTask(name)); }
+  static  LongTask newByteTask(String name) { return newLongTask(name, UnitFormatter.BYTES); }
+  static  LongTask newByteTask() { return newLongTask(UnitFormatter.BYTES); }
 
   default RangeTask newRangeSubtask(String name) { return attach(newRangeTask(name)); }
   static  RangeTask newRangeTask(String name) { return new RangeTask(name); }
@@ -28,6 +30,10 @@ public interface Tasks {
   default LongTask newLongSubtask(String name) { return attach(newLongTask(name)); }
   static  LongTask newLongTask(String name) { return new LongTask(name); }
   static  LongTask newLongTask() { return new LongTask(); }
+
+  default LongTask newLongSubtask(String name, UnitFormatter unit) { return attach(newLongTask(name, unit)); }
+  static  LongTask newLongTask(String name, UnitFormatter unit) { return new LongTask(name, unit); }
+  static  LongTask newLongTask(UnitFormatter unit) { return new LongTask(unit); }
 
   default PathScanningTask newPathScanningSubtask(String name) { return attach(newPathScanningTask(name)); }
   static  PathScanningTask newPathScanningTask(String name) { return new PathScanningTask(name); }

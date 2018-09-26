@@ -29,7 +29,7 @@ public class E003_SequentialTasks extends AbstractExampleTest {
         try (ByteRangeTracker tracker = task.start(0, max)) {
           for (int i = 0; i < max; i += randomIntBetween(0, 10 * 1024)) {
             tracker.at(i);
-            sleep(randomIntBetween(1, 5));
+            sleep(randomIntBetween(1, 50));
           }
         }
       }

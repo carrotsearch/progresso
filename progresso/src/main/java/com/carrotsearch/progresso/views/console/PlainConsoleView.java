@@ -177,11 +177,10 @@ public class PlainConsoleView implements ProgressView {
     return System.currentTimeMillis();
   }
   
-  private static List<AbstractTrackerFormatter<?>> defaultFormatters() {
+  public static List<AbstractTrackerFormatter<?>> defaultFormatters() {
     return Arrays.asList(
         new UpdateablePathTrackerFormatter(),
         new UpdateableByteRangeTrackerFormatter(),
-        new UpdateableByteTrackerFormatter(),
         new UpdateableCompletedRatioTrackerFormatter(),
         new UpdateableLongTrackerFormatter(),
         new UpdateableGenericTrackerFormatter());

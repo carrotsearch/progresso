@@ -124,11 +124,10 @@ public class QuietConsoleView implements ProgressView {
     return lf.format(lineWidth) + LF;
   }
 
-  private static List<AbstractTrackerFormatter<?>> defaultFormatters() {
+  public static List<AbstractTrackerFormatter<?>> defaultFormatters() {
     return Arrays.asList(
         new UpdateablePathTrackerFormatter(),
         new UpdateableByteRangeTrackerFormatter(),
-        new UpdateableByteTrackerFormatter(),
         new UpdateableCompletedRatioTrackerFormatter(),
         new UpdateableLongTrackerFormatter(),
         new UpdateableGenericTrackerFormatter());

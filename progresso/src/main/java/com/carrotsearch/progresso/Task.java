@@ -17,7 +17,7 @@ public abstract class Task<T extends Tracker> implements Tasks {
   }
 
   // Unique sentinel object.
-  private final static String UNNAMED = new String("<unnamed task>");
+  protected final static String UNNAMED = new String("<unnamed task>");
 
   private final String name;
   private final List<TaskListener> taskListeners = new CopyOnWriteArrayList<>();
