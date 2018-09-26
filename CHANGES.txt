@@ -1,12 +1,16 @@
 
-[1.5.0]
+[1.6.0]
 
   GH-6: ByteTask, ByteTracker, ByteRangeTask and ByteRangeTracker removed in
         favor of a customizable unit formatter passed to LongTask/ RangeTask.
 
-[1.4.0]
+[1.5.0]
 
   GH-5: Dependency upgrades to log4j 2.11.1 and slf4j 1.8.0-beta2.
+
+[1.4.0]
+
+  [release skipped]
 
 [1.3.0]
 
