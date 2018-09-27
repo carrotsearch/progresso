@@ -39,14 +39,17 @@ final class RateCalculator {
     if (samples.size() >= 2) {
       Sample first = samples.peekFirst();
       Sample last = samples.peekLast();
+      long delta = last.time - first.time;
 
       if (first.value > last.value) {
         throw new RuntimeException(first + " " + last);
       }
-      
-      return (last.value - first.value) * 1000 / (last.time - first.time);
-    } else {
-      return 0L;
+
+      if (delta > 0) {
+        return (last.value - first.value) * 1000 / delta;
+      }
     }
+
+    return 0L;
   }
 }

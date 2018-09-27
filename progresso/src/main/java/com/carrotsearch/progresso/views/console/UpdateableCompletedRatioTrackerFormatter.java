@@ -16,6 +16,15 @@ public class UpdateableCompletedRatioTrackerFormatter extends AbstractTrackerFor
   private final IdentityHashMap<Tracker, RateCalculator> rateCalculators = new IdentityHashMap<>();
 
   @Override
+  public void taskStarted(Task<?> task) {
+    if (task.getTracker() instanceof LongTracker) {
+      LongTracker tracker = (LongTracker) task.getTracker();
+      RateCalculator rateCalculator = rateCalculators.computeIfAbsent(tracker, (key) -> new RateCalculator());
+      rateCalculator.tick(System.currentTimeMillis(), tracker.at());
+    }
+  }
+
+  @Override
   public boolean supports(int lineWidth, Tracker tracker) {
     return tracker instanceof CompletedRatio;
   }

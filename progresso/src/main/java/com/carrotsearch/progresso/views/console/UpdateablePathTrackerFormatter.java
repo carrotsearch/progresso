@@ -12,6 +12,11 @@ import com.carrotsearch.progresso.util.LineFormatter.Alignment;
 import com.carrotsearch.progresso.util.LineFormatter.Trim;
 
 public class UpdateablePathTrackerFormatter extends AbstractTrackerFormatter<PathTracker> {
+  
+  @Override
+  public void taskStarted(Task<?> task) {
+  }
+
   @Override
   public boolean supports(int lineWidth, Tracker tracker) {
     return tracker instanceof PathTracker;

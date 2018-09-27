@@ -61,7 +61,7 @@ public class UpdateableConsoleView implements ProgressView {
   @Override
   public void update(Set<Task<?>> tasks) {
     statusUpdater.update(tasks,
-        (t) -> startedTasks.addLast(t),
+        (t) -> { startedTasks.addLast(t); formatters.forEach(fmt -> fmt.taskStarted(t)); },
         (t) -> doneTasks.addLast(t));
 
     // If active task has completed, finalize its progress.
