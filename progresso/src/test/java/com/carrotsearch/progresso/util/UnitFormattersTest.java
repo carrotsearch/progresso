@@ -5,11 +5,11 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.carrotsearch.progresso.util.UnitFormatterImpl.ByteFormatter;
-import com.carrotsearch.progresso.util.UnitFormatterImpl.DecimalCompactFormatter;
+import com.carrotsearch.progresso.util.UnitFormatters.ByteFormatter;
+import com.carrotsearch.progresso.util.UnitFormatters.DecimalCompactFormatter;
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 
-public class UnitFormatterTest extends RandomizedTest {
+public class UnitFormattersTest extends RandomizedTest {
   @Test
   public void testFormatBytes() {
     UnitFormatter fmt = Units.BYTES;
@@ -18,6 +18,7 @@ public class UnitFormatterTest extends RandomizedTest {
     assertThat(fmt.format(1024)).isEqualTo("1.00KB");
     assertThat(fmt.format(1024 * 1024)).isEqualTo("1.00MB");
     assertThat(fmt.format(1024 * 1024 * 1024)).isEqualTo("1.00GB");
+    assertThat(fmt.format(1024L * 1024 * 1024 * 1024 * 2)).isEqualTo("2.00TB");
   }
 
   @Test
@@ -29,7 +30,8 @@ public class UnitFormatterTest extends RandomizedTest {
     assertThat(fmt.parse("2KB")).isEqualTo(2 * 1024);
     assertThat(fmt.parse("2MB")).isEqualTo(2 * 1024 * 1024);
     assertThat(fmt.parse("2GB")).isEqualTo(2L * 1024 * 1024 * 1024);
-    
+    assertThat(fmt.parse("2.01TB")).isEqualTo(1024L * 1024 * 1024 * 1024 * 201 / 100);
+
     assertThat(fmt.parse("1 023")).isEqualTo(1023);
     assertThat(fmt.parse("1,023")).isEqualTo(1023);
     assertThat(fmt.parse("10,023")).isEqualTo(10_023);

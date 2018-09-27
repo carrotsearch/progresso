@@ -1,11 +1,11 @@
 package com.carrotsearch.progresso.util;
 
-import static com.carrotsearch.progresso.util.UnitFormatterImpl.*;
+import static com.carrotsearch.progresso.util.UnitFormatters.*;
 
 import java.util.Locale;
 
-import com.carrotsearch.progresso.util.UnitFormatterImpl.ByteFormatter;
-import com.carrotsearch.progresso.util.UnitFormatterImpl.DecimalCompactFormatter;
+import com.carrotsearch.progresso.util.UnitFormatters.ByteFormatter;
+import com.carrotsearch.progresso.util.UnitFormatters.DecimalCompactFormatter;
 
 public final class Units {
   public static final ByteFormatter BYTES = new ByteFormatter();
@@ -23,7 +23,7 @@ public final class Units {
     public String format(long millis) {
       long[] units = splitToUnits(millis);
       compactRounding(millis, units);
-      return formatUnits(units, UnitFormatterImpl.TIME_UNITS_SHORT, false);
+      return formatUnits(units, UnitFormatters.TIME_UNITS_SHORT, false);
     }
   };
   
@@ -31,7 +31,7 @@ public final class Units {
     public String format(long millis) {
       long[] units = splitToUnits(millis);
       regularRounding(millis, units);
-      return formatUnits(units, UnitFormatterImpl.TIME_UNITS_SHORT, false);
+      return formatUnits(units, UnitFormatters.TIME_UNITS_SHORT, false);
     }
   };
 
@@ -40,7 +40,7 @@ public final class Units {
     public String format(long millis) {
       long[] units = splitToUnits(millis);
       regularRounding(millis, units);
-      return formatUnits(units, UnitFormatterImpl.TIME_UNITS_FULL, true);
+      return formatUnits(units, UnitFormatters.TIME_UNITS_FULL, true);
     }
   };
 }

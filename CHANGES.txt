@@ -1,4 +1,8 @@
 
+[1.6.1]
+
+  GH-8: Byte formatter fails for TB parsing/ formatting.
+
 [1.6.0]
 
   GH-6: ByteTask, ByteTracker, ByteRangeTask and ByteRangeTracker removed in

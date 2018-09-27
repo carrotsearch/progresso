@@ -4,7 +4,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-final class UnitFormatterImpl {
+public final class UnitFormatters {
   static final long MS = 1;
   static final long SECOND = MS * 1000;
   static final long MINUTE = SECOND * 60;
@@ -46,10 +46,10 @@ final class UnitFormatterImpl {
         return val.longValue();
       }
 
-      Pattern p = Pattern.compile("(?<size>[0-9]+)(?<unit>GB|MB|KB)");
+      Pattern p = Pattern.compile("(?<size>[0-9,\\.]+)(?<unit>TB|GB|MB|KB)");
       Matcher matcher = p.matcher(value);
       if (matcher.matches()) {
-        long size = Long.parseLong(matcher.group("size"));
+        double size = Double.parseDouble(matcher.group("size"));
         switch (matcher.group("unit")) {
           case "KB":
             size = 1024 * size;
@@ -60,10 +60,13 @@ final class UnitFormatterImpl {
           case "GB":
             size = (1024 * 1024 * 1024) * size;
             break;
+          case "TB":
+            size = (1024L * 1024 * 1024 * 1024) * size;
+            break;
           default:
             throw new RuntimeException(); // Inaccessible.
         }
-        return size;
+        return (long) size;
       } else {
         return Long.parseLong(value);
       }
@@ -79,10 +82,10 @@ final class UnitFormatterImpl {
         return val.longValue();
       }
 
-      Pattern p = Pattern.compile("(?<size>[0-9]+)(?<unit>G|M|k)");
+      Pattern p = Pattern.compile("(?<size>[0-9,\\.]+)(?<unit>G|M|k)");
       Matcher matcher = p.matcher(value);
       if (matcher.matches()) {
-        long size = Long.parseLong(matcher.group("size"));
+        double size = Double.parseDouble(matcher.group("size"));
         switch (matcher.group("unit")) {
           case "k":
             size = 1000 * size;
@@ -96,7 +99,7 @@ final class UnitFormatterImpl {
           default:
             throw new RuntimeException(); // Inaccessible.
         }
-        return size;
+        return (long) size;
       } else {
         return Long.parseLong(value);
       }
