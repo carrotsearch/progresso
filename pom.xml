@@ -4,7 +4,7 @@
 
   <groupId>com.carrotsearch.progresso</groupId>
   <artifactId>progresso-parent</artifactId>
-  <version>1.7.0-SNAPSHOT</version>
+  <version>1.6.1</version>
   <packaging>pom</packaging>
 
   <name>Progresso Parent (POM)</name>
@@ -58,26 +58,29 @@
 
     <version.log4j>2.11.1</version.log4j> 
 
-    <version.assertj>3.8.0</version.assertj>
-    <version.randomizedtesting>2.6.4</version.randomizedtesting>
+    <version.assertj>3.11.1</version.assertj>
+    <version.randomizedtesting>2.7.0</version.randomizedtesting>
     <version.junit>4.12</version.junit>
-    <version.forbiddenapis>2.4.1</version.forbiddenapis>    
+    <version.forbiddenapis>2.6</version.forbiddenapis>    
     <version.slf4j>1.8.0-beta2</version.slf4j> 
 
-    <version.maven.api>3.2.3</version.maven.api>
+    <version.maven.api>3.2.5</version.maven.api>
     <version.maven-assembly-plugin>3.1.0</version.maven-assembly-plugin>
-    <version.maven-clean-plugin>3.0.0</version.maven-clean-plugin>
-    <version.maven-compiler-plugin>3.7.0</version.maven-compiler-plugin>
-    <version.maven-dependency-plugin>3.0.2</version.maven-dependency-plugin>
+    <version.maven-clean-plugin>3.1.0</version.maven-clean-plugin>
+    <version.maven-compiler-plugin>3.8.0</version.maven-compiler-plugin>
+    <version.maven-dependency-plugin>3.1.1</version.maven-dependency-plugin>
     <version.maven-deploy-plugin>2.8.2</version.maven-deploy-plugin>
     <version.maven-install-plugin>2.5.2</version.maven-install-plugin>
-    <version.maven-jar-plugin>3.0.2</version.maven-jar-plugin>
-    <version.maven-resources-plugin>3.0.2</version.maven-resources-plugin>
-    <version.maven-site-plugin>3.7</version.maven-site-plugin>
+    <version.maven-jar-plugin>3.1.0</version.maven-jar-plugin>
+    <version.maven-resources-plugin>3.1.0</version.maven-resources-plugin>
+    <version.maven-site-plugin>3.7.1</version.maven-site-plugin>
     <version.maven-eclipse-plugin>2.10</version.maven-eclipse-plugin>
     <version.maven-antrun-plugin>1.8</version.maven-antrun-plugin>
     <version.maven-enforcer-plugin>3.0.0-M2</version.maven-enforcer-plugin>
-    <version.maven-surefire-plugin>2.20.1</version.maven-surefire-plugin>
+    <version.maven-surefire-plugin>2.22.0</version.maven-surefire-plugin>
+    <version.maven-gpg-plugin>1.6</version.maven-gpg-plugin>
+    <version.maven-javadoc-plugin>3.0.1</version.maven-javadoc-plugin>
+    <version.maven-source-plugin>3.0.1</version.maven-source-plugin>
 
     <tests.jvms>auto</tests.jvms>
     <tests.shuffle>true</tests.shuffle>
@@ -201,14 +204,6 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <version>${version.maven-assembly-plugin}</version>
-
-          <dependencies>
-            <dependency>
-              <groupId>org.codehaus.plexus</groupId>
-              <artifactId>plexus-archiver</artifactId>
-              <version>3.0.3</version>
-            </dependency>
-          </dependencies>
         </plugin>
 
         <plugin>
@@ -227,6 +222,24 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <version>${version.maven-site-plugin}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>${version.maven-gpg-plugin}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${version.maven-javadoc-plugin}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>${version.maven-source-plugin}</version>
         </plugin>
 
         <plugin>
