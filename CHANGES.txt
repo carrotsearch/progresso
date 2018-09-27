@@ -1,4 +1,6 @@
 
+[1.7.0]
+
 [1.6.1]
 
   GH-7: Initial progress ratio always reported as zero.
