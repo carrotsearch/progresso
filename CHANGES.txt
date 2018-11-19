@@ -1,6 +1,11 @@
 
 [1.7.0]
 
+[1.6.2]
+
+  GH-9: TaskStats.totalTimeString must throw an exception on an empty set of 
+        tasks.
+
 [1.6.1]
 
   GH-7: Initial progress ratio always reported as zero.

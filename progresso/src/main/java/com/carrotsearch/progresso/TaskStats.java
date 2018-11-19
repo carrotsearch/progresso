@@ -26,6 +26,10 @@ public final class TaskStats {
   }
 
   private static String totalTimeString(Set<Task<?>> tasks) {
+    if (tasks.isEmpty()) {
+      throw new IllegalArgumentException("Task set must not be empty.");
+    }
+
     long start = Long.MAX_VALUE;
     long end = 0;
 
