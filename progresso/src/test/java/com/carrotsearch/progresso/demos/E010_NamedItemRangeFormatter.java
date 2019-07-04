@@ -1,20 +1,19 @@
 
 package com.carrotsearch.progresso.demos;
 
-import java.util.Collections;
-
-import org.junit.Test;
-
+import com.carrotsearch.progresso.ProgressView;
 import com.carrotsearch.progresso.RangeTracker;
 import com.carrotsearch.progresso.Tasks;
 import com.carrotsearch.progresso.util.Units;
 import com.carrotsearch.progresso.views.console.ConsoleAware;
-import com.carrotsearch.progresso.views.console.UpdateableConsoleView;
+import org.junit.Test;
+
+import java.util.Collections;
 
 public class E010_NamedItemRangeFormatter extends AbstractExampleTest {
   @Test
   public void countNoRatio() throws Exception {
-    UpdateableConsoleView view = new UpdateableConsoleView(ConsoleAware.writer());
+    ProgressView view = ConsoleAware.newConsoleProgressView();
 
     long max = 10 * (1024 * 1024);
     long duration = 3 * 1000;
@@ -34,7 +33,7 @@ public class E010_NamedItemRangeFormatter extends AbstractExampleTest {
 
   @Test
   public void countWithUnits() throws Exception {
-    UpdateableConsoleView view = new UpdateableConsoleView(ConsoleAware.writer());
+    ProgressView view = ConsoleAware.newConsoleProgressView();
 
     long max = 10 * (1024 * 1024);
     long duration = 3 * 1000;
@@ -54,7 +53,7 @@ public class E010_NamedItemRangeFormatter extends AbstractExampleTest {
 
   @Test
   public void countAnonymous() throws Exception {
-    UpdateableConsoleView view = new UpdateableConsoleView(ConsoleAware.writer());
+    ProgressView view = ConsoleAware.newConsoleProgressView();
 
     long max = 10 * (1024 * 1024);
     long duration = 3 * 1000;

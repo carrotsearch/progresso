@@ -2,6 +2,7 @@ package com.carrotsearch.progresso.views.console;
 
 import java.util.concurrent.TimeUnit;
 
+import com.carrotsearch.progresso.CompletedRatio;
 import com.carrotsearch.progresso.RangeTracker;
 import com.carrotsearch.progresso.Task;
 import com.carrotsearch.progresso.Tracker;
@@ -56,7 +57,7 @@ public abstract class AbstractTrackerFormatter<T> implements TrackerFormatter {
     lf.cell(cols, cols, Alignment.LEFT, Trim.LEFT, LineFormatter.PRIORITY_OPTIONAL, value);
   }
 
-  protected void appendTime(LineFormatter lf, Task<?> task, Tracker tracker) {
+  protected void appendTime(LineFormatter lf, Task<?> task, Tracker tracker, TrackerRateCalculator.TrackerStats stats) {
     final long duration = tracker.elapsedMillis();
 
     String value = "";
@@ -68,16 +69,20 @@ public abstract class AbstractTrackerFormatter<T> implements TrackerFormatter {
       if (duration > ETA_ESTIMATE_DELAY) {
         value = Units.DURATION_COMPACT.format(tracker.elapsedMillis());
 
-        if (tracker instanceof RangeTracker) {
-          final RangeTracker rangeTracker = (RangeTracker) tracker;
-          final long current = rangeTracker.at();
-          final MinMax mm = rangeTracker.minMax;
-
-          if (current > mm.minInclusive && current < mm.maxExclusive) {
-            long etaMillis = (long) (((double) (mm.maxExclusive - mm.minInclusive)) * duration / (current - mm.minInclusive) - duration);
+        if (stats != null) {
+          if (stats.hasCompletionEta()) {
+            long etaMillis = Math.round(stats.completionEta());
             value = "~" + Units.DURATION_COMPACT.format(etaMillis);
           }
-        }      
+        } else if (tracker instanceof CompletedRatio) {
+          final CompletedRatio ratio = (CompletedRatio) tracker;
+          final double current = Units.clamp(ratio.completedRatio(), 0, 1);
+
+          if (current > 0) {
+            long etaMillis = Math.round((duration * (1 - current)) / (current - 0));
+            value = "~" + Units.DURATION_COMPACT.format(etaMillis);
+          }
+        }
       }
     }
 

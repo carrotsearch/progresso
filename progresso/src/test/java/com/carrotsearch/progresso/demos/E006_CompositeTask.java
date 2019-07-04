@@ -1,19 +1,11 @@
 
 package com.carrotsearch.progresso.demos;
 
-import java.util.Collections;
-
+import com.carrotsearch.progresso.*;
+import com.carrotsearch.progresso.views.console.ConsoleAware;
 import org.junit.Test;
 
-import com.carrotsearch.progresso.CompositeTask;
-import com.carrotsearch.progresso.GenericTask;
-import com.carrotsearch.progresso.RangeTask;
-import com.carrotsearch.progresso.RangeTracker;
-import com.carrotsearch.progresso.TaskStats;
-import com.carrotsearch.progresso.Tasks;
-import com.carrotsearch.progresso.Tracker;
-import com.carrotsearch.progresso.views.console.ConsoleAware;
-import com.carrotsearch.progresso.views.console.UpdateableConsoleView;
+import java.util.Collections;
 
 public class E006_CompositeTask extends AbstractExampleTest {
   @Test
@@ -23,14 +15,14 @@ public class E006_CompositeTask extends AbstractExampleTest {
     RangeTask range2 = composite.attach(Tasks.newRangeTask("Range0-10,w2"), 5);
     GenericTask generic = composite.attach(Tasks.newGenericTask("Generic"), 5);
 
-    UpdateableConsoleView view = new UpdateableConsoleView(ConsoleAware.writer());
+    ProgressView view = ConsoleAware.newConsoleProgressView();
     view.update(Collections.singleton(composite));
 
     try (Tracker ctracker = composite.start()) {
       int max = 10;
       try (RangeTracker t = range1.start(0, max + 1)) {
         for (int i = 0; i < max; i++) {
-          Thread.sleep(250);
+          Thread.sleep(1250);
           t.at(i);
           view.update(Collections.singleton(composite));
         }

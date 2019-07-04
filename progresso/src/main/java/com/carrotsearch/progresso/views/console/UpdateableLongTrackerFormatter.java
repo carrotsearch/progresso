@@ -1,26 +1,20 @@
 package com.carrotsearch.progresso.views.console;
 
-import java.util.IdentityHashMap;
-
 import com.carrotsearch.progresso.LongTracker;
 import com.carrotsearch.progresso.Task;
 import com.carrotsearch.progresso.Tracker;
 import com.carrotsearch.progresso.util.LineFormatter;
-import com.carrotsearch.progresso.util.UnitFormatter;
-import com.carrotsearch.progresso.util.Units;
 import com.carrotsearch.progresso.util.LineFormatter.Alignment;
 import com.carrotsearch.progresso.util.LineFormatter.Trim;
+import com.carrotsearch.progresso.util.UnitFormatter;
+import com.carrotsearch.progresso.util.Units;
 
 public class UpdateableLongTrackerFormatter extends AbstractTrackerFormatter<Tracker> {
-  private final IdentityHashMap<Tracker, RateCalculator> rateCalculators = new IdentityHashMap<>();
+  private final TrackerRateCalculator rateCalculator = new TrackerRateCalculator();
 
   @Override
   public void taskStarted(Task<?> task) {
-    if (task.getTracker() instanceof LongTracker) {
-      LongTracker tracker = (LongTracker) task.getTracker();
-      RateCalculator rateCalculator = rateCalculators.computeIfAbsent(tracker, (key) -> new RateCalculator());
-      rateCalculator.tick(System.currentTimeMillis(), tracker.at());
-    }
+    rateCalculator.update(task.getTracker());
   }
 
   @Override
@@ -49,16 +43,17 @@ public class UpdateableLongTrackerFormatter extends AbstractTrackerFormatter<Tra
         lf.cell(columns, columns, Alignment.RIGHT, Trim.RIGHT, LineFormatter.PRIORITY_OPTIONAL, value);
       }
 
-      RateCalculator rateCalculator = 
-          rateCalculators.computeIfAbsent(tracker, (key) -> new RateCalculator());
-      String itemsPerSec = unit.format((long) rateCalculator.tick(System.currentTimeMillis(), at));
-      if (itemsPerSec != null) {
-        String speedRatio = " @" + itemsPerSec + "/s";
-        appendOptional(lf, speedRatio);
+      TrackerRateCalculator.TrackerStats stats = rateCalculator.update(task.getTracker());
+      if (stats.hasItemsPerSec()) {
+        String itemsPerSec = unit.format(stats.itemsPerSec());
+        if (itemsPerSec != null) {
+          String speedRatio = " @" + itemsPerSec + "/s";
+          appendOptional(lf, speedRatio);
+        }
       }
     } else {
       lf.cell(" done");
     }
-    appendTime(lf, task, tracker);
+    appendTime(lf, task, tracker, null);
   }
 }

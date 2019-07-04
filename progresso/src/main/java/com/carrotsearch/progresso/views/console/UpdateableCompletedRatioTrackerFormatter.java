@@ -1,8 +1,5 @@
 package com.carrotsearch.progresso.views.console;
 
-import java.util.IdentityHashMap;
-import java.util.Locale;
-
 import com.carrotsearch.progresso.CompletedRatio;
 import com.carrotsearch.progresso.LongTracker;
 import com.carrotsearch.progresso.Task;
@@ -12,16 +9,14 @@ import com.carrotsearch.progresso.util.LineFormatter;
 import com.carrotsearch.progresso.util.LineFormatter.Alignment;
 import com.carrotsearch.progresso.util.UnitFormatter;
 
+import java.util.Locale;
+
 public class UpdateableCompletedRatioTrackerFormatter extends AbstractTrackerFormatter<Tracker> {
-  private final IdentityHashMap<Tracker, RateCalculator> rateCalculators = new IdentityHashMap<>();
+  private final TrackerRateCalculator rateCalculator = new TrackerRateCalculator();
 
   @Override
   public void taskStarted(Task<?> task) {
-    if (task.getTracker() instanceof LongTracker) {
-      LongTracker tracker = (LongTracker) task.getTracker();
-      RateCalculator rateCalculator = rateCalculators.computeIfAbsent(tracker, (key) -> new RateCalculator());
-      rateCalculator.tick(System.currentTimeMillis(), tracker.at());
-    }
+    rateCalculator.update(task.getTracker());
   }
 
   @Override
@@ -37,35 +32,38 @@ public class UpdateableCompletedRatioTrackerFormatter extends AbstractTrackerFor
     
     if (task.getStatus() != Status.DONE) {
       String dots = dots(lineWidth, completedRatio);
-      
+      TrackerRateCalculator.TrackerStats stats = rateCalculator.update(tracker);
+
       if (tracker.task() instanceof WithUnit &&
           tracker instanceof LongTracker) {
         UnitFormatter unit = ((WithUnit) tracker.task()).unit();
-        dots = overlayUnitsPerSecond(dots, (LongTracker) tracker, unit);
+        dots = overlayUnitsPerSecond(dots, stats, completedRatio, unit);
       }
       appendOptional(lf, dots);
+      appendPercent(lf, task, completedRatio);
+      appendTime(lf, task, tracker, stats);
+    } else {
+      appendPercent(lf, task, completedRatio);
+      appendTime(lf, task, tracker, null);
     }
-    appendPercent(lf, task, completedRatio);
-    appendTime(lf, task, tracker);
   }
 
-  protected String overlayUnitsPerSecond(String dots, LongTracker tracker, UnitFormatter unit) {
-    RateCalculator rateCalculator = 
-        rateCalculators.computeIfAbsent(tracker, (key) -> new RateCalculator());
+  protected String overlayUnitsPerSecond(String dots, TrackerRateCalculator.TrackerStats stats, double completedRatio, UnitFormatter unit) {
+    if (stats.hasItemsPerSec()) {
+      String itemsPerSec = unit.format(stats.itemsPerSec());
+      if (itemsPerSec != null) {
+        String speedRatio = itemsPerSec + "/s";
 
-    String itemsPerSec = unit.format((long) rateCalculator.tick(System.currentTimeMillis(), tracker.at()));
-    if (itemsPerSec != null) {
-      String speedRatio = itemsPerSec + "/s"; 
-  
-      StringBuilder b = new StringBuilder(dots);
-      int at;
-      if (((CompletedRatio) tracker).completedRatio() > 0.5) {
-        at = 1;
-      } else {
-        at = b.length() - speedRatio.length() - 1;
+        StringBuilder b = new StringBuilder(dots);
+        int at;
+        if (completedRatio > 0.5) {
+          at = 1;
+        } else {
+          at = b.length() - speedRatio.length() - 1;
+        }
+        b.replace(at, at + speedRatio.length(), speedRatio);
+        dots = b.toString();
       }
-      b.replace(at, at + speedRatio.length(), speedRatio);
-      dots = b.toString();
     }
 
     return dots;

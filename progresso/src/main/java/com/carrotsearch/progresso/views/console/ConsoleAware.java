@@ -5,6 +5,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.ServiceLoader;
 
 import com.carrotsearch.progresso.ProgressView;
@@ -24,6 +25,10 @@ public class ConsoleAware {
 
   private static ConsoleWriter consoleWriter;
   private static int globalWidthHint = CONSOLE_WIDTH_DEFAULT;
+
+  public static ProgressView newConsoleProgressView() {
+    return newConsoleProgressView(Collections.emptyList());
+  }
 
   public static ProgressView newConsoleProgressView(Collection<Task<?>> topLevelSteps) {
     if (isUpdateable()) {

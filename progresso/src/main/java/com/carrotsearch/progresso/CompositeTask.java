@@ -54,8 +54,8 @@ public class CompositeTask extends Task<CompositeTask.WeightedTracker> {
 
   public <T extends Task<?>> T attach(T task, double weight) {
     if (getStatus() != Status.NEW) {
-      throw new RuntimeException("Tasks cannot be attached to a composite once it's started: "
-          + task);
+      throw new RuntimeException("Tasks cannot be attached to a composite once it's been started: "
+          + this + " .attach(" + task + ")");
     }
 
     weights.put(task, weight);

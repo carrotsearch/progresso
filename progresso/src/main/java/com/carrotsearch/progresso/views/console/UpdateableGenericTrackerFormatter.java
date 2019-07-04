@@ -20,6 +20,6 @@ public class UpdateableGenericTrackerFormatter extends AbstractTrackerFormatter<
     if (task.isDone()) {
       lf.cell(" done");
     }
-    appendTime(lf, task, tracker);
+    appendTime(lf, task, tracker, null);
   }
 }
