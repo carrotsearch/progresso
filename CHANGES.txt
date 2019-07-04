@@ -1,6 +1,8 @@
 
 [1.7.0]
 
+ GH-10: Tracker's constructor is now public.
+
 [1.6.2]
 
   GH-9: TaskStats.totalTimeString must throw an exception on an empty set of 

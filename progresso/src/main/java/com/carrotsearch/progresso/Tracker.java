@@ -13,7 +13,7 @@ public abstract class Tracker implements Closeable {
   private final long startTime = CLOCK.millis();
   private Long endTime;
 
-  Tracker(Task<?> task) {
+  public Tracker(Task<?> task) {
     this.task = Objects.requireNonNull(task);
   }
 
