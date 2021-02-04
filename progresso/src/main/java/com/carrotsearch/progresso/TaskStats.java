@@ -1,5 +1,7 @@
 package com.carrotsearch.progresso;
 
+import com.carrotsearch.progresso.util.Units;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,17 +14,13 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.carrotsearch.progresso.util.Units;
-
 public final class TaskStats {
-  public final static String TOTAL_TIME = "Total time:";
-  
+  public static final String TOTAL_TIME = "Total time:";
+
   private TaskStats() {}
 
   public static String summary(Set<Task<?>> tasks) {
-    return String.format(Locale.ROOT,
-        "Done. %s",
-        totalTimeString(tasks));
+    return String.format(Locale.ROOT, "Done. %s", totalTimeString(tasks));
   }
 
   private static String totalTimeString(Set<Task<?>> tasks) {
@@ -38,7 +36,7 @@ public final class TaskStats {
       if (t.hasTracker()) {
         Tracker tracker = t.getTracker();
         start = Math.min(tracker.startTime(), start);
-        end  = Math.max(tracker.startTime() + tracker.elapsedMillis(), end);
+        end = Math.max(tracker.startTime() + tracker.elapsedMillis(), end);
         if (!t.isDone()) {
           done = false;
         }
@@ -60,7 +58,7 @@ public final class TaskStats {
       if (t.hasTracker()) {
         Tracker tracker = t.getTracker();
         start = Math.min(tracker.startTime(), start);
-        end  = Math.max(tracker.startTime() + tracker.elapsedMillis(), end);
+        end = Math.max(tracker.startTime() + tracker.elapsedMillis(), end);
       }
     }
 
@@ -71,28 +69,27 @@ public final class TaskStats {
     }
   }
 
-
   public static String breakdown(Collection<? extends Task<?>> tasks) {
     return breakdown(tasks.toArray(new Task<?>[tasks.size()]));
   }
 
-  private final static Comparator<? super Task<?>> BY_START_TIME = (a, b) -> {
-    if (a.hasTracker() && b.hasTracker()) {
-      Tracker ta = a.getTracker();
-      Tracker tb = b.getTracker();
-      int value = Long.compare(ta.startTime(), tb.startTime());
-      if (value == 0) {
-        value = Long.compare(ta.elapsedMillis(), tb.elapsedMillis());
-      }
-      return value;
-    } else {
-      if (a.hasTracker()) {
-        return -1;
-      } else {
-        return 1;
-      }
-    }
-  };
+  private static final Comparator<? super Task<?>> BY_START_TIME =
+      (a, b) -> {
+        int c = Boolean.compare(b.hasTracker(), a.hasTracker());
+        if (c != 0) {
+          return c;
+        } else {
+          if (a.hasTracker()) {
+            c = Long.compare(a.getTracker().startTime(), b.getTracker().startTime());
+            if (c != 0) {
+              return c;
+            }
+          }
+
+          c = a.getName().compareTo(b.getName());
+        }
+        return c;
+      };
 
   public static String breakdown(Task<?>... taskList) {
     return breakdown(BY_START_TIME, taskList);
@@ -100,26 +97,25 @@ public final class TaskStats {
 
   public static String breakdown(Comparator<? super Task<?>> taskOrdering, Task<?>... taskList) {
     HashSet<Task<?>> all = new HashSet<>(Arrays.asList(taskList));
-    LinkedHashSet<Task<?>> tasks = Arrays.stream(taskList)
-        .filter((t) -> {
-          for (Task<?> parent = t.getParent(); parent != null; parent = parent.getParent()) {
-            if (all.contains(parent)) {
-              return false;
-            }
-          }
-          return true;
-        })
-        .sorted(taskOrdering)
-        .collect(Collectors.toCollection(LinkedHashSet::new));
+    LinkedHashSet<Task<?>> tasks =
+        Arrays.stream(taskList)
+            .filter(
+                (t) -> {
+                  for (Task<?> parent = t.getParent();
+                      parent != null;
+                      parent = parent.getParent()) {
+                    if (all.contains(parent)) {
+                      return false;
+                    }
+                  }
+                  return true;
+                })
+            .sorted(taskOrdering)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
 
     List<String[]> lines = new ArrayList<String[]>();
-    lines.add(new String [] {
-        "[Task]",
-        "[Time]",
-        "[%]",
-        "[+T₀]"
-    });
-    
+    lines.add(new String[] {"[Task]", "[Time]", "[%]", "[+T₀]"});
+
     long total = 0;
     long t0 = Long.MAX_VALUE;
     for (Task<?> task : tasks) {
@@ -135,8 +131,8 @@ public final class TaskStats {
       breakdownTask(lines, 0, task, taskOrdering, total, t0);
     }
 
-    int [] widths = new int [lines.get(0).length];
-    for (String [] line : lines) {
+    int[] widths = new int[lines.get(0).length];
+    for (String[] line : lines) {
       for (int c = 0; c < line.length; c++) {
         widths[c] = Math.max(line[c].length(), widths[c]);
       }
@@ -144,48 +140,46 @@ public final class TaskStats {
 
     StringBuilder b = new StringBuilder();
     try (Formatter fmt = new Formatter(b, Locale.ROOT)) {
-      String pattern = 
-          "%-" + widths[0] + "s  " +
-          "%"  + widths[1] + "s  " +
-          "%"  + widths[2] + "s  " +
-          "%"  + widths[3] + "s\n";
-      for (String [] line : lines) {
+      String pattern =
+          "%-" + widths[0] + "s  " + "%" + widths[1] + "s  " + "%" + widths[2] + "s  " + "%"
+              + widths[3] + "s\n";
+      for (String[] line : lines) {
         fmt.format(pattern, (Object[]) line);
       }
     }
     return b.toString();
   }
 
-  private static void breakdownTask(List<String[]> lines, 
-                                    int indent, 
-                                    Task<?> task, 
-                                    Comparator<? super Task<?>> taskOrdering, 
-                                    long total, 
-                                    long t0) {
+  private static void breakdownTask(
+      List<String[]> lines,
+      int indent,
+      Task<?> task,
+      Comparator<? super Task<?>> taskOrdering,
+      long total,
+      long t0) {
     String padding = repeat(indent, "  ");
 
-    lines.add(new String [] {
-        padding + taskName(task),
-        taskTime(task),
-        taskTimeFraction(task, total),
-        taskTimeT0(task, t0)
-    });
+    lines.add(
+        new String[] {
+          padding + taskName(task),
+          taskTime(task),
+          taskTimeFraction(task, total),
+          taskTimeT0(task, t0)
+        });
 
     for (Attribute a : task.attributes()) {
-      lines.add(new String [] {
-          String.format(Locale.ROOT, "%s @ %s: %s", padding, a.key, a.value),
-          "",
-          "",
-          ""
-      });
+      lines.add(
+          new String[] {
+            String.format(Locale.ROOT, "%s @ %s: %s", padding, a.key, a.value), "", "", ""
+          });
     }
 
-    task.subtasks()
-      .stream()
-      .sorted(taskOrdering)
-      .forEachOrdered((subtask) -> {
-        breakdownTask(lines, indent + 1, subtask, taskOrdering, total, t0);
-      });
+    task.subtasks().stream()
+        .sorted(taskOrdering)
+        .forEachOrdered(
+            (subtask) -> {
+              breakdownTask(lines, indent + 1, subtask, taskOrdering, total, t0);
+            });
   }
 
   private static String taskTimeT0(Task<?> task, long t0) {
@@ -203,7 +197,7 @@ public final class TaskStats {
       if (percent > 100.0d) {
         return ">100%?";
       } else {
-        return String.format(Locale.ROOT, "%4.1f%%", percent); 
+        return String.format(Locale.ROOT, "%4.1f%%", percent);
       }
     } else {
       return "";
@@ -223,7 +217,7 @@ public final class TaskStats {
   }
 
   private static String repeat(int indent, String s) {
-    if (indent == 0) { 
+    if (indent == 0) {
       return "";
     }
 
