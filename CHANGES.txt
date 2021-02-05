@@ -1,6 +1,12 @@
 
 [1.7.1]
 
+ GH-16: Improve breakdown output for still running tasks and skipped/ never
+        started tasks.
+
+ GH-14: TaskStats breakdown can result in "IllegalArgumentException: Comparison 
+        method violates its general contract!"
+
  GH-15: Add an utility to format tabular outputs.
 
 [1.7.0]

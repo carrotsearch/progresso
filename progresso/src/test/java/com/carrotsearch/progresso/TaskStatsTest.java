@@ -2,7 +2,6 @@ package com.carrotsearch.progresso;
 
 import com.carrotsearch.randomizedtesting.RandomizedContext;
 import com.carrotsearch.randomizedtesting.RandomizedTest;
-import com.carrotsearch.randomizedtesting.annotations.Repeat;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -73,6 +72,8 @@ public class TaskStatsTest extends RandomizedTest {
     GenericTask t2 = Tasks.newGenericTask("task_b");
     GenericTask s2 = t2.newGenericSubtask("subtask_2");
     GenericTask s3 = t2.newGenericSubtask("subtask_3");
+    s3.attribute("att1", "%s", "att1 value");
+    s3.attribute("att2 long attribute", "%s", "att2 value");
 
     Tracker tr2 = t2.start();
     Thread.sleep(10);
