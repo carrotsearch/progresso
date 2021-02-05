@@ -1,4 +1,8 @@
 
+[1.7.1]
+
+ GH-15: Add an utility to format tabular outputs.
+
 [1.7.0]
 
  GH-10: Tracker's constructor is now public.
