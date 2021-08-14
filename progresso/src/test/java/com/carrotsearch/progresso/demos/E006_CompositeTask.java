@@ -9,7 +9,9 @@ public class E006_CompositeTask extends AbstractExampleTest {
   @Test
   public void composite() throws Exception {
     CompositeTask composite = new CompositeTask("Composite");
-    RangeTask range1 = composite.attach(Tasks.newRangeTask("Range0-10,w1"));
+    // Default weight (1)
+    RangeTask range1 = composite.newRangeSubtask("Range0-10,w1");
+    // Explicit weights (5)
     RangeTask range2 = composite.attach(Tasks.newRangeTask("Range0-10,w2"), 5);
     GenericTask generic = composite.attach(Tasks.newGenericTask("Generic"), 5);
 

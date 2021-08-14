@@ -48,21 +48,25 @@ public class CompositeTask extends Task<CompositeTask.WeightedTracker> {
   }
 
   @Override
-  public <T extends Task<?>> T attach(T task) {
-    return attach(task, 1d);
+  public void attach(Iterable<? extends Task<?>> tasks) {
+    super.attach(tasks);
+
+    for (Task<?> task : tasks) {
+      if (getStatus() != Status.NEW) {
+        throw new RuntimeException("Tasks cannot be attached to a composite once it's been started: "
+            + this + " .attach(" + task + ")");
+      }
+
+      weights.putIfAbsent(task, 1d);
+    }
   }
 
   public <T extends Task<?>> T attach(T task, double weight) {
-    if (getStatus() != Status.NEW) {
-      throw new RuntimeException("Tasks cannot be attached to a composite once it's been started: "
-          + this + " .attach(" + task + ")");
-    }
-
     weights.put(task, weight);
     return super.attach(task);
   }
 
-  public Tracker start() {
+  public WeightedTracker start() {
     return start(new WeightedTracker());
   }
 }

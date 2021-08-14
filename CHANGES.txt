@@ -1,6 +1,9 @@
 
 [1.7.2]
 
+ GH-19: Composite doesn't add task weights for tasks added via
+        add(collection).
+
  GH-18: Progress views don't display tasks attached to the task tree after
         they've registered listeners.
 
