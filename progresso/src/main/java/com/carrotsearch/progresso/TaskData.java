@@ -7,8 +7,8 @@ import java.util.Locale;
 
 /** An immutable snapshot of task properties. */
 public class TaskData {
-  public final Task<?> task;
-  public final Tracker tracker;
+  private final Task<?> task;
+  private final Tracker tracker;
   private final long startTime;
   private final long elapsed;
   private final Task.Status status;
@@ -27,6 +27,14 @@ public class TaskData {
       this.startInstant = null;
       this.elapsed = 0;
     }
+  }
+
+  public Task<?> getTask() {
+    return task;
+  }
+
+  public Tracker getTracker() {
+    return tracker;
   }
 
   public boolean hasTracker() {

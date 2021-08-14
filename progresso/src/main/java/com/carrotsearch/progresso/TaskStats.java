@@ -123,7 +123,7 @@ public final class TaskStats {
     return tabular.flush().getWriter().toString();
   }
 
-  private static List<TaskData> uniqueTasks(Comparator<TaskData> order, Task<?>[] taskList) {
+  public static List<TaskData> uniqueTasks(Comparator<TaskData> order, Task<?>[] taskList) {
     HashSet<Task<?>> all = new HashSet<>(Arrays.asList(taskList));
     List<TaskData> tasks =
         Arrays.stream(taskList)
@@ -160,13 +160,13 @@ public final class TaskStats {
             padding + td.taskName(), td.taskTime(), td.taskTimeFraction(total), td.taskTimeT0(t0))
         .nextRow();
 
-    for (Attribute a : td.task.attributes()) {
+    for (Attribute a : td.getTask().attributes()) {
       tabular
           .append(String.format(Locale.ROOT, "%s @ %s: %s", padding, a.key, a.value), "", "", "")
           .nextRow();
     }
 
-    td.task.subtasks().stream()
+    td.getTask().subtasks().stream()
         .map(TaskData::new)
         .sorted(taskOrdering)
         .forEachOrdered(
