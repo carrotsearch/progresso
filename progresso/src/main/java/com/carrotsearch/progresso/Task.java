@@ -1,5 +1,6 @@
 package com.carrotsearch.progresso;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +28,7 @@ public abstract class Task<T extends Tracker> implements Tasks {
   private final AtomicReference<Task<?>> parent = new AtomicReference<Task<?>>();
 
   private Status status = Status.NEW;
+  private Instant lastStatusChange = Instant.now();
   private T tracker;
 
   /**
@@ -79,7 +81,11 @@ public abstract class Task<T extends Tracker> implements Tasks {
   public String getName() {
     return name;
   }
-  
+
+  public Instant getLastStatusChangeTime() {
+    return lastStatusChange;
+  }
+
   @Override
   public void attach(Iterable<? extends Task<?>> tasks) {
     for (Task<?> child : tasks) {
@@ -126,6 +132,7 @@ public abstract class Task<T extends Tracker> implements Tasks {
 
   void setStatus(Status newStatus) {
     this.status = newStatus;
+    this.lastStatusChange = Instant.now();
     taskListeners.forEach((c) -> c.statusChanged(this, newStatus));
   }
 

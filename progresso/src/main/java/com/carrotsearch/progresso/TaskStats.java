@@ -4,6 +4,7 @@ import com.carrotsearch.progresso.util.TabularOutput;
 import com.carrotsearch.progresso.util.Units;
 
 import java.io.StringWriter;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -16,21 +17,13 @@ import java.util.stream.Collectors;
 
 public final class TaskStats {
   public static final String TOTAL_TIME = "Total time:";
-  private static final Comparator<TaskData> BY_START_TIME =
-      (a, b) -> {
-        int c = Boolean.compare(b.hasTracker(), a.hasTracker());
-        if (c != 0) return c;
-
-        if (a.hasTracker() && b.hasTracker()) {
-          c = a.startInstant().compareTo(b.startInstant());
-          if (c != 0) return c;
-
-          c = Long.compare(a.elapsedMillis(), b.elapsedMillis());
-          if (c != 0) return c;
-        }
-
-        return a.taskName().compareTo(b.taskName());
-      };
+  public static final Comparator<TaskData> BY_START_TIME;
+  static {
+    BY_START_TIME = Comparator.<TaskData, Instant>
+        comparing(v -> v.hasTracker() ? v.startInstant() : v.getTask().getLastStatusChangeTime())
+        .thenComparingLong(v -> v.hasTracker() ? v.elapsedMillis() : 0)
+        .thenComparing(TaskData::taskName);
+  }
 
   private TaskStats() {}
 
