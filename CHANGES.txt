@@ -1,4 +1,9 @@
 
+[1.7.2]
+
+ GH-18: Progress views don't display tasks attached to the task tree after
+        they've registered listeners.
+
 [1.7.1]
 
  GH-16: Improve breakdown output for still running tasks and skipped/ never

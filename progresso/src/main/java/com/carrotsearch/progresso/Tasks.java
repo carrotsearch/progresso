@@ -1,6 +1,6 @@
 package com.carrotsearch.progresso;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.carrotsearch.progresso.util.UnitFormatter;
@@ -10,7 +10,7 @@ public interface Tasks {
   void attach(Iterable<? extends Task<?>> tasks);
 
   default <T extends Task<?>> T attach(T task) {
-    attach(Arrays.asList(task));
+    attach(Collections.singletonList(task));
     return task;
   }
 

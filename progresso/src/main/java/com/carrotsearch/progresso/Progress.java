@@ -63,6 +63,8 @@ public final class Progress implements AutoCloseable, Tasks {
       for (Task<?> task : tasks) {
         if (taskSet.add(task)) {
           task.addListener(taskListener);
+          // if task already has sub-tasks, add them recursively.
+          attach(task.subtasks());
         }
       }
       notifyViews();
