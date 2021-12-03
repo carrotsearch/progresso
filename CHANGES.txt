@@ -1,5 +1,11 @@
 
-[1.7.2]
+[1.7.3]
+
+ GH-22: Add progresso-jvmversion utility for scripts.
+
+ GH-21: Add automatic module names.
+
+[1.7.3]
 
  GH-19: Composite doesn't add task weights for tasks added via
         add(collection).

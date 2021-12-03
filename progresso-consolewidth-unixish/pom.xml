@@ -13,7 +13,11 @@
   <artifactId>progresso-consolewidth-unixish</artifactId>
   <packaging>jar</packaging>
 
-  <name>Progresso (Console width detection, Unixish systems)</name> 
+  <name>Progresso (Console width detection, Unixish systems)</name>
+
+  <properties>
+    <project.moduleId>com.carrotsearch.progresso.consolewidth_unixish</project.moduleId>
+  </properties>
 
   <dependencies>
     <dependency>

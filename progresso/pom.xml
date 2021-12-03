@@ -15,6 +15,10 @@
 
   <name>Progresso</name>
 
+  <properties>
+    <project.moduleId>com.carrotsearch.progresso</project.moduleId>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

@@ -13,7 +13,11 @@
   <artifactId>progresso-log4j2</artifactId>
   <packaging>jar</packaging>
 
-  <name>Progresso (Log4j2 integration)</name> 
+  <name>Progresso (Log4j2 integration)</name>
+
+  <properties>
+    <project.moduleId>com.carrotsearch.progresso.log4j</project.moduleId>
+  </properties>
 
   <dependencies>
     <dependency>

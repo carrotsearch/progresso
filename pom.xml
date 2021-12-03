@@ -100,6 +100,7 @@
     <module>progresso</module>
     <module>progresso-log4j</module>
     <module>progresso-consolewidth-unixish</module>
+    <module>progresso-jvmversion</module>
   </modules>
 
   <dependencyManagement>
@@ -189,6 +190,8 @@
                 <Project-ArtifactId>${project.artifactId}</Project-ArtifactId>
                 <Project-Version>${project.version}</Project-Version>
                 <Project-Name>${project.name}</Project-Name>
+
+                <Automatic-Module-Name>${project.moduleId}</Automatic-Module-Name>
               </manifestEntries>
             </archive>
           </configuration>

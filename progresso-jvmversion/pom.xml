@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.carrotsearch.progresso</groupId>
+    <artifactId>progresso-parent</artifactId> 
+    <version>1.7.2</version>
+    <relativePath>../</relativePath>
+  </parent>
+
+  <artifactId>progresso-jvmversion</artifactId>
+  <packaging>jar</packaging>
+
+  <name>Progresso (jvm version echo for scripts)</name>
+
+  <properties>
+    <project.moduleId>com.carrotsearch.progresso.jvmversion</project.moduleId>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${version.maven-jar-plugin}</version>
+        <configuration>
+          <archive>
+            <addMavenDescriptor>false</addMavenDescriptor>
+            <manifest>
+              <mainClass>com.carrotsearch.progresso.jvmversion.JvmVersion</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>de.thetaphi</groupId>
+        <artifactId>forbiddenapis</artifactId>
+        <version>${version.forbiddenapis}</version>
+
+        <executions>
+          <execution>
+            <id>check-forbidden-apis</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
