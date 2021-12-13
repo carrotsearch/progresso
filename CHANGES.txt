@@ -1,4 +1,8 @@
 
+[1.7.4]
+
+ GH-24: Upgrade log4j to 2.15.0.
+
 [1.7.3]
 
  GH-22: Add progresso-jvmversion utility for scripts.
