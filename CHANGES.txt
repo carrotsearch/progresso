@@ -1,4 +1,6 @@
 
+[1.7.6-SNAPSHOT]
+
 [1.7.5]
 
  GH-24: Upgrade log4j to 2.17.1.
