@@ -1,4 +1,3 @@
-
 package com.carrotsearch.progresso.demos;
 
 import com.carrotsearch.progresso.ProgressView;
@@ -6,9 +5,8 @@ import com.carrotsearch.progresso.RangeTracker;
 import com.carrotsearch.progresso.Tasks;
 import com.carrotsearch.progresso.util.Units;
 import com.carrotsearch.progresso.views.console.ConsoleAware;
-import org.junit.Test;
-
 import java.util.Collections;
+import org.junit.Test;
 
 public class E010_NamedItemRangeFormatter extends AbstractExampleTest {
   @Test
@@ -38,7 +36,8 @@ public class E010_NamedItemRangeFormatter extends AbstractExampleTest {
     long max = 10 * (1024 * 1024);
     long duration = 3 * 1000;
     long steps = 40;
-    try (RangeTracker t = Tasks.newRangeTask("Counting lemmings", Units.DECIMAL_COMPACT).start(0, max + 1)) {
+    try (RangeTracker t =
+        Tasks.newRangeTask("Counting lemmings", Units.DECIMAL_COMPACT).start(0, max + 1)) {
       for (int i = 0; i < steps; i++) {
         sleep(duration / steps);
         t.incrementBy(max / steps);
@@ -69,5 +68,5 @@ public class E010_NamedItemRangeFormatter extends AbstractExampleTest {
 
       view.update(Collections.singleton(t.task()));
     }
-  }  
+  }
 }

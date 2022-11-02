@@ -10,18 +10,18 @@ public final class UnitFormatters {
   static final long MINUTE = SECOND * 60;
   static final long HOUR = MINUTE * 60;
   static final long DAY = HOUR * 24;
-  
-  static final long []   TIME_THRESHOLDS  = { DAY, HOUR, MINUTE, SECOND,   MS };
-  static final String [] TIME_UNITS_SHORT = { "d",  "h",    "m",    "s", "ms" };
-  static final String [] TIME_UNITS_FULL  = { " day", " hour", " minute", " second", " millisecond" };
+
+  static final long[] TIME_THRESHOLDS = {DAY, HOUR, MINUTE, SECOND, MS};
+  static final String[] TIME_UNITS_SHORT = {"d", "h", "m", "s", "ms"};
+  static final String[] TIME_UNITS_FULL = {" day", " hour", " minute", " second", " millisecond"};
 
   static final int IDX_MS = 4;
-  static final int IDX_S  = 3;
-  static final int IDX_M  = 2;
-  static final int IDX_H  = 1;
+  static final int IDX_S = 3;
+  static final int IDX_M = 2;
+  static final int IDX_H = 1;
 
   public static class ByteFormatter implements UnitFormatter {
-    final String [] units = {"KB", "MB", "GB", "TB"}; 
+    final String[] units = {"KB", "MB", "GB", "TB"};
 
     @Override
     public String format(long bytes) {
@@ -31,7 +31,7 @@ public final class UnitFormatters {
         double v = bytes;
         for (String unit : units) {
           bytes /= 1024;
-          v     /= 1024d;
+          v /= 1024d;
           if (bytes < 1024) {
             return String.format(Locale.ROOT, "%,.2f%s", v, unit);
           }
@@ -70,11 +70,11 @@ public final class UnitFormatters {
       } else {
         return Long.parseLong(value);
       }
-    }    
+    }
   }
-  
+
   public static class DecimalCompactFormatter implements UnitFormatter {
-    final String [] units = {"k", "M", "G"}; 
+    final String[] units = {"k", "M", "G"};
 
     public long parse(String value) {
       Long val = separatedByGroupingChars(value);
@@ -104,7 +104,7 @@ public final class UnitFormatters {
         return Long.parseLong(value);
       }
     }
-    
+
     @Override
     public String format(long value) {
       if (value < 1000) {
@@ -113,7 +113,7 @@ public final class UnitFormatters {
         double v = value;
         for (String unit : units) {
           value /= 1000;
-          v     /= 1000d;
+          v /= 1000d;
           if (value < 1000) {
             return String.format(Locale.ROOT, "%,.2f%s", v, unit);
           }
@@ -122,7 +122,7 @@ public final class UnitFormatters {
       }
     }
   }
-  
+
   static void regularRounding(long millis, long[] units) {
     // Apply some ad-hoc heuristics to truncate tiny fields
     // if the duration is large.
@@ -133,7 +133,7 @@ public final class UnitFormatters {
     if (millis > 30 * MINUTE) {
       units[IDX_S] = 0;
     }
-  }      
+  }
 
   static void compactRounding(long millis, long[] unit) {
     // Don't report milliseconds if beyond one second.
@@ -159,7 +159,7 @@ public final class UnitFormatters {
 
   static String formatUnits(long[] units, String[] unitNames, boolean pluralize) {
     int f = 0;
-    while (units[f] == 0 && f + 1 < units.length) { 
+    while (units[f] == 0 && f + 1 < units.length) {
       f++;
     }
     int t = TIME_THRESHOLDS.length - 1;
@@ -168,7 +168,7 @@ public final class UnitFormatters {
     }
 
     StringBuilder b = new StringBuilder();
-    for (;f <= t; f++) {
+    for (; f <= t; f++) {
       if (f == t || units[f] != 0) {
         if (b.length() > 0) {
           b.append(' ');
@@ -184,7 +184,7 @@ public final class UnitFormatters {
   }
 
   protected static long[] splitToUnits(long millis) {
-    long [] v = new long [TIME_THRESHOLDS.length];
+    long[] v = new long[TIME_THRESHOLDS.length];
     long x = millis;
     for (int i = 0; i < TIME_THRESHOLDS.length; i++) {
       v[i] = x / TIME_THRESHOLDS[i];
@@ -192,7 +192,7 @@ public final class UnitFormatters {
     }
     return v;
   }
-  
+
   static Long separatedByGroupingChars(String value) {
     // Commas as grouping separators.
     if (value.matches("([0-9]{1,3})|(([0-9]{1,3})(,[0-9]{3})*)")) {
@@ -205,5 +205,5 @@ public final class UnitFormatters {
     }
 
     return null;
-  }  
+  }
 }

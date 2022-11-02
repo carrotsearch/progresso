@@ -18,7 +18,7 @@ public abstract class Task<T extends Tracker> implements Tasks {
   }
 
   // Unique sentinel object.
-  protected final static String UNNAMED = new String("<unnamed task>");
+  protected static final String UNNAMED = new String("<unnamed task>");
 
   private final String name;
   private final List<TaskListener> taskListeners = new CopyOnWriteArrayList<>();
@@ -31,14 +31,11 @@ public abstract class Task<T extends Tracker> implements Tasks {
   private Instant lastStatusChange = Instant.now();
   private T tracker;
 
-  /**
-   * Helps in debugging where a given task was instantiated.
-   */
-  private final String allocationStack = 
-      Arrays.asList(Thread.currentThread().getStackTrace())
-        .stream()
-        .map((e) -> e.toString())
-        .collect(Collectors.joining("\n"));
+  /** Helps in debugging where a given task was instantiated. */
+  private final String allocationStack =
+      Arrays.asList(Thread.currentThread().getStackTrace()).stream()
+          .map((e) -> e.toString())
+          .collect(Collectors.joining("\n"));
 
   public Task() {
     this(UNNAMED);
@@ -50,7 +47,7 @@ public abstract class Task<T extends Tracker> implements Tasks {
     }
     this.name = name;
   }
-  
+
   public final Status getStatus() {
     return status;
   }
@@ -66,13 +63,13 @@ public abstract class Task<T extends Tracker> implements Tasks {
     if (getStatus() != Status.NEW) {
       throw new RuntimeException("Only new tasks can be skipped: " + this);
     }
-    
+
     setStatus(Status.SKIPPED);
   }
 
   public boolean hasTracker() {
     return tracker != null;
-  }  
+  }
 
   public boolean hasName() {
     return name != UNNAMED;
@@ -98,7 +95,7 @@ public abstract class Task<T extends Tracker> implements Tasks {
   public Task<?> getParent() {
     return parent.get();
   }
-  
+
   public List<Task<?>> subtasks() {
     return children;
   }
@@ -106,11 +103,16 @@ public abstract class Task<T extends Tracker> implements Tasks {
   private void setParent(Task<?> newParent) {
     if (!parent.compareAndSet(null, newParent)) {
       if (parent.get() != newParent) {
-        throw new RuntimeException("A task must be bound to only one parent: " + this
-            + " parent: " + parent.get() + ", newParent: " + newParent);
+        throw new RuntimeException(
+            "A task must be bound to only one parent: "
+                + this
+                + " parent: "
+                + parent.get()
+                + ", newParent: "
+                + newParent);
       }
     }
-    
+
     taskListeners.forEach((c) -> c.attachedParent(this, newParent));
   }
 
@@ -141,8 +143,7 @@ public abstract class Task<T extends Tracker> implements Tasks {
   }
 
   public boolean isDone() {
-    return getStatus() == Status.DONE ||
-           getStatus() == Status.SKIPPED;
+    return getStatus() == Status.DONE || getStatus() == Status.SKIPPED;
   }
 
   @Override

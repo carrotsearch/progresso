@@ -2,12 +2,11 @@ package com.carrotsearch.progresso.util;
 
 import static org.assertj.core.api.Assertions.*;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.carrotsearch.progresso.util.UnitFormatters.ByteFormatter;
 import com.carrotsearch.progresso.util.UnitFormatters.DecimalCompactFormatter;
 import com.carrotsearch.randomizedtesting.RandomizedTest;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class UnitFormattersTest extends RandomizedTest {
   @Test
@@ -85,9 +84,9 @@ public class UnitFormattersTest extends RandomizedTest {
     assertThat(fmt.parse("1,023")).isEqualTo(1023);
     assertThat(fmt.parse("10,023")).isEqualTo(10_023);
     assertThat(fmt.parse("10,023")).isEqualTo(10_023);
-    assertThat(fmt.parse("0,001,023")).isEqualTo(1_023);        
+    assertThat(fmt.parse("0,001,023")).isEqualTo(1_023);
   }
-  
+
   @Test
   public void testFormatDecimal() {
     UnitFormatter fmt = Units.DECIMAL;
@@ -124,7 +123,7 @@ public class UnitFormattersTest extends RandomizedTest {
     assertThat(fmt.format(1 * D + 1 * M)).isEqualTo("1d 1m");
     assertThat(fmt.format(2 * D + 1 * H + 3 * M + 1 * S)).isEqualTo("2d 1h 3m");
   }
-  
+
   @Test
   public void testFormatCompactDuration() {
     final long S = 1000;
@@ -153,7 +152,7 @@ public class UnitFormattersTest extends RandomizedTest {
     assertThat(fmt.format(7 * D + 1 * H + 3 * M + 1 * S)).isEqualTo("7d");
     assertThat(fmt.format(14 * D + 1 * H + 3 * M + 1 * S)).isEqualTo("14d");
   }
-  
+
   @Test
   public void testFormatVerboseDuration() {
     final long S = 1000;
@@ -179,5 +178,5 @@ public class UnitFormattersTest extends RandomizedTest {
     assertThat(fmt.format(6 * H + 1 * M)).isEqualTo("6 hours 1 minute");
     assertThat(fmt.format(1 * D + 1 * M)).isEqualTo("1 day 1 minute");
     assertThat(fmt.format(2 * D + 1 * H + 3 * M + 1 * S)).isEqualTo("2 days 1 hour 3 minutes");
-  }  
+  }
 }

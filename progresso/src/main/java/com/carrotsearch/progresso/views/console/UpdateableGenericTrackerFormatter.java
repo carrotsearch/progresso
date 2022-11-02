@@ -6,8 +6,7 @@ import com.carrotsearch.progresso.util.LineFormatter;
 
 public class UpdateableGenericTrackerFormatter extends AbstractTrackerFormatter<Tracker> {
   @Override
-  public void taskStarted(Task<?> task) {
-  }
+  public void taskStarted(Task<?> task) {}
 
   @Override
   public boolean supports(int lineWidth, Tracker tracker) {

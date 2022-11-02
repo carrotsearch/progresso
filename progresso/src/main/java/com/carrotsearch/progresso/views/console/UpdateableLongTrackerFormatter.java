@@ -24,7 +24,7 @@ public class UpdateableLongTrackerFormatter extends AbstractTrackerFormatter<Tra
 
   @Override
   protected void doFormat(LineFormatter lf, int lineWidth, Task<?> task, Tracker tracker) {
-    LongTracker longTracker = (LongTracker) tracker; 
+    LongTracker longTracker = (LongTracker) tracker;
 
     UnitFormatter unit;
     if (longTracker.task() instanceof WithUnit) {
@@ -40,7 +40,8 @@ public class UpdateableLongTrackerFormatter extends AbstractTrackerFormatter<Tra
       final String value = unit.format(at);
       if (value != null) {
         final int columns = lf.columns(value);
-        lf.cell(columns, columns, Alignment.RIGHT, Trim.RIGHT, LineFormatter.PRIORITY_OPTIONAL, value);
+        lf.cell(
+            columns, columns, Alignment.RIGHT, Trim.RIGHT, LineFormatter.PRIORITY_OPTIONAL, value);
       }
 
       TrackerRateCalculator.TrackerStats stats = rateCalculator.update(task.getTracker());

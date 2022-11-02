@@ -1,9 +1,8 @@
 package com.carrotsearch.progresso;
 
+import com.carrotsearch.progresso.util.MinMax;
 import java.util.Objects;
 import java.util.function.LongSupplier;
-
-import com.carrotsearch.progresso.util.MinMax;
 
 public class RangeTracker extends LongTracker implements CompletedRatio {
   public final MinMax minMax;
@@ -16,7 +15,7 @@ public class RangeTracker extends LongTracker implements CompletedRatio {
   public RangeTracker(Task<?> task, MinMax minmax) {
     this(task, minmax, null);
   }
-  
+
   @Override
   public void at(long newValue) {
     super.at(withinMinMax(newValue));
@@ -24,14 +23,16 @@ public class RangeTracker extends LongTracker implements CompletedRatio {
 
   private long withinMinMax(long value) {
     if (!minMax.isWithin(value)) {
-      throw new RuntimeException("Value out of tracker bounds: " + value + ", " + minMax + ", task: " + task().getName());
+      throw new RuntimeException(
+          "Value out of tracker bounds: " + value + ", " + minMax + ", task: " + task().getName());
     }
     return value;
   }
 
   @Override
   public long at() {
-    // L4G-772: do return the minimum on empty ranges, even though it's excluded. While this doesn't make
+    // L4G-772: do return the minimum on empty ranges, even though it's excluded. While this doesn't
+    // make
     // sense logically, it makes the code less complex in other places.
     if (isEmptyRange()) {
       return minMax.minInclusive;
@@ -39,7 +40,7 @@ public class RangeTracker extends LongTracker implements CompletedRatio {
       return withinMinMax(super.at());
     }
   }
-  
+
   @Override
   protected void close0() {
     assert at() == 0 || true; // Exception or always true.
@@ -72,10 +73,11 @@ public class RangeTracker extends LongTracker implements CompletedRatio {
         return 0d;
       }
     } else {
-      return ((double) at() - minMax.minInclusive) / (minMax.maxExclusive - minMax.minInclusive - 1);
+      return ((double) at() - minMax.minInclusive)
+          / (minMax.maxExclusive - minMax.minInclusive - 1);
     }
   }
-  
+
   @Override
   public String toString() {
     return "RangeTracker, @" + at() + ", " + minMax;

@@ -6,15 +6,16 @@ public final class MinMax {
 
   public MinMax(long minInclusive, long maxExclusive) {
     if (minInclusive > maxExclusive) {
-      throw new IllegalArgumentException("Invalid range: [" + minInclusive + ";" + maxExclusive + ")");
+      throw new IllegalArgumentException(
+          "Invalid range: [" + minInclusive + ";" + maxExclusive + ")");
     }
     this.minInclusive = minInclusive;
     this.maxExclusive = maxExclusive;
   }
-  
+
   @Override
   public String toString() {
-    return "[" +  minInclusive + "; " + maxExclusive + ")";
+    return "[" + minInclusive + "; " + maxExclusive + ")";
   }
 
   public boolean isWithin(long value) {

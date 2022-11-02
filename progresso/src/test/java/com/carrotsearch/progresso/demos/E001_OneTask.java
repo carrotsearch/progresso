@@ -1,12 +1,10 @@
-
 package com.carrotsearch.progresso.demos;
-
-import org.junit.Test;
 
 import com.carrotsearch.progresso.Progress;
 import com.carrotsearch.progresso.RangeTask;
 import com.carrotsearch.progresso.RangeTracker;
 import com.carrotsearch.progresso.Tasks;
+import org.junit.Test;
 
 public class E001_OneTask extends AbstractExampleTest {
   @Test

@@ -1,4 +1,3 @@
-
 package com.carrotsearch.progresso.demos;
 
 import com.carrotsearch.progresso.Progress;
@@ -8,13 +7,14 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class E011_VariableSpeed extends AbstractExampleTest {
-  @Test @Ignore
+  @Test
+  @Ignore
   public void variableProcessingSpeed() throws Exception {
     long max = 1024 * 1024 * 3;
     long current = 0;
     long step = 1024 * 5;
     try (Progress p = defaultProgress();
-         RangeTracker t = p.newByteRangeSubtask("Reading file").start(0, max + 1)) {
+        RangeTracker t = p.newByteRangeSubtask("Reading file").start(0, max + 1)) {
 
       while (current < max) {
         current = Units.clamp(current + step, 0, max);

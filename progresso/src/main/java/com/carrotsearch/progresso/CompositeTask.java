@@ -15,23 +15,27 @@ public class CompositeTask extends Task<CompositeTask.WeightedTracker> {
     public long modHash() {
       return Double.doubleToLongBits(completedRatio());
     }
-    
+
     @Override
     public double completedRatio() {
       if (weights.isEmpty()) {
         return task().isDone() ? 1d : 0d;
       }
 
-      double current = weights.entrySet().stream().mapToDouble((e) -> {
-        Task<?> task = e.getKey();
-        double weight = e.getValue();
+      double current =
+          weights.entrySet().stream()
+              .mapToDouble(
+                  (e) -> {
+                    Task<?> task = e.getKey();
+                    double weight = e.getValue();
 
-        if (task.hasTracker() && task.getTracker() instanceof CompletedRatio) {
-          return ((CompletedRatio) task.getTracker()).completedRatio() * weight;
-        } else {
-          return (task.isDone() ? 1d : 0d) * weight;
-        }
-      }).sum();
+                    if (task.hasTracker() && task.getTracker() instanceof CompletedRatio) {
+                      return ((CompletedRatio) task.getTracker()).completedRatio() * weight;
+                    } else {
+                      return (task.isDone() ? 1d : 0d) * weight;
+                    }
+                  })
+              .sum();
 
       return current / totalWeight;
     }
@@ -42,7 +46,7 @@ public class CompositeTask extends Task<CompositeTask.WeightedTracker> {
   public CompositeTask(String name) {
     super(name);
   }
-  
+
   public CompositeTask() {
     super();
   }
@@ -53,8 +57,12 @@ public class CompositeTask extends Task<CompositeTask.WeightedTracker> {
 
     for (Task<?> task : tasks) {
       if (getStatus() != Status.NEW) {
-        throw new RuntimeException("Tasks cannot be attached to a composite once it's been started: "
-            + this + " .attach(" + task + ")");
+        throw new RuntimeException(
+            "Tasks cannot be attached to a composite once it's been started: "
+                + this
+                + " .attach("
+                + task
+                + ")");
       }
 
       weights.putIfAbsent(task, 1d);

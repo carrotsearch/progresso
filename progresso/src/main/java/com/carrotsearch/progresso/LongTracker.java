@@ -31,7 +31,8 @@ public class LongTracker extends Tracker {
     ensureNoSupplier();
 
     if (value.get() > newValue) {
-      throw new IllegalArgumentException("New value must be >= old value: " + newValue + ", old: " + this.value);
+      throw new IllegalArgumentException(
+          "New value must be >= old value: " + newValue + ", old: " + this.value);
     }
 
     value.set(newValue);
@@ -46,10 +47,10 @@ public class LongTracker extends Tracker {
     ensureNoSupplier();
     this.value.addAndGet(value);
   }
-  
+
   private void ensureNoSupplier() {
     if (atSupplier != null) {
-      throw new RuntimeException("Can't set when supplier is provided.");      
+      throw new RuntimeException("Can't set when supplier is provided.");
     }
   }
 }

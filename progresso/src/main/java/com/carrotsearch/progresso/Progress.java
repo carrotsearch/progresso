@@ -1,5 +1,7 @@
 package com.carrotsearch.progresso;
 
+import com.carrotsearch.progresso.Task.Status;
+import com.carrotsearch.progresso.annotations.SuppressForbidden;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,9 +9,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.carrotsearch.progresso.Task.Status;
-import com.carrotsearch.progresso.annotations.SuppressForbidden;
 
 public final class Progress implements AutoCloseable, Tasks {
   private final List<ProgressView> views = new ArrayList<>();
@@ -19,17 +18,18 @@ public final class Progress implements AutoCloseable, Tasks {
 
   private LinkedHashSet<Task<?>> taskSet = new LinkedHashSet<>();
 
-  private TaskListener taskListener = new TaskListener() {
-    @Override
-    public void attachedChild(Task<?> task, Task<?> child) {
-      attach(child);
-    }
+  private TaskListener taskListener =
+      new TaskListener() {
+        @Override
+        public void attachedChild(Task<?> task, Task<?> child) {
+          attach(child);
+        }
 
-    @Override
-    public void statusChanged(Task<?> task, Status newStatus) {
-      notifyViews();
-    }
-  };
+        @Override
+        public void statusChanged(Task<?> task, Status newStatus) {
+          notifyViews();
+        }
+      };
 
   public Progress(ProgressView... views) {
     this.updaterThread = new Thread(Progress.this::pollForUpdates, "Progress updater");
@@ -47,7 +47,7 @@ public final class Progress implements AutoCloseable, Tasks {
   public void attach(ProgressView view) {
     attach(Collections.singleton(view));
   }
-  
+
   public void attach(Collection<? extends ProgressView> views) {
     synchronized (viewSync) {
       this.views.addAll(views);
@@ -75,7 +75,7 @@ public final class Progress implements AutoCloseable, Tasks {
     Set<Task<?>> tasks = Collections.unmodifiableSet(taskSet);
     synchronized (viewSync) {
       views.forEach((view) -> view.update(tasks));
-    }    
+    }
   }
 
   @SuppressForbidden("wait/notify legitimate")

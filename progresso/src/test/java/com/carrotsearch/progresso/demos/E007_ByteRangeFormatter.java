@@ -1,13 +1,11 @@
-
 package com.carrotsearch.progresso.demos;
 
 import com.carrotsearch.progresso.ProgressView;
 import com.carrotsearch.progresso.RangeTracker;
 import com.carrotsearch.progresso.Tasks;
 import com.carrotsearch.progresso.views.console.ConsoleAware;
-import org.junit.Test;
-
 import java.util.Collections;
+import org.junit.Test;
 
 public class E007_ByteRangeFormatter extends AbstractExampleTest {
   @Test

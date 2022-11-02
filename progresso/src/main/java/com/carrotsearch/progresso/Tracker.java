@@ -1,7 +1,6 @@
 package com.carrotsearch.progresso;
 
 import com.carrotsearch.progresso.Task.Status;
-
 import java.io.Closeable;
 import java.time.Instant;
 import java.util.Objects;

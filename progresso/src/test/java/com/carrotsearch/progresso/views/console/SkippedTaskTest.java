@@ -6,9 +6,8 @@ import com.carrotsearch.progresso.RangeTask;
 import com.carrotsearch.progresso.RangeTracker;
 import com.carrotsearch.progresso.TaskStats;
 import com.carrotsearch.randomizedtesting.RandomizedTest;
-import org.junit.Test;
-
 import java.util.Arrays;
+import org.junit.Test;
 
 public class SkippedTaskTest extends RandomizedTest {
   @Test

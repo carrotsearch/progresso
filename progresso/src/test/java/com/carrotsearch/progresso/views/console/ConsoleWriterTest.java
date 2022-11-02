@@ -1,12 +1,10 @@
 package com.carrotsearch.progresso.views.console;
 
-import java.io.StringWriter;
-
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-
 import com.carrotsearch.progresso.util.ColumnCounter;
 import com.carrotsearch.randomizedtesting.RandomizedTest;
+import java.io.StringWriter;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
 
 @SuppressWarnings("resource")
 public class ConsoleWriterTest extends RandomizedTest {
@@ -16,7 +14,7 @@ public class ConsoleWriterTest extends RandomizedTest {
     ConsoleWriter cw = new ConsoleWriter(sw, ColumnCounter.DEFAULT, 80);
     cw.printLine("12345");
     Assertions.assertThat(sw.toString()).isEqualTo("12345" + ConsoleWriter.LF);
-    
+
     sw.getBuffer().setLength(0);
     cw.printLine("abcdef");
     Assertions.assertThat(sw.toString()).isEqualTo("abcdef" + ConsoleWriter.LF);
@@ -24,10 +22,10 @@ public class ConsoleWriterTest extends RandomizedTest {
     sw.getBuffer().setLength(0);
     cw.printLine("");
     Assertions.assertThat(sw.toString()).isEqualTo(ConsoleWriter.LF);
-    
+
     sw.getBuffer().setLength(0);
     cw.printLine("");
-    Assertions.assertThat(sw.toString()).isEqualTo(ConsoleWriter.LF);    
+    Assertions.assertThat(sw.toString()).isEqualTo(ConsoleWriter.LF);
   }
 
   @Test
@@ -47,13 +45,13 @@ public class ConsoleWriterTest extends RandomizedTest {
     sw.getBuffer().setLength(0);
     cw.updateLine("123");
     Assertions.assertThat(sw.toString()).isEqualTo("\r123  ");
-    
+
     // Only remove what's actually needed from last line.
     sw.getBuffer().setLength(0);
     cw.updateLine("ab");
     Assertions.assertThat(sw.toString()).isEqualTo("\rab ");
   }
-  
+
   @Test
   public void testCrInside() throws Exception {
     StringWriter sw = new StringWriter();

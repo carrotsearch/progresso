@@ -1,23 +1,21 @@
 package com.carrotsearch.progresso.views.console;
 
-import java.util.concurrent.TimeUnit;
-
 import com.carrotsearch.progresso.CompletedRatio;
-import com.carrotsearch.progresso.RangeTracker;
 import com.carrotsearch.progresso.Task;
 import com.carrotsearch.progresso.Tracker;
 import com.carrotsearch.progresso.util.LineFormatter;
 import com.carrotsearch.progresso.util.LineFormatter.Alignment;
 import com.carrotsearch.progresso.util.LineFormatter.Trim;
-import com.carrotsearch.progresso.util.MinMax;
 import com.carrotsearch.progresso.util.Units;
+import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractTrackerFormatter<T> implements TrackerFormatter {
   /**
-   * This is the minimum width of the time column; it's typically the last column
-   * and we want it aligned properly.
+   * This is the minimum width of the time column; it's typically the last column and we want it
+   * aligned properly.
    */
   private static final int TIME_COL_WIDTH = 9;
+
   private static final long ETA_ESTIMATE_DELAY = TimeUnit.SECONDS.toMillis(2);
 
   /* */
@@ -48,20 +46,27 @@ public abstract class AbstractTrackerFormatter<T> implements TrackerFormatter {
       name.append("(unnamed task)");
     }
 
-    lf.cell(10, Integer.MAX_VALUE, Alignment.LEFT, Trim.RIGHT, LineFormatter.PRIORITY_HIGH, name.toString());
+    lf.cell(
+        10,
+        Integer.MAX_VALUE,
+        Alignment.LEFT,
+        Trim.RIGHT,
+        LineFormatter.PRIORITY_HIGH,
+        name.toString());
     lf.cell(" ");
   }
-  
+
   protected void appendOptional(LineFormatter lf, String value) {
     int cols = lf.columns(value);
     lf.cell(cols, cols, Alignment.LEFT, Trim.LEFT, LineFormatter.PRIORITY_OPTIONAL, value);
   }
 
-  protected void appendTime(LineFormatter lf, Task<?> task, Tracker tracker, TrackerRateCalculator.TrackerStats stats) {
+  protected void appendTime(
+      LineFormatter lf, Task<?> task, Tracker tracker, TrackerRateCalculator.TrackerStats stats) {
     final long duration = tracker.elapsedMillis();
 
     String value = "";
-    
+
     if (task.isDone() && task.hasTracker()) {
       value = Units.DURATION_COMPACT.format(tracker.elapsedMillis());
     } else {
@@ -86,7 +91,13 @@ public abstract class AbstractTrackerFormatter<T> implements TrackerFormatter {
       }
     }
 
-    lf.cell(TIME_COL_WIDTH, TIME_COL_WIDTH, Alignment.RIGHT, Trim.RIGHT, LineFormatter.PRIORITY_DEFAULT, value);
+    lf.cell(
+        TIME_COL_WIDTH,
+        TIME_COL_WIDTH,
+        Alignment.RIGHT,
+        Trim.RIGHT,
+        LineFormatter.PRIORITY_DEFAULT,
+        value);
   }
 
   protected static String dots(int lineWidth, double completedRatio) {
@@ -117,7 +128,7 @@ public abstract class AbstractTrackerFormatter<T> implements TrackerFormatter {
           chr = ':';
         } else {
           if (i < atColumn) {
-            chr = '=';  
+            chr = '=';
           } else {
             chr = ' ';
           }

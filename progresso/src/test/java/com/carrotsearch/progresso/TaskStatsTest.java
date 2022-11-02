@@ -2,13 +2,12 @@ package com.carrotsearch.progresso;
 
 import com.carrotsearch.randomizedtesting.RandomizedContext;
 import com.carrotsearch.randomizedtesting.RandomizedTest;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
 
 public class TaskStatsTest extends RandomizedTest {
   @Test

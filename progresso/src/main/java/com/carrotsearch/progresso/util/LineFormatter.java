@@ -3,24 +3,24 @@ package com.carrotsearch.progresso.util;
 import java.util.ArrayList;
 
 /**
- * Formats fields into a given number of columns. Fields support optional 
- * stretching, trimming and alignments. 
+ * Formats fields into a given number of columns. Fields support optional stretching, trimming and
+ * alignments.
  */
 public class LineFormatter {
   public static final int PRIORITY_OPTIONAL = 0;
-  public static final int PRIORITY_DEFAULT  = 100;
-  public static final int PRIORITY_HIGH  = 200;
+  public static final int PRIORITY_DEFAULT = 100;
+  public static final int PRIORITY_HIGH = 200;
 
   public static enum Alignment {
     LEFT,
     RIGHT;
   }
-  
+
   /** Content trimming if it's too large to fit in a column. */
   public static enum Trim {
     /** ...xxxxx */
     LEFT,
-    
+
     /** xxxxx... */
     RIGHT,
 
@@ -38,7 +38,8 @@ public class LineFormatter {
     final Alignment alignment;
     final Trim trim;
 
-    public Cell(String value, int minWidth, int maxWidth, Alignment alignment, Trim trim, int priority) {
+    public Cell(
+        String value, int minWidth, int maxWidth, Alignment alignment, Trim trim, int priority) {
       this.value = value.toString();
       this.minWidth = minWidth;
       this.maxWidth = maxWidth;
@@ -57,11 +58,11 @@ public class LineFormatter {
   }
 
   private final ColumnCounter cc;
-  
+
   public LineFormatter(ColumnCounter cc) {
     this.cc = cc;
   }
-  
+
   public LineFormatter() {
     this(ColumnCounter.DEFAULT);
   }
@@ -73,7 +74,7 @@ public class LineFormatter {
   public LineFormatter cell(String value) {
     return cell(columns(value), columns(value), Alignment.LEFT, value);
   }
-  
+
   public LineFormatter cell(int minWidth, String value) {
     return cell(minWidth, Integer.MAX_VALUE, Alignment.LEFT, value);
   }
@@ -97,11 +98,13 @@ public class LineFormatter {
     return cell(minWidth, maxWidth, alignment, trim, PRIORITY_DEFAULT, value);
   }
 
-  public LineFormatter cell(int minWidth, int maxWidth, Alignment alignment, Trim trim, String value) {
+  public LineFormatter cell(
+      int minWidth, int maxWidth, Alignment alignment, Trim trim, String value) {
     return cell(minWidth, maxWidth, alignment, trim, PRIORITY_DEFAULT, value);
   }
-  
-  public LineFormatter cell(int minWidth, int maxWidth, Alignment alignment, Trim trim, int priority, String value) {
+
+  public LineFormatter cell(
+      int minWidth, int maxWidth, Alignment alignment, Trim trim, int priority, String value) {
     cells.add(new Cell(value, minWidth, maxWidth, alignment, trim, priority));
     return this;
   }
@@ -151,7 +154,7 @@ public class LineFormatter {
           stretchables.add(c);
         }
       }
-  
+
       // Distribute paddings over stretchables equally, any excesses from maxWidth
       // stretchables are propagated to the next round. Perhaps there's a direct way
       // to calculate this, but it's beyond me now.
@@ -159,8 +162,8 @@ public class LineFormatter {
       while (padding > 0 && !stretchables.isEmpty()) {
         int perCell = padding / stretchables.size();
         int lastExtra = padding - (perCell * stretchables.size());
-  
-        int extraSpace = 0; 
+
+        int extraSpace = 0;
         for (int i = stretchables.size(); --i >= 0; lastExtra = 0) {
           Cell c = stretchables.get(i);
           c.width += lastExtra + perCell;
@@ -178,7 +181,7 @@ public class LineFormatter {
     for (Cell c : thisCells) {
       String value = c.value;
 
-      int columns = columns(value); 
+      int columns = columns(value);
       if (columns != c.width) {
         value = align(c);
       }
@@ -213,7 +216,10 @@ public class LineFormatter {
             value = value.substring(0, value.offsetByCodePoints(0, max)) + ELLIPSIS;
             break;
           case RIGHT:
-            value = ELLIPSIS + value.substring(value.offsetByCodePoints(0, value.codePointCount(0, value.length()) - max));
+            value =
+                ELLIPSIS
+                    + value.substring(
+                        value.offsetByCodePoints(0, value.codePointCount(0, value.length()) - max));
             break;
           case MIDDLE:
             if (max == 1) {
@@ -222,9 +228,9 @@ public class LineFormatter {
               int left = max / 2;
               int right = value.codePointCount(0, value.length()) - left;
               value =
-                  value.substring(0, value.offsetByCodePoints(0, left)) +
-                  ELLIPSIS +
-                  value.substring(value.offsetByCodePoints(0, right));
+                  value.substring(0, value.offsetByCodePoints(0, left))
+                      + ELLIPSIS
+                      + value.substring(value.offsetByCodePoints(0, right));
             }
             break;
           default:
@@ -264,5 +270,5 @@ public class LineFormatter {
 
   public int columns(String value) {
     return cc.columns(value);
-  }  
+  }
 }

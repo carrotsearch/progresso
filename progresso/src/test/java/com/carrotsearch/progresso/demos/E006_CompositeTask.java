@@ -1,4 +1,3 @@
-
 package com.carrotsearch.progresso.demos;
 
 import com.carrotsearch.progresso.*;

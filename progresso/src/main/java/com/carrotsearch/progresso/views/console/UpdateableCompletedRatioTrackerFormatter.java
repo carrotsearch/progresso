@@ -8,7 +8,6 @@ import com.carrotsearch.progresso.Tracker;
 import com.carrotsearch.progresso.util.LineFormatter;
 import com.carrotsearch.progresso.util.LineFormatter.Alignment;
 import com.carrotsearch.progresso.util.UnitFormatter;
-
 import java.util.Locale;
 
 public class UpdateableCompletedRatioTrackerFormatter extends AbstractTrackerFormatter<Tracker> {
@@ -23,19 +22,18 @@ public class UpdateableCompletedRatioTrackerFormatter extends AbstractTrackerFor
   public boolean supports(int lineWidth, Tracker tracker) {
     return tracker instanceof CompletedRatio;
   }
-  
+
   @Override
   protected void doFormat(LineFormatter lf, int lineWidth, Task<?> task, Tracker tracker) {
     appendTaskName(lf, task);
 
     final double completedRatio = ((CompletedRatio) tracker).completedRatio();
-    
+
     if (task.getStatus() != Status.DONE) {
       String dots = dots(lineWidth, completedRatio);
       TrackerRateCalculator.TrackerStats stats = rateCalculator.update(tracker);
 
-      if (tracker.task() instanceof WithUnit &&
-          tracker instanceof LongTracker) {
+      if (tracker.task() instanceof WithUnit && tracker instanceof LongTracker) {
         UnitFormatter unit = ((WithUnit) tracker.task()).unit();
         dots = overlayUnitsPerSecond(dots, stats, completedRatio, unit);
       }
@@ -48,7 +46,11 @@ public class UpdateableCompletedRatioTrackerFormatter extends AbstractTrackerFor
     }
   }
 
-  protected String overlayUnitsPerSecond(String dots, TrackerRateCalculator.TrackerStats stats, double completedRatio, UnitFormatter unit) {
+  protected String overlayUnitsPerSecond(
+      String dots,
+      TrackerRateCalculator.TrackerStats stats,
+      double completedRatio,
+      UnitFormatter unit) {
     if (stats.hasItemsPerSec()) {
       String itemsPerSec = unit.format(stats.itemsPerSec());
       if (itemsPerSec != null) {

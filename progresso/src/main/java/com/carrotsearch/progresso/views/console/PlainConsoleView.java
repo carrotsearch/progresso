@@ -1,5 +1,11 @@
 package com.carrotsearch.progresso.views.console;
 
+import com.carrotsearch.progresso.ProgressView;
+import com.carrotsearch.progresso.Task;
+import com.carrotsearch.progresso.Task.Status;
+import com.carrotsearch.progresso.Tracker;
+import com.carrotsearch.progresso.util.LineFormatter;
+import com.carrotsearch.progresso.util.LineFormatter.Alignment;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
@@ -15,23 +21,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import com.carrotsearch.progresso.ProgressView;
-import com.carrotsearch.progresso.Task;
-import com.carrotsearch.progresso.Task.Status;
-import com.carrotsearch.progresso.Tracker;
-import com.carrotsearch.progresso.util.LineFormatter;
-import com.carrotsearch.progresso.util.LineFormatter.Alignment;
-
-/**
- * A very basic progress view.
- */
+/** A very basic progress view. */
 public class PlainConsoleView implements ProgressView {
-  private final static String LF = System.getProperty("line.separator");
+  private static final String LF = System.getProperty("line.separator");
 
   private final ArrayList<? extends TrackerFormatter> formatters;
 
-  private static final long DELAY_INITIAL  = TimeUnit.SECONDS.toMillis(2); 
-  private static final long DELAY_PROGRESS = TimeUnit.SECONDS.toMillis(2); 
+  private static final long DELAY_INITIAL = TimeUnit.SECONDS.toMillis(2);
+  private static final long DELAY_PROGRESS = TimeUnit.SECONDS.toMillis(2);
 
   private final TaskStatusRecovery statusUpdater = new TaskStatusRecovery();
   private final ArrayDeque<Task<?>> doneTasks = new ArrayDeque<>();
@@ -49,22 +46,20 @@ public class PlainConsoleView implements ProgressView {
   public PlainConsoleView(ConsoleWriter out) {
     this(out, Collections.emptyList());
   }
-  
-  public PlainConsoleView(ConsoleWriter out,
-      Collection<Task<?>> topTasks) {
+
+  public PlainConsoleView(ConsoleWriter out, Collection<Task<?>> topTasks) {
     this(out, out.lineWidth(), topTasks);
   }
 
-  public PlainConsoleView(Writer out,
-                          int lineWidth,
-                          Collection<Task<?>> topTasks) {
+  public PlainConsoleView(Writer out, int lineWidth, Collection<Task<?>> topTasks) {
     this(out, lineWidth, topTasks, defaultFormatters());
   }
 
-  public PlainConsoleView(Writer out,
-                          int lineWidth,
-                          Collection<Task<?>> topTasks,
-                          List<? extends TrackerFormatter> formatters) {
+  public PlainConsoleView(
+      Writer out,
+      int lineWidth,
+      Collection<Task<?>> topTasks,
+      List<? extends TrackerFormatter> formatters) {
     this.lineWidth = lineWidth;
     this.topTasks = new HashSet<>(topTasks);
     this.out = out;
@@ -73,8 +68,12 @@ public class PlainConsoleView implements ProgressView {
 
   @Override
   public void update(Set<Task<?>> tasks) {
-    statusUpdater.update(tasks,
-        (t) -> { startedTasks.addLast(t); formatters.forEach(fmt -> fmt.taskStarted(t)); },
+    statusUpdater.update(
+        tasks,
+        (t) -> {
+          startedTasks.addLast(t);
+          formatters.forEach(fmt -> fmt.taskStarted(t));
+        },
         (t) -> doneTasks.addLast(t));
 
     // If active task has completed, finalize its progress.
@@ -101,9 +100,9 @@ public class PlainConsoleView implements ProgressView {
   }
 
   private void pickNewActive() {
-    for (Iterator<Task<?>> i = startedTasks.iterator(); i.hasNext();) {
+    for (Iterator<Task<?>> i = startedTasks.iterator(); i.hasNext(); ) {
       Task<?> t = i.next();
-      
+
       if (t.getStatus() == Status.STARTED) {
         if (activeTask != t && (activeTask == null || t.isChildOf(activeTask))) {
           activeTask = t;
@@ -141,9 +140,8 @@ public class PlainConsoleView implements ProgressView {
     nextUpdate = now() + DELAY_PROGRESS;
     out(updateView(t));
   }
-  
-  private static EnumSet<Status> UPDATE_ALLOWED = EnumSet.of(
-      Status.STARTED, Status.DONE);
+
+  private static EnumSet<Status> UPDATE_ALLOWED = EnumSet.of(Status.STARTED, Status.DONE);
 
   private String updateView(Task<?> task) {
     final Status taskStatus = task.getStatus();
@@ -156,11 +154,10 @@ public class PlainConsoleView implements ProgressView {
 
     if (!topTasks.isEmpty()) {
       String top = Long.toString(topTasks.size());
-      long current = topTasks.stream()
-          .filter((t) -> (t == task || task.isChildOf(t) || t.isDone()))
-          .count();
+      long current =
+          topTasks.stream().filter((t) -> (t == task || task.isChildOf(t) || t.isDone())).count();
       int width = 2 * lf.columns(top) + 1 + 1;
-      lf.cell(width, width, Alignment.RIGHT, current + "/" + top + " "); 
+      lf.cell(width, width, Alignment.RIGHT, current + "/" + top + " ");
     }
 
     for (TrackerFormatter formatter : formatters) {
@@ -176,12 +173,12 @@ public class PlainConsoleView implements ProgressView {
   private long now() {
     return System.currentTimeMillis();
   }
-  
+
   public static List<AbstractTrackerFormatter<?>> defaultFormatters() {
     return Arrays.asList(
         new UpdateablePathTrackerFormatter(),
         new UpdateableCompletedRatioTrackerFormatter(),
         new UpdateableLongTrackerFormatter(),
         new UpdateableGenericTrackerFormatter());
-  }  
+  }
 }

@@ -1,20 +1,19 @@
 package com.carrotsearch.progresso.views.console;
 
+import com.carrotsearch.progresso.util.ColumnCounter;
 import java.io.IOException;
 import java.io.Writer;
 
-import com.carrotsearch.progresso.util.ColumnCounter;
-
 public class ConsoleWriter extends Writer {
-  public final static String LF = System.getProperty("line.separator"); 
-  private final static String CR = "\r";
+  public static final String LF = System.getProperty("line.separator");
+  private static final String CR = "\r";
 
   private final ColumnCounter cc;
   private final Writer delegate;
 
   private final int lineWidth;
   private int lastLineWidth;
-  
+
   public ConsoleWriter(Writer delegate, ColumnCounter cc, int lineWidth) {
     this.delegate = delegate;
     this.lineWidth = lineWidth;
@@ -49,7 +48,7 @@ public class ConsoleWriter extends Writer {
   public void updateLine(String content) throws IOException {
     synchronized (super.lock) {
       if (content.indexOf(LF) >= 0) {
-        throw new IllegalArgumentException("Line updates can't contain line feeds: " + content); 
+        throw new IllegalArgumentException("Line updates can't contain line feeds: " + content);
       }
 
       lineOut(content);
@@ -60,7 +59,7 @@ public class ConsoleWriter extends Writer {
     synchronized (super.lock) {
       lineOut(content + LF);
     }
-  }  
+  }
 
   private void lineOut(String content) throws IOException {
     int break1;

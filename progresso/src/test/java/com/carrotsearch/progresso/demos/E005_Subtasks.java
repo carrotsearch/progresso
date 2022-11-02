@@ -1,10 +1,4 @@
-
 package com.carrotsearch.progresso.demos;
-
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Test;
 
 import com.carrotsearch.progresso.Progress;
 import com.carrotsearch.progresso.RangeTask;
@@ -14,6 +8,9 @@ import com.carrotsearch.progresso.TaskStats;
 import com.carrotsearch.progresso.Tasks;
 import com.carrotsearch.progresso.views.console.ConsoleAware;
 import com.carrotsearch.progresso.views.console.PlainConsoleView;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.Test;
 
 public class E005_Subtasks extends AbstractExampleTest {
   @Test
@@ -23,18 +20,16 @@ public class E005_Subtasks extends AbstractExampleTest {
 
     List<Task<?>> topLevel = Arrays.asList(t1, t2);
 
-    try (Progress p = new Progress(new PlainConsoleView(
-         ConsoleAware.writer(), DEFAULT_WIDTH, topLevel))) {
+    try (Progress p =
+        new Progress(new PlainConsoleView(ConsoleAware.writer(), DEFAULT_WIDTH, topLevel))) {
       p.attach(topLevel);
 
       runTask(t1);
       runTask(t2);
 
-      System.out.println(TaskStats.breakdown(
-          t1, 
-          t2, 
-          Tasks.newGenericTask(),
-          Tasks.newGenericTask().start().task()));
+      System.out.println(
+          TaskStats.breakdown(
+              t1, t2, Tasks.newGenericTask(), Tasks.newGenericTask().start().task()));
     }
   }
 

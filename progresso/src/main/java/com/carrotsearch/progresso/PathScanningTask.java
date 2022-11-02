@@ -1,9 +1,8 @@
 package com.carrotsearch.progresso;
 
+import com.carrotsearch.progresso.PathScanningTask.PathTracker;
 import java.nio.file.Path;
 import java.util.Objects;
-
-import com.carrotsearch.progresso.PathScanningTask.PathTracker;
 
 public class PathScanningTask extends Task<PathTracker> {
   public class PathTracker extends Tracker {
@@ -22,7 +21,7 @@ public class PathScanningTask extends Task<PathTracker> {
     public Path at() {
       return current;
     }
-    
+
     public long count() {
       return count;
     }
@@ -41,5 +40,5 @@ public class PathScanningTask extends Task<PathTracker> {
 
   public PathTracker start() {
     return start(new PathTracker());
-  }  
+  }
 }

@@ -1,5 +1,17 @@
 package com.carrotsearch.progresso.views.console;
 
+import com.carrotsearch.progresso.GenericTask;
+import com.carrotsearch.progresso.LongTracker;
+import com.carrotsearch.progresso.PathScanningTask;
+import com.carrotsearch.progresso.Progress;
+import com.carrotsearch.progresso.ProgressView;
+import com.carrotsearch.progresso.RangeTask;
+import com.carrotsearch.progresso.RangeTracker;
+import com.carrotsearch.progresso.Task;
+import com.carrotsearch.progresso.Tracker;
+import com.carrotsearch.randomizedtesting.LifecycleScope;
+import com.carrotsearch.randomizedtesting.RandomizedTest;
+import com.carrotsearch.randomizedtesting.annotations.Repeat;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -9,23 +21,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Function;
 import java.util.stream.Stream;
-
-import com.carrotsearch.progresso.PathScanningTask;
-import com.carrotsearch.randomizedtesting.LifecycleScope;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.carrotsearch.progresso.GenericTask;
-import com.carrotsearch.progresso.LongTracker;
-import com.carrotsearch.progresso.Progress;
-import com.carrotsearch.progresso.ProgressView;
-import com.carrotsearch.progresso.RangeTask;
-import com.carrotsearch.progresso.RangeTracker;
-import com.carrotsearch.progresso.Task;
-import com.carrotsearch.progresso.Tracker;
-import com.carrotsearch.randomizedtesting.RandomizedTest;
-import com.carrotsearch.randomizedtesting.annotations.Repeat;
 
 @Repeat(iterations = 20)
 public class ViewsTest extends RandomizedTest {
@@ -121,10 +119,8 @@ public class ViewsTest extends RandomizedTest {
     }
 
     // Empty ranges.
-    try (RangeTracker t = p.newByteRangeSubtask("empty byte range").start(0, 0)) {
-    }
-    try (RangeTracker t = p.newRangeSubtask("empty range").start(0, 0)) {
-    }
+    try (RangeTracker t = p.newByteRangeSubtask("empty byte range").start(0, 0)) {}
+    try (RangeTracker t = p.newRangeSubtask("empty range").start(0, 0)) {}
 
     // Do not allow updates on empty ranges.
     try (RangeTracker t = p.newRangeSubtask("subrange").start(0, 0)) {
@@ -138,7 +134,7 @@ public class ViewsTest extends RandomizedTest {
 
     // path scanner.
     try (PathScanningTask.PathTracker t = p.newPathScanningSubtask("path scanner").start();
-         Stream<Path> pathStream = Files.walk(scanDir)) {
+        Stream<Path> pathStream = Files.walk(scanDir)) {
       pathStream.forEach(t::at);
     } catch (IOException e) {
       throw new UncheckedIOException(e);

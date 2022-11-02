@@ -1,11 +1,9 @@
-
 package com.carrotsearch.progresso;
 
 import com.carrotsearch.progresso.demos.AbstractExampleTest;
 import com.carrotsearch.progresso.views.console.ConsoleAware;
-import org.junit.Test;
-
 import java.util.Arrays;
+import org.junit.Test;
 
 public class CompositeTaskTest extends AbstractExampleTest {
   @Test

@@ -10,11 +10,12 @@ public class GenericTask extends Task<Tracker> {
   }
 
   public Tracker start() {
-    return start(new Tracker(this) {
-      @Override
-      public long modHash() {
-        return 0L;
-      }
-    });
+    return start(
+        new Tracker(this) {
+          @Override
+          public long modHash() {
+            return 0L;
+          }
+        });
   }
 }

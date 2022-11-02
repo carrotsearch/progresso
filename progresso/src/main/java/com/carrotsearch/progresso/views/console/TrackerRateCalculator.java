@@ -3,7 +3,6 @@ package com.carrotsearch.progresso.views.console;
 import com.carrotsearch.progresso.CompletedRatio;
 import com.carrotsearch.progresso.LongTracker;
 import com.carrotsearch.progresso.Tracker;
-
 import java.util.IdentityHashMap;
 
 class TrackerRateCalculator {
@@ -47,17 +46,21 @@ class TrackerRateCalculator {
     }
   }
 
-  private final IdentityHashMap<Tracker, TimeWindowSampler<TrackerState>> samplers = new IdentityHashMap<>();
+  private final IdentityHashMap<Tracker, TimeWindowSampler<TrackerState>> samplers =
+      new IdentityHashMap<>();
 
   public TrackerStats update(Tracker tracker) {
-    if (tracker instanceof LongTracker ||
-        tracker instanceof CompletedRatio) {
-      TimeWindowSampler<TrackerState> sampler = samplers.computeIfAbsent(tracker, (key) -> new TimeWindowSampler<>());
-      TimeWindowSampler<TrackerState>.WindowStats windowStats = sampler.tick(now(), new TrackerState(tracker));
+    if (tracker instanceof LongTracker || tracker instanceof CompletedRatio) {
+      TimeWindowSampler<TrackerState> sampler =
+          samplers.computeIfAbsent(tracker, (key) -> new TimeWindowSampler<>());
+      TimeWindowSampler<TrackerState>.WindowStats windowStats =
+          sampler.tick(now(), new TrackerState(tracker));
 
       if (windowStats != null) {
-        Long itemsPerSec = (tracker instanceof LongTracker) ? computeItemsPerSec(windowStats) : null;
-        Double completionEta = (tracker instanceof CompletedRatio) ? computeCompletionEta(windowStats) : null;
+        Long itemsPerSec =
+            (tracker instanceof LongTracker) ? computeItemsPerSec(windowStats) : null;
+        Double completionEta =
+            (tracker instanceof CompletedRatio) ? computeCompletionEta(windowStats) : null;
         return new TrackerStats(itemsPerSec, completionEta);
       }
     }
@@ -69,7 +72,8 @@ class TrackerRateCalculator {
     TimeWindowSampler<TrackerState>.Sample last = windowStats.last;
 
     if (first.value.at > last.value.at) {
-      throw new RuntimeException("Non-monotonic at() in samples: " + first.value.at + " " + last.value.at);
+      throw new RuntimeException(
+          "Non-monotonic at() in samples: " + first.value.at + " " + last.value.at);
     }
 
     long delta = last.time - first.time;
@@ -85,7 +89,11 @@ class TrackerRateCalculator {
     TimeWindowSampler<TrackerState>.Sample last = windowStats.last;
 
     if (first.value.completedRatio > last.value.completedRatio) {
-      throw new RuntimeException("Non-monotonic completion ratio in samples: " + first.value.completedRatio + " " + last.value.completedRatio);
+      throw new RuntimeException(
+          "Non-monotonic completion ratio in samples: "
+              + first.value.completedRatio
+              + " "
+              + last.value.completedRatio);
     }
 
     long delta = last.time - first.time;

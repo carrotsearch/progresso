@@ -6,6 +6,8 @@ import com.carrotsearch.progresso.util.LineFormatter;
 
 public interface TrackerFormatter {
   void taskStarted(Task<?> task);
+
   boolean supports(int lineWidth, Tracker tracker);
+
   void format(LineFormatter lf, int lineWidth, Task<?> task, Tracker tracker);
 }

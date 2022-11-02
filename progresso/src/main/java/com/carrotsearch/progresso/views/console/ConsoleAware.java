@@ -1,5 +1,9 @@
 package com.carrotsearch.progresso.views.console;
 
+import com.carrotsearch.progresso.ProgressView;
+import com.carrotsearch.progresso.Task;
+import com.carrotsearch.progresso.annotations.SuppressForbidden;
+import com.carrotsearch.progresso.util.ColumnCounter;
 import java.io.Console;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -8,16 +12,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.ServiceLoader;
 
-import com.carrotsearch.progresso.ProgressView;
-import com.carrotsearch.progresso.Task;
-import com.carrotsearch.progresso.annotations.SuppressForbidden;
-import com.carrotsearch.progresso.util.ColumnCounter;
-
 @SuppressForbidden("Legitimate use of System.out and properties.")
 public class ConsoleAware {
-  /**
-   * Sane default console with. We don't want to use native hooks to get it.
-   */
+  /** Sane default console with. We don't want to use native hooks to get it. */
   public static final int CONSOLE_WIDTH_DEFAULT = 80;
 
   public static final String CONSOLE_WIDTH_PROPERTY = "console.width";
@@ -49,9 +46,7 @@ public class ConsoleAware {
     return consoleUpdateable;
   }
 
-  /**
-   * Returns the console writer. 
-   */
+  /** Returns the console writer. */
   public static synchronized ConsoleWriter writer() {
     if (consoleWriter == null) {
       Console console = System.console();
@@ -61,7 +56,7 @@ public class ConsoleAware {
       } else {
         writer = new OutputStreamWriter(System.out, Charset.defaultCharset());
       }
-      
+
       consoleWriter = new ConsoleWriter(writer, ColumnCounter.DEFAULT, consoleWidth());
     }
 
@@ -69,8 +64,7 @@ public class ConsoleAware {
   }
 
   /**
-   * @return Returns current console width based on the global hint or user property
-   * override. 
+   * @return Returns current console width based on the global hint or user property override.
    */
   public static int consoleWidth() throws IllegalArgumentException {
     // The sane default.
@@ -95,7 +89,7 @@ public class ConsoleAware {
 
   /**
    * Provide the default console width hint (in columns).
-   * 
+   *
    * @throws IllegalArgumentException If console width &lt; 1.
    */
   public static void setDefaultConsoleWidth(int widthHint) throws IllegalArgumentException {

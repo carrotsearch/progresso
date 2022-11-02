@@ -1,7 +1,6 @@
 package com.carrotsearch.progresso;
 
 import com.carrotsearch.progresso.util.Units;
-
 import java.time.Instant;
 import java.util.Locale;
 

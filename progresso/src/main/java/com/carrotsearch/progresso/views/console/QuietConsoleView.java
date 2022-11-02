@@ -1,5 +1,11 @@
 package com.carrotsearch.progresso.views.console;
 
+import com.carrotsearch.progresso.ProgressView;
+import com.carrotsearch.progresso.Task;
+import com.carrotsearch.progresso.Task.Status;
+import com.carrotsearch.progresso.Tracker;
+import com.carrotsearch.progresso.util.LineFormatter;
+import com.carrotsearch.progresso.util.LineFormatter.Alignment;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
@@ -13,18 +19,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.carrotsearch.progresso.ProgressView;
-import com.carrotsearch.progresso.Task;
-import com.carrotsearch.progresso.Task.Status;
-import com.carrotsearch.progresso.Tracker;
-import com.carrotsearch.progresso.util.LineFormatter;
-import com.carrotsearch.progresso.util.LineFormatter.Alignment;
-
-/**
- * A "quiet" console view that only reports completed top-level tasks.
- */
+/** A "quiet" console view that only reports completed top-level tasks. */
 public class QuietConsoleView implements ProgressView {
-  private final static String LF = System.getProperty("line.separator");
+  private static final String LF = System.getProperty("line.separator");
 
   private final ArrayList<? extends TrackerFormatter> formatters;
 
@@ -36,7 +33,7 @@ public class QuietConsoleView implements ProgressView {
   private final int lineWidth;
 
   private final Set<Task<?>> topTasks;
-  
+
   public QuietConsoleView(ConsoleWriter out) {
     this(out, Collections.emptyList());
   }
@@ -45,16 +42,15 @@ public class QuietConsoleView implements ProgressView {
     this(out, out.lineWidth() - 1, topTasks);
   }
 
-  public QuietConsoleView(Writer out,
-                          int lineWidth,
-                          Collection<Task<?>> topTasks) {
+  public QuietConsoleView(Writer out, int lineWidth, Collection<Task<?>> topTasks) {
     this(out, lineWidth, topTasks, defaultFormatters());
   }
 
-  public QuietConsoleView(Writer out,
-                          int lineWidth,
-                          Collection<Task<?>> topTasks,
-                          List<? extends TrackerFormatter> formatters) {
+  public QuietConsoleView(
+      Writer out,
+      int lineWidth,
+      Collection<Task<?>> topTasks,
+      List<? extends TrackerFormatter> formatters) {
     this.lineWidth = lineWidth;
     this.topTasks = new HashSet<>(topTasks);
     this.out = out;
@@ -63,8 +59,12 @@ public class QuietConsoleView implements ProgressView {
 
   @Override
   public void update(Set<Task<?>> tasks) {
-    statusUpdater.update(tasks,
-        (t) -> { startedTasks.addLast(t); formatters.forEach(fmt -> fmt.taskStarted(t)); },
+    statusUpdater.update(
+        tasks,
+        (t) -> {
+          startedTasks.addLast(t);
+          formatters.forEach(fmt -> fmt.taskStarted(t));
+        },
         (t) -> doneTasks.addLast(t));
 
     // Flush any pending completed tasks.
@@ -107,11 +107,10 @@ public class QuietConsoleView implements ProgressView {
 
     if (!topTasks.isEmpty()) {
       String top = Long.toString(topTasks.size());
-      long current = topTasks.stream()
-          .filter((t) -> (t == task || task.isChildOf(t) || t.isDone()))
-          .count();
+      long current =
+          topTasks.stream().filter((t) -> (t == task || task.isChildOf(t) || t.isDone())).count();
       int width = 2 * lf.columns(top) + 1 + 1;
-      lf.cell(width, width, Alignment.RIGHT, current + "/" + top + " "); 
+      lf.cell(width, width, Alignment.RIGHT, current + "/" + top + " ");
     }
 
     for (TrackerFormatter formatter : formatters) {
@@ -130,5 +129,5 @@ public class QuietConsoleView implements ProgressView {
         new UpdateableCompletedRatioTrackerFormatter(),
         new UpdateableLongTrackerFormatter(),
         new UpdateableGenericTrackerFormatter());
-  }  
+  }
 }

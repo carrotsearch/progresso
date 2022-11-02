@@ -23,13 +23,13 @@ public abstract class AbstractExampleTest extends RandomizedTest {
   public void emitTestName() {
     System.out.println("-- " + RandomizedContext.current().getTargetMethod().getName());
   }
-  
+
   @After
   public void emitNewline() {
     System.out.println();
   }
-  
+
   protected Progress defaultProgress() {
     return new Progress(ConsoleAware.newConsoleProgressView());
-  }  
+  }
 }

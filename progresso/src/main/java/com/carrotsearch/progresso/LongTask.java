@@ -1,11 +1,10 @@
 package com.carrotsearch.progresso;
 
-import java.util.Objects;
-import java.util.function.LongSupplier;
-
 import com.carrotsearch.progresso.util.UnitFormatter;
 import com.carrotsearch.progresso.util.Units;
 import com.carrotsearch.progresso.views.console.WithUnit;
+import java.util.Objects;
+import java.util.function.LongSupplier;
 
 public class LongTask extends Task<LongTracker> implements WithUnit {
   private final UnitFormatter unit;
@@ -30,11 +29,11 @@ public class LongTask extends Task<LongTracker> implements WithUnit {
   public LongTracker start(long initialValue) {
     return start(new LongTracker(this, initialValue));
   }
-  
+
   public LongTracker start(long initialValue, LongSupplier supplier) {
     return start(new LongTracker(this, initialValue, supplier));
   }
-  
+
   @Override
   public UnitFormatter unit() {
     return unit;

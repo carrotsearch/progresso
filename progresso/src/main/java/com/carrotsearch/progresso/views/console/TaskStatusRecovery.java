@@ -1,19 +1,16 @@
 package com.carrotsearch.progresso.views.console;
 
+import com.carrotsearch.progresso.Task;
+import com.carrotsearch.progresso.Task.Status;
 import java.util.IdentityHashMap;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import com.carrotsearch.progresso.Task;
-import com.carrotsearch.progresso.Task.Status;
-
-/**
- * Simplifies status transition management a bit.
- */
+/** Simplifies status transition management a bit. */
 public class TaskStatusRecovery {
   private static class State {
     Task.Status status;
-    
+
     State(Task<?> task) {
       update(task);
     }
@@ -22,12 +19,11 @@ public class TaskStatusRecovery {
       this.status = task.getStatus();
     }
   }
-  
+
   private IdentityHashMap<Task<?>, State> tasks = new IdentityHashMap<>();
 
-  public synchronized void update(Set<Task<?>> updateSet,
-                                  Consumer<Task<?>> taskStarted,
-                                  Consumer<Task<?>> taskDone) {
+  public synchronized void update(
+      Set<Task<?>> updateSet, Consumer<Task<?>> taskStarted, Consumer<Task<?>> taskDone) {
     for (Task<?> task : updateSet) {
       State state = tasks.get(task);
       if (state == null) {
@@ -38,7 +34,7 @@ public class TaskStatusRecovery {
           taskDone.accept(task);
         }
       } else {
-        if (state.status == Status.NEW)  {
+        if (state.status == Status.NEW) {
           if (task.getStatus() == Status.STARTED) {
             taskStarted.accept(task);
           }

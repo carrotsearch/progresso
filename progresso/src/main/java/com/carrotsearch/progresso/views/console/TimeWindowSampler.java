@@ -7,7 +7,7 @@ public final class TimeWindowSampler<T> {
   public final class Sample {
     final long time;
     final T value;
-    
+
     public Sample(long time, T value) {
       this.time = time;
       this.value = value;
@@ -41,8 +41,7 @@ public final class TimeWindowSampler<T> {
 
     // Prevent rapid sample bursts, replace the last sample only at most
     // each window of sample interval.
-    if (samples.size() > 1 &&
-        samples.peekLast().time + MIN_SAMPLE_INTERVAL >= tsNow) {
+    if (samples.size() > 1 && samples.peekLast().time + MIN_SAMPLE_INTERVAL >= tsNow) {
       samples.removeLast();
     }
     samples.addLast(new Sample(tsNow, value));
