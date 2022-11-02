@@ -33,8 +33,6 @@ public class UpdateableLongTrackerFormatter extends AbstractTrackerFormatter<Tra
       unit = Units.DECIMAL;
     }
 
-    appendTaskName(lf, task);
-
     if (!task.isDone()) {
       final long at = longTracker.at();
       final String value = unit.format(at);
@@ -52,9 +50,6 @@ public class UpdateableLongTrackerFormatter extends AbstractTrackerFormatter<Tra
           appendOptional(lf, speedRatio);
         }
       }
-    } else {
-      lf.cell(" done");
     }
-    appendTime(lf, task, tracker, null);
   }
 }

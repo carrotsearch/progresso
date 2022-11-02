@@ -22,17 +22,7 @@ public class UpdateablePathTrackerFormatter extends AbstractTrackerFormatter<Pat
 
   @Override
   protected void doFormat(LineFormatter lf, int lineWidth, Task<?> task, PathTracker tracker) {
-    if (task.hasName()) {
-      String name = task.getName();
-      lf.cell(0, lf.columns(name), name);
-      lf.cell(": ");
-    }
-
-    if (task.getStatus() == Status.DONE) {
-      long cnt = tracker.count();
-
-      lf.cell(String.format(Locale.ROOT, "%,d path%s scanned", cnt, cnt == 1 ? "" : "s"));
-    } else {
+    if (task.getStatus() != Status.DONE) {
       Path current = tracker.at();
       if (current != null) {
         lf.cell(5, 40, Alignment.LEFT, Trim.MIDDLE, current.toString());

@@ -1,6 +1,10 @@
 
 [1.8.0]
 
+ GH-20: Show skipped tasks in progress views.
+
+ GH-31: reformat the code with spotless/gjf.
+
  GH-30: Require java 11 or later.
 
  GH-29: Upgrade slf4j to 2.0.3, log4j to 2.19.0.

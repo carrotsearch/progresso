@@ -107,6 +107,6 @@ class TrackerRateCalculator {
   }
 
   private long now() {
-    return System.currentTimeMillis();
+    return System.nanoTime();
   }
 }

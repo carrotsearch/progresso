@@ -5,6 +5,7 @@ import com.carrotsearch.progresso.ProgressView;
 import com.carrotsearch.progresso.RangeTask;
 import com.carrotsearch.progresso.RangeTracker;
 import com.carrotsearch.progresso.TaskStats;
+import com.carrotsearch.progresso.Tracker;
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 import java.util.Arrays;
 import org.junit.Test;
@@ -42,6 +43,10 @@ public class SkippedTaskTest extends RandomizedTest {
       try (RangeTracker t = t3.start(0, 10)) {
         Thread.sleep(100);
         t.at(9);
+
+        try (Tracker unused = t.task().newGenericSubtask("Subtask").start()) {
+          // Do nothing.
+        }
       }
 
       System.out.println(TaskStats.breakdown(p.tasks()));

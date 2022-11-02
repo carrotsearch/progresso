@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.config.Property;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
@@ -31,7 +32,7 @@ public class ProgressAwareAppender extends AbstractAppender {
   private boolean printStackTraces = true;
 
   public ProgressAwareAppender(String name, Filter filter) {
-    super(name, filter, null, true);
+    super(name, filter, null, true, Property.EMPTY_ARRAY);
   }
 
   public boolean isPrintStackTraces() {

@@ -25,8 +25,6 @@ public class UpdateableCompletedRatioTrackerFormatter extends AbstractTrackerFor
 
   @Override
   protected void doFormat(LineFormatter lf, int lineWidth, Task<?> task, Tracker tracker) {
-    appendTaskName(lf, task);
-
     final double completedRatio = ((CompletedRatio) tracker).completedRatio();
 
     if (task.getStatus() != Status.DONE) {
@@ -38,11 +36,7 @@ public class UpdateableCompletedRatioTrackerFormatter extends AbstractTrackerFor
         dots = overlayUnitsPerSecond(dots, stats, completedRatio, unit);
       }
       appendOptional(lf, dots);
-      appendPercent(lf, task, completedRatio);
-      appendTime(lf, task, tracker, stats);
-    } else {
-      appendPercent(lf, task, completedRatio);
-      appendTime(lf, task, tracker, null);
+      appendPercent(lf, completedRatio);
     }
   }
 
@@ -71,12 +65,8 @@ public class UpdateableCompletedRatioTrackerFormatter extends AbstractTrackerFor
     return dots;
   }
 
-  private static void appendPercent(LineFormatter lf, Task<?> task, double completedRatio) {
-    if (task.isDone()) {
-      lf.cell(" done");
-    } else {
-      double p = 100.0d * completedRatio;
-      lf.cell(5, 5, Alignment.RIGHT, String.format(Locale.ROOT, "%3.0f%%", p));
-    }
+  private static void appendPercent(LineFormatter lf, double completedRatio) {
+    double p = 100.0d * completedRatio;
+    lf.cell(5, 5, Alignment.RIGHT, String.format(Locale.ROOT, "%3.0f%%", p));
   }
 }

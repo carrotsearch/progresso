@@ -14,11 +14,5 @@ public class UpdateableGenericTrackerFormatter extends AbstractTrackerFormatter<
   }
 
   @Override
-  protected void doFormat(LineFormatter lf, int lineWidth, Task<?> task, Tracker tracker) {
-    appendTaskName(lf, task);
-    if (task.isDone()) {
-      lf.cell(" done");
-    }
-    appendTime(lf, task, tracker, null);
-  }
+  protected void doFormat(LineFormatter lf, int lineWidth, Task<?> task, Tracker tracker) {}
 }

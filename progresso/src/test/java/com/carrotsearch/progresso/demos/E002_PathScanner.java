@@ -15,11 +15,11 @@ public class E002_PathScanner extends AbstractExampleTest {
   @Test
   public void pathScanner() throws IOException {
     try (Progress progress = defaultProgress()) {
-      final long deadline = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(4);
+      final long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(4);
       final ArrayDeque<Path> paths = new ArrayDeque<>();
       FileSystems.getDefault().getRootDirectories().forEach((p) -> paths.add(p));
       try (PathTracker tracker = progress.newPathScanningSubtask("Scanning folders").start()) {
-        while (!paths.isEmpty() && System.currentTimeMillis() < deadline) {
+        while (!paths.isEmpty() && System.nanoTime() < deadline) {
           Path p = paths.pop();
           try {
             if (Files.isDirectory(p)
