@@ -1,6 +1,8 @@
 
 [1.8.0]
 
+ GH-30: Require java 1.8 or later.
+
  GH-29: Upgrade slf4j to 2.0.3, log4j to 2.19.0.
 
 [1.7.5]
