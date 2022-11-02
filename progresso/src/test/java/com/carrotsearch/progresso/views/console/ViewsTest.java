@@ -1,11 +1,19 @@
 package com.carrotsearch.progresso.views.console;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
+import com.carrotsearch.progresso.PathScanningTask;
+import com.carrotsearch.randomizedtesting.LifecycleScope;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.carrotsearch.progresso.GenericTask;
@@ -21,6 +29,15 @@ import com.carrotsearch.randomizedtesting.annotations.Repeat;
 
 @Repeat(iterations = 20)
 public class ViewsTest extends RandomizedTest {
+  private static Path scanDir;
+
+  @BeforeClass
+  public static void generateTestPaths() throws IOException {
+    scanDir = newTempDir(LifecycleScope.SUITE);
+    Files.createFile(scanDir.resolve("tmpfile1.txt"));
+    Files.createFile(scanDir.resolve("tmpfile2.txt"));
+  }
+
   @Test
   public void plainConsoleView() {
     runTest((t) -> new PlainConsoleView(ConsoleAware.writer(), t));
@@ -47,7 +64,7 @@ public class ViewsTest extends RandomizedTest {
       p.attach(viewSupplier.apply(Collections.emptyList()));
       runMethods(p);
     }
-    
+
     try (Progress p = new Progress()) {
       GenericTask t1 = p.newGenericSubtask("closed");
       t1.start().close();
@@ -59,7 +76,7 @@ public class ViewsTest extends RandomizedTest {
   }
 
   void runMethods(Progress p) {
-    try (RangeTracker t = p.newByteRangeSubtask("t").start(0, 10)) {
+    try (RangeTracker t = p.newByteRangeSubtask("byte range").start(0, 10)) {
       if (randomBoolean()) {
         t.at(randomIntBetween(0, 9));
       }
@@ -80,9 +97,11 @@ public class ViewsTest extends RandomizedTest {
       }
     }
 
-    GenericTask skipped = p.newGenericSubtask();
-    skipped.skip();
-    
+    // skipped tasks.
+    p.newLongSubtask("skipped long task").skip();
+    p.newRangeSubtask("skipped range task").skip();
+    p.newGenericSubtask().skip();
+
     try (LongTracker t = p.newLongSubtask("long").start(0)) {
       if (randomBoolean()) {
         t.incrementBy(randomIntBetween(0, 10));
@@ -102,17 +121,27 @@ public class ViewsTest extends RandomizedTest {
     }
 
     // Empty ranges.
-    try (RangeTracker t = p.newByteRangeSubtask("t").start(0, 0)) {}
-    try (RangeTracker t = p.newRangeSubtask("t").start(0, 0)) {}
-    
+    try (RangeTracker t = p.newByteRangeSubtask("empty byte range").start(0, 0)) {
+    }
+    try (RangeTracker t = p.newRangeSubtask("empty range").start(0, 0)) {
+    }
+
     // Do not allow updates on empty ranges.
-    try (RangeTracker t = p.newRangeSubtask("t").start(0, 0)) {
+    try (RangeTracker t = p.newRangeSubtask("subrange").start(0, 0)) {
       try {
         t.at(0);
         Assert.fail();
       } catch (RuntimeException e) {
         // Expected.
       }
+    }
+
+    // path scanner.
+    try (PathScanningTask.PathTracker t = p.newPathScanningSubtask("path scanner").start();
+         Stream<Path> pathStream = Files.walk(scanDir)) {
+      pathStream.forEach(t::at);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
     }
   }
 }
