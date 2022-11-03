@@ -1,4 +1,9 @@
 
+[1.8.1]
+
+ GH-32: Console progress for range tasks displays elapsed time
+        (instead of the ETA).
+
 [1.8.0]
 
  GH-20: Show skipped tasks in progress views.

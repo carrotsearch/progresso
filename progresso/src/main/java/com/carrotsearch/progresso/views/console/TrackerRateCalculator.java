@@ -4,6 +4,7 @@ import com.carrotsearch.progresso.CompletedRatio;
 import com.carrotsearch.progresso.LongTracker;
 import com.carrotsearch.progresso.Tracker;
 import java.util.IdentityHashMap;
+import java.util.concurrent.TimeUnit;
 
 class TrackerRateCalculator {
   private static class TrackerState {
@@ -54,7 +55,7 @@ class TrackerRateCalculator {
       TimeWindowSampler<TrackerState> sampler =
           samplers.computeIfAbsent(tracker, (key) -> new TimeWindowSampler<>());
       TimeWindowSampler<TrackerState>.WindowStats windowStats =
-          sampler.tick(now(), new TrackerState(tracker));
+          sampler.tick(TimeUnit.NANOSECONDS.toMillis(System.nanoTime()), new TrackerState(tracker));
 
       if (windowStats != null) {
         Long itemsPerSec =
@@ -104,9 +105,5 @@ class TrackerRateCalculator {
     } else {
       return null;
     }
-  }
-
-  private long now() {
-    return System.nanoTime();
   }
 }
