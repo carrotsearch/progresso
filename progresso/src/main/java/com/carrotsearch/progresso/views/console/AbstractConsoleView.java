@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /** A very basic progress view. */
 public abstract class AbstractConsoleView implements ProgressView {
@@ -147,8 +148,8 @@ public abstract class AbstractConsoleView implements ProgressView {
     return lf.format(lineWidth);
   }
 
-  protected final long now() {
-    return System.nanoTime();
+  protected final long nowMillis() {
+    return TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
   }
 
   public static List<AbstractTrackerFormatter<?>> defaultFormatters() {

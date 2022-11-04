@@ -46,7 +46,7 @@ public class PlainConsoleView extends AbstractConsoleView {
     if (task == null) {
       nextUpdate = 0L;
     } else {
-      nextUpdate = now() + DELAY_INITIAL;
+      nextUpdate = nowMillis() + DELAY_INITIAL;
     }
   }
 
@@ -55,11 +55,11 @@ public class PlainConsoleView extends AbstractConsoleView {
   }
 
   protected void taskUpdate(Task<?> t) {
-    if (now() < nextUpdate) {
+    if (nowMillis() < nextUpdate) {
       return;
     }
 
-    nextUpdate = now() + DELAY_PROGRESS;
+    nextUpdate = nowMillis() + DELAY_PROGRESS;
     printLine(formatStatusLine(t));
   }
 

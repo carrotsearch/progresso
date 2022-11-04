@@ -61,12 +61,12 @@ public class UpdateableConsoleView extends AbstractConsoleView {
     // When there's no change to task status, and we haven't reached
     // the update interval, skip the update.
     long modHash = t.getTracker().modHash();
-    if (this.modHash == modHash && now() < nextUpdate) {
+    if (this.modHash == modHash && nowMillis() < nextUpdate) {
       return;
     }
 
     this.modHash = modHash;
-    nextUpdate = now() + DEFAULT_UPDATE_INTERVAL;
+    nextUpdate = nowMillis() + DEFAULT_UPDATE_INTERVAL;
 
     try {
       consoleWriter.updateLine(formatStatusLine(t));
