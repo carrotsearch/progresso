@@ -52,7 +52,7 @@ public final class TaskStats {
       }
     }
 
-    if (!done || start > end) {
+    if (!done || (start != Long.MAX_VALUE && start > end)) {
       return TOTAL_TIME + " (not done yet).";
     }
 
