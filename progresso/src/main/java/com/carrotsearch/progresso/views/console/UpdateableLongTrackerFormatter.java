@@ -37,7 +37,7 @@ public class UpdateableLongTrackerFormatter extends AbstractTrackerFormatter<Tra
       final long at = longTracker.at();
       final String value = unit.format(at);
       if (value != null) {
-        final int columns = lf.columns(value);
+        final int columns = lf.getColumnCounter().columns(value);
         lf.cell(
             columns, columns, Alignment.RIGHT, Trim.RIGHT, LineFormatter.PRIORITY_OPTIONAL, value);
       }

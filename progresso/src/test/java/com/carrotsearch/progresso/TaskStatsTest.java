@@ -30,6 +30,23 @@ public class TaskStatsTest extends RandomizedTest {
   }
 
   @Test
+  public void taskTruncateNames() {
+    GenericTask t1 = Tasks.newGenericTask("task_a " + "~".repeat(200) + "X");
+
+    try (Tracker tracker = t1.start()) {
+      tracker.attribute(
+          "description " + "%".repeat(150), "%s", "<val>" + " ".repeat(100) + "</val>");
+    }
+
+    String breakdown = TaskStats.breakdownBuilder().addTasks(t1).maxColumnWidth(80).toString();
+
+    Assertions.assertThat(breakdown)
+        .contains("task_a ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~X")
+        .contains(
+            " @ description %%%%%%%%%%%%%%%%%%%%%%%...                                </val>");
+  }
+
+  @Test
   public void taskBreakdown() {
     GenericTask t1 = Tasks.newGenericTask("task_a");
     GenericTask t3 = t1.newGenericSubtask("subtask_1");

@@ -67,12 +67,12 @@ public class LineFormatter {
     this(ColumnCounter.DEFAULT);
   }
 
-  private static String ELLIPSIS = "...";
-  private StringBuilder b = new StringBuilder();
-  private ArrayList<Cell> cells = new ArrayList<>();
+  private static final String ELLIPSIS = "...";
+  private final StringBuilder b = new StringBuilder();
+  private final ArrayList<Cell> cells = new ArrayList<>();
 
   public LineFormatter cell(String value) {
-    return cell(columns(value), columns(value), Alignment.LEFT, value);
+    return cell(cc.columns(value), cc.columns(value), Alignment.LEFT, value);
   }
 
   public LineFormatter cell(int minWidth, String value) {
@@ -181,12 +181,12 @@ public class LineFormatter {
     for (Cell c : thisCells) {
       String value = c.value;
 
-      int columns = columns(value);
+      int columns = cc.columns(value);
       if (columns != c.width) {
-        value = align(c);
+        value = align(c, cc, b);
       }
 
-      columns = columns(value);
+      columns = cc.columns(value);
       if (columns > lineWidth) {
         // We can't squeeze any more fields. Break out
         break;
@@ -199,13 +199,13 @@ public class LineFormatter {
     return b.toString();
   }
 
-  private String align(Cell cell) {
+  static String align(Cell cell, ColumnCounter columnCounter, StringBuilder buffer) {
     String value = cell.value;
-    int valueColumns = columns(value);
+    int valueColumns = columnCounter.columns(value);
 
     if (cell.width < valueColumns) {
       // We have to trim the value to fit inside cell.width.
-      final int max = cell.width - columns(ELLIPSIS);
+      final int max = cell.width - columnCounter.columns(ELLIPSIS);
       if (max == 0) {
         value = ELLIPSIS;
       } else if (max <= 0) {
@@ -223,7 +223,7 @@ public class LineFormatter {
             break;
           case MIDDLE:
             if (max == 1) {
-              value = value.substring(0, 1) + ELLIPSIS;
+              value = value.charAt(0) + ELLIPSIS;
             } else {
               int left = max / 2;
               int right = value.codePointCount(0, value.length()) - left;
@@ -239,36 +239,36 @@ public class LineFormatter {
       }
 
       // Recalculate
-      valueColumns = columns(value);
+      valueColumns = columnCounter.columns(value);
     }
 
     int paddingSpaces = cell.width - valueColumns;
     if (paddingSpaces != 0) {
-      final int bufferReset = b.length();
+      final int bufferReset = buffer.length();
       switch (cell.alignment) {
         case LEFT:
-          b.append(value);
+          buffer.append(value);
           for (int i = 0; i < paddingSpaces; i++) {
-            b.append(' ');
+            buffer.append(' ');
           }
           break;
         case RIGHT:
           for (int i = 0; i < paddingSpaces; i++) {
-            b.append(' ');
+            buffer.append(' ');
           }
-          b.append(value);
+          buffer.append(value);
           break;
         default:
           throw new AssertionError();
       }
-      value = b.substring(bufferReset);
-      b.setLength(bufferReset);
+      value = buffer.substring(bufferReset);
+      buffer.setLength(bufferReset);
     }
 
     return value;
   }
 
-  public int columns(String value) {
-    return cc.columns(value);
+  public ColumnCounter getColumnCounter() {
+    return cc;
   }
 }

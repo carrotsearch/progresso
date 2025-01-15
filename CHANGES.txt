@@ -1,4 +1,8 @@
 
+[1.8.3]
+
+ 
+
 [1.8.2]
 
  GH-33: Console progress more verbose than previously for the plain update view.

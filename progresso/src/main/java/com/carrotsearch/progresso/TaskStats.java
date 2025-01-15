@@ -4,15 +4,9 @@ import com.carrotsearch.progresso.util.TabularOutput;
 import com.carrotsearch.progresso.util.Units;
 import java.io.StringWriter;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class TaskStats {
   public static final String TOTAL_TIME = "Total time:";
@@ -78,43 +72,92 @@ public final class TaskStats {
     }
   }
 
+  public static class BreakDownBuilder {
+    private List<Task<?>> tasks = new ArrayList<>();
+    private Comparator<TaskData> comparator;
+    private Integer maxColumnWidth = null;
+
+    public BreakDownBuilder addTasks(Stream<? extends Task<?>> tasks) {
+      tasks.forEach(this.tasks::add);
+      return this;
+    }
+
+    public BreakDownBuilder addTasks(Collection<? extends Task<?>> tasks) {
+      return this.addTasks(tasks.stream());
+    }
+
+    public BreakDownBuilder addTasks(Task<?>... tasks) {
+      return this.addTasks(Stream.of(tasks));
+    }
+
+    public BreakDownBuilder maxColumnWidth(int maxColumnWidth) {
+      this.maxColumnWidth = maxColumnWidth;
+      return this;
+    }
+
+    public BreakDownBuilder withComparator(Comparator<TaskData> comparator) {
+      if (this.comparator != null) {
+        throw new RuntimeException("Only one comparator is allowed.");
+      }
+      this.comparator = comparator;
+      return this;
+    }
+
+    @Override
+    public String toString() {
+      var order = Objects.requireNonNullElse(comparator, BY_START_TIME);
+      List<TaskData> tasks = uniqueTasks(order, this.tasks.toArray(Task[]::new));
+
+      long total = 0;
+      long t0 = Long.MAX_VALUE;
+      for (TaskData td : tasks) {
+        if (td.hasTracker()) {
+          t0 = Math.min(t0, td.startTimeMillis());
+          if (td.hasTracker()) {
+            total += td.elapsedMillis();
+          }
+        }
+      }
+
+      TabularOutput tabular =
+          TabularOutput.to(new StringWriter())
+              .columnSeparator("  ")
+              .noAutoFlush()
+              .addColumn(
+                  "[Task]",
+                  spec -> {
+                    if (maxColumnWidth != null) {
+                      spec.maxWidth(maxColumnWidth);
+                    }
+                    spec.alignLeft();
+                  })
+              .addColumn("[Time]", TabularOutput.ColumnSpec::alignRight)
+              .addColumn("[%]", TabularOutput.ColumnSpec::alignRight)
+              .addColumn("[+T₀]", TabularOutput.ColumnSpec::alignRight)
+              .build();
+
+      for (TaskData td : tasks) {
+        breakdownTask(tabular, 0, td, order, total, t0);
+      }
+
+      return tabular.flush().getWriter().toString();
+    }
+  }
+
+  public static BreakDownBuilder breakdownBuilder() {
+    return new BreakDownBuilder();
+  }
+
   public static String breakdown(Collection<? extends Task<?>> tasks) {
-    return breakdown(tasks.toArray(new Task<?>[tasks.size()]));
+    return breakdownBuilder().addTasks(tasks).toString();
   }
 
   public static String breakdown(Task<?>... taskList) {
-    return breakdown(BY_START_TIME, taskList);
+    return breakdownBuilder().addTasks(taskList).toString();
   }
 
   public static String breakdown(Comparator<TaskData> order, Task<?>... taskList) {
-    List<TaskData> tasks = uniqueTasks(order, taskList);
-
-    long total = 0;
-    long t0 = Long.MAX_VALUE;
-    for (TaskData td : tasks) {
-      if (td.hasTracker()) {
-        t0 = Math.min(t0, td.startTimeMillis());
-        if (td.hasTracker()) {
-          total += td.elapsedMillis();
-        }
-      }
-    }
-
-    TabularOutput tabular =
-        TabularOutput.to(new StringWriter())
-            .columnSeparator("  ")
-            .noAutoFlush()
-            .addColumn("[Task]", TabularOutput.ColumnSpec::alignLeft)
-            .addColumn("[Time]", TabularOutput.ColumnSpec::alignRight)
-            .addColumn("[%]", TabularOutput.ColumnSpec::alignRight)
-            .addColumn("[+T₀]", TabularOutput.ColumnSpec::alignRight)
-            .build();
-
-    for (TaskData td : tasks) {
-      breakdownTask(tabular, 0, td, order, total, t0);
-    }
-
-    return tabular.flush().getWriter().toString();
+    return breakdownBuilder().withComparator(order).addTasks(taskList).toString();
   }
 
   public static List<TaskData> uniqueTasks(Comparator<TaskData> order, Task<?>[] taskList) {

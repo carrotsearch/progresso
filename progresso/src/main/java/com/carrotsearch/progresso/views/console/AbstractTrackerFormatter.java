@@ -22,7 +22,7 @@ public abstract class AbstractTrackerFormatter<T> implements TrackerFormatter {
   protected abstract void doFormat(LineFormatter lf, int lineWidth, Task<?> task, T tracker);
 
   protected static void appendOptional(LineFormatter lf, String value) {
-    int cols = lf.columns(value);
+    int cols = lf.getColumnCounter().columns(value);
     lf.cell(cols, cols, Alignment.LEFT, Trim.LEFT, LineFormatter.PRIORITY_OPTIONAL, value);
   }
 

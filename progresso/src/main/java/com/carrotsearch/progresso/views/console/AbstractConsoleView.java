@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 /** A very basic progress view. */
 public abstract class AbstractConsoleView implements ProgressView {
-  protected static final String LF = System.getProperty("line.separator");
+  protected static final String LF = System.lineSeparator();
 
   private final ArrayList<? extends TrackerFormatter> formatters;
 
@@ -111,7 +111,7 @@ public abstract class AbstractConsoleView implements ProgressView {
       String top = Long.toString(topTasks.size());
       long current =
           topTasks.stream().filter((t) -> (t == task || task.isChildOf(t) || t.isDone())).count();
-      int width = 2 * lf.columns(top) + 1 + 1;
+      int width = 2 * lf.getColumnCounter().columns(top) + 1 + 1;
       lf.cell(width, width, Alignment.RIGHT, current + "/" + top + " ");
     }
 

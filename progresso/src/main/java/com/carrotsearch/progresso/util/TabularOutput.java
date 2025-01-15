@@ -54,15 +54,33 @@ public final class TabularOutput {
 
   /** Column specification. */
   public static final class ColumnSpec {
+    /**
+     * Maximum default column width. This is 4 times a fairly standard terminal window. Should
+     * prevent insane formatting if a very long value appears in the output.
+     */
+    private static final int DEFAULT_MAX_COLUMN_WIDTH = 120 * 4;
+
     /** Alignment. */
     Alignment alignment = Alignment.LEFT;
 
     /** Formatter for the value. */
     String format = "%s";
 
+    /** Maximum column width, in characters. No limit if zero. */
+    int maxWidth = DEFAULT_MAX_COLUMN_WIDTH;
+
     /** Sets column flush on the last added column. */
     public ColumnSpec alignLeft() {
       this.alignment = Alignment.LEFT;
+      return this;
+    }
+
+    /** Sets maximum column width, in characters. No limit if zero. */
+    public ColumnSpec maxWidth(int maxWidth) {
+      if (maxWidth < 0) {
+        throw new IllegalArgumentException("maxWidth must be greater than zero.");
+      }
+      this.maxWidth = maxWidth;
       return this;
     }
 
@@ -270,6 +288,8 @@ public final class TabularOutput {
     }
   }
 
+  private static ColumnCounter cc = ColumnCounter.DEFAULT;
+
   private String formatValue(ColumnData columnData, Object v) {
     v = toStringAdapter(v);
 
@@ -280,6 +300,15 @@ public final class TabularOutput {
       value = String.format(Locale.ROOT, columnData.spec.format, v);
     }
 
+    int maxValueColumns = columnData.spec.maxWidth;
+    if (maxValueColumns > 0) {
+      var lineFormatter = new LineFormatter(cc);
+      int valueColumns = cc.columns(value);
+      value =
+          lineFormatter
+              .cell(0, valueColumns, LineFormatter.Alignment.LEFT, LineFormatter.Trim.MIDDLE, value)
+              .format(maxValueColumns);
+    }
     return value;
   }
 
