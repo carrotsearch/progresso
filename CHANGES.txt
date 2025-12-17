@@ -1,6 +1,10 @@
 
 [1.8.3]
 
+ GH-37: System.console() always returns non-null on Java 22+
+
+[1.8.3]
+
  GH-35: Add some control over max column width for insane task and attribute name/values.
 
 [1.8.2]

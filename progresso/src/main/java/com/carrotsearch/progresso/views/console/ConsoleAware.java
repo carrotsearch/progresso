@@ -7,10 +7,14 @@ import com.carrotsearch.progresso.util.ColumnCounter;
 import java.io.Console;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.ServiceLoader;
+import java.util.function.Predicate;
 
 @SuppressForbidden("Legitimate use of System.out and properties.")
 public class ConsoleAware {
@@ -22,6 +26,36 @@ public class ConsoleAware {
 
   private static ConsoleWriter consoleWriter;
   private static int globalWidthHint = CONSOLE_WIDTH_DEFAULT;
+
+  /**
+   * Assume the terminal is updateable if system console is available and - on newer JDKs - the
+   * isTerminal method returns true.
+   */
+  private static final Predicate<Console> consoleIsTerminal;
+
+  static {
+    Predicate<Console> consoleCheck = null;
+    try {
+      // Only available on JDK22+.
+      Method isTerminal = Console.class.getMethod("isTerminal");
+      consoleCheck =
+          (console) -> {
+            try {
+              return (boolean) isTerminal.invoke(console);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+              return console != null;
+            }
+          };
+    } catch (NoSuchMethodException e) {
+      // ignore.
+    }
+
+    if (consoleCheck == null) {
+      consoleCheck = Objects::nonNull;
+    }
+
+    consoleIsTerminal = consoleCheck;
+  }
 
   public static ProgressView newConsoleProgressView() {
     return newConsoleProgressView(Collections.emptyList());
@@ -40,8 +74,7 @@ public class ConsoleAware {
     if (System.getProperty(CONSOLE_UPDATEABLE_PROPERTY) != null) {
       consoleUpdateable = Boolean.parseBoolean(System.getProperty(CONSOLE_UPDATEABLE_PROPERTY));
     } else {
-      // Assume the terminal is updateable if system console is available.
-      consoleUpdateable = System.console() != null;
+      consoleUpdateable = consoleIsTerminal.test(System.console());
     }
     return consoleUpdateable;
   }
