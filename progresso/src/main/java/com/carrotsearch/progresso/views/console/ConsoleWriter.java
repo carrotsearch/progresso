@@ -111,6 +111,5 @@ public class ConsoleWriter extends Writer {
     return lineWidth;
   }
 
-    public void println() {
-    }
+  public void println() {}
 }
