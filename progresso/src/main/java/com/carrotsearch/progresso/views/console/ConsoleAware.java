@@ -43,7 +43,7 @@ public class ConsoleAware {
       predicate =
           (console) -> {
             try {
-              return (boolean) isTerminal.invoke(console);
+              return console != null && (boolean) isTerminal.invoke(console);
             } catch (IllegalAccessException | InvocationTargetException e) {
               return false;
             }
