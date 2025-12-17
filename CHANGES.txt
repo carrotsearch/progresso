@@ -1,5 +1,5 @@
 
-[1.8.3]
+[1.8.4]
 
  GH-37: System.console() always returns non-null on Java 22+
 
