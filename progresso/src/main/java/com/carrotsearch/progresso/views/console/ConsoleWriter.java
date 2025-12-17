@@ -42,7 +42,7 @@ public class ConsoleWriter extends Writer {
 
   @Override
   public void close() throws IOException {
-    throw new IOException("Console writer shouldn't be closed.");
+    // Ignore. We never close the singleton writer.
   }
 
   public void updateLine(String content) throws IOException {
