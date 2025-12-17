@@ -1,4 +1,8 @@
 
+[1.8.5]
+
+ GH-38: Correct NPE regression in GH-37. Add gh workflow checks.
+
 [1.8.4]
 
  GH-37: System.console() always returns non-null on Java 22+
