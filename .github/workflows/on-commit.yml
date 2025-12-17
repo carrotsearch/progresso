@@ -20,3 +20,38 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - name: Upload built JAR
+      uses: actions/upload-artifact@v3
+      with:
+        name: progresso-jar
+        path: progresso/target/progresso-*.jar
+
+  test-console-aware:
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        java-version: [11, 17, 21, 24, 25]
+
+    steps:
+    - name: Download built JAR
+      uses: actions/download-artifact@v3
+      with:
+        name: progresso-jar
+        path: target/
+    - name: Set up JDK ${{ matrix.java-version }}
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ matrix.java-version }}
+        distribution: 'temurin'
+    - name: Test ConsoleAware invocation
+      run: |
+        OUTPUT=$(java -cp target/progresso-*.jar com.carrotsearch.progresso.views.console.ConsoleAware)
+        echo "Output: $OUTPUT"
+        if [[ $OUTPUT == Console* ]]; then
+          echo "✓ ConsoleAware test passed on JDK ${{ matrix.java-version }}"
+        else
+          echo "✗ ConsoleAware test failed: output does not start with 'Console'"
+          echo "Actual output: $OUTPUT"
+          exit 1
+        fi

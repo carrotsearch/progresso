@@ -5,6 +5,7 @@ import com.carrotsearch.progresso.Task;
 import com.carrotsearch.progresso.annotations.SuppressForbidden;
 import com.carrotsearch.progresso.util.ColumnCounter;
 import java.io.Console;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
@@ -12,6 +13,7 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.function.Predicate;
@@ -34,27 +36,27 @@ public class ConsoleAware {
   private static final Predicate<Console> consoleIsTerminal;
 
   static {
-    Predicate<Console> consoleCheck = null;
+    Predicate<Console> predicate = null;
     try {
       // Only available on JDK22+.
       Method isTerminal = Console.class.getMethod("isTerminal");
-      consoleCheck =
+      predicate =
           (console) -> {
             try {
               return (boolean) isTerminal.invoke(console);
             } catch (IllegalAccessException | InvocationTargetException e) {
-              return console != null;
+              return false;
             }
           };
     } catch (NoSuchMethodException e) {
       // ignore.
     }
 
-    if (consoleCheck == null) {
-      consoleCheck = Objects::nonNull;
+    if (predicate == null) {
+      predicate = Objects::nonNull;
     }
 
-    consoleIsTerminal = consoleCheck;
+    consoleIsTerminal = predicate;
   }
 
   public static ProgressView newConsoleProgressView() {
@@ -133,6 +135,18 @@ public class ConsoleAware {
   static void checkWidth(int widthHint) {
     if (widthHint < 1) {
       throw new IllegalArgumentException("Console width hint must be >= 1: " + widthHint);
+    }
+  }
+
+  /** Prints console information to command-line. */
+  public static void main(String[] args) throws IOException {
+    try (ConsoleWriter w = ConsoleAware.writer()) {
+      w.printLine(
+          String.format(
+              Locale.ROOT,
+              "Console %s, width: %s.",
+              ConsoleAware.isUpdateable() ? "is updateable" : "is not updateable",
+              ConsoleAware.consoleWidth()));
     }
   }
 }
