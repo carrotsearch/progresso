@@ -1,4 +1,8 @@
 
+[1.8.6]
+
+ GH-40: Add an explicit annotation processor pass to progresso-log4j.
+
 [1.8.5]
 
  GH-38: Correct NPE regression in GH-37. Add gh workflow checks.
