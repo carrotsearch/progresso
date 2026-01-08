@@ -624,32 +624,6 @@
     </profile>    
   </profiles>
 
-  <repositories>
-    <repository>
-      <id>sonatype-nexus-public</id>
-      <name>SonaType public snapshots and releases repository</name>
-      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-
-    <repository>
-      <id>sonatype-nexus-snapshots</id>
-      <name>Sonatype Nexus Snapshots</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
   <pluginRepositories>
     <pluginRepository>
       <id>sonatype-nexus-public</id>
