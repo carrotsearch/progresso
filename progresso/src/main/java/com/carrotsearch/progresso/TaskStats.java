@@ -46,8 +46,13 @@ public final class TaskStats {
       }
     }
 
-    if (!done || (start != Long.MAX_VALUE && start > end)) {
+    if (!done) {
       return TOTAL_TIME + " (not done yet).";
+    }
+
+    // No task has a tracker (all skipped or never started): nothing has elapsed.
+    if (start == Long.MAX_VALUE || start > end) {
+      return TOTAL_TIME + " " + Units.DURATION.format(0) + ".";
     }
 
     return TOTAL_TIME + " " + Units.DURATION.format((end - start)) + ".";
