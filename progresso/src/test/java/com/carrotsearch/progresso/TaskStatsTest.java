@@ -4,6 +4,7 @@ import com.carrotsearch.randomizedtesting.RandomizedContext;
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.assertj.core.api.Assertions;
@@ -27,6 +28,17 @@ public class TaskStatsTest extends RandomizedTest {
     }
 
     System.out.println(TaskStats.breakdown(tasks));
+  }
+
+  @Test
+  public void summaryAllTasksSkipped() {
+    GenericTask t1 = Tasks.newGenericTask("task_a");
+    GenericTask t2 = Tasks.newGenericTask("task_b");
+    t1.skip();
+    t2.skip();
+
+    Assertions.assertThat(TaskStats.summary(Set.of(t1, t2)))
+        .isEqualTo("Done. " + TaskStats.TOTAL_TIME + " 0ms.");
   }
 
   @Test
