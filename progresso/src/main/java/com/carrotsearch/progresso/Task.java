@@ -1,5 +1,6 @@
 package com.carrotsearch.progresso;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +31,7 @@ public abstract class Task<T extends Tracker> implements Tasks {
   private Status status = Status.NEW;
   private Instant lastStatusChange = Instant.now();
   private T tracker;
+  private Duration etaWindow;
 
   /** Helps in debugging where a given task was instantiated. */
   private final String allocationStack =
@@ -180,6 +182,30 @@ public abstract class Task<T extends Tracker> implements Tasks {
 
   public List<Attribute> attributes() {
     return attributes;
+  }
+
+  /**
+   * Sets the sampling window used by console views to estimate this task's throughput and
+   * completion time (ETA). Longer windows smooth out bursty progress; {@link Duration#ZERO}
+   * estimates over the whole task. Overrides the process-wide default (see the {@code
+   * progresso.eta.window.millis} system property). Must be set before the task starts.
+   *
+   * @param window The sampling window, or null to use the default.
+   */
+  public Task<T> etaWindow(Duration window) {
+    if (window != null && window.isNegative()) {
+      throw new IllegalArgumentException("ETA window must not be negative: " + window);
+    }
+    this.etaWindow = window;
+    return this;
+  }
+
+  /**
+   * @return The sampling window set with {@link #etaWindow(Duration)}, or null if this task uses
+   *     the default.
+   */
+  public Duration etaWindow() {
+    return etaWindow;
   }
 
   public String instantiationStack() {

@@ -10,6 +10,11 @@
  ("    done   2m 30s"), aligned with the ETA of running tasks; this was lost in
  1.8.0 (GH-20).
 
+ GH-34: The sampling window used to estimate throughput and ETA of running tasks can
+        be set with the progresso.eta.window.millis system property (default: 5000) or
+        per task with Task.etaWindow(Duration). Longer windows smooth out bursty
+        tasks; 0 estimates over the whole task.
+
 [1.8.7]
 
  GH-43: TaskStats.summary reported a huge negative total time when all tasks were skipped.
