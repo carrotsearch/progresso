@@ -59,29 +59,29 @@
     <version.assertj>3.27.7</version.assertj>
     <version.randomizedtesting>2.9.2</version.randomizedtesting>
     <version.junit>4.13.2</version.junit>
-    <version.forbiddenapis>2.6</version.forbiddenapis>    
+    <version.forbiddenapis>3.11</version.forbiddenapis>    
 
     <version.log4j>2.25.4</version.log4j>
-    <version.slf4j>2.0.17</version.slf4j>
+    <version.slf4j>2.0.20</version.slf4j>
 
-    <version.maven.api>3.2.5</version.maven.api>
-    <version.maven-assembly-plugin>3.3.0</version.maven-assembly-plugin>
-    <version.maven-clean-plugin>3.1.0</version.maven-clean-plugin>
-    <version.maven-compiler-plugin>3.13.0</version.maven-compiler-plugin>
-    <version.maven-dependency-plugin>3.1.2</version.maven-dependency-plugin>
-    <version.maven-deploy-plugin>3.1.4</version.maven-deploy-plugin>
-    <version.maven-install-plugin>3.0.0-M1</version.maven-install-plugin>
-    <version.maven-jar-plugin>3.2.0</version.maven-jar-plugin>
-    <version.maven-resources-plugin>3.2.0</version.maven-resources-plugin>
-    <version.maven-site-plugin>3.7.1</version.maven-site-plugin>
+    <version.maven.api>3.6.3</version.maven.api>
+    <version.maven-assembly-plugin>3.8.0</version.maven-assembly-plugin>
+    <version.maven-clean-plugin>3.5.0</version.maven-clean-plugin>
+    <version.maven-compiler-plugin>3.16.0</version.maven-compiler-plugin>
+    <version.maven-dependency-plugin>3.11.0</version.maven-dependency-plugin>
+    <version.maven-deploy-plugin>3.2.0</version.maven-deploy-plugin>
+    <version.maven-install-plugin>3.2.0</version.maven-install-plugin>
+    <version.maven-jar-plugin>3.5.1</version.maven-jar-plugin>
+    <version.maven-resources-plugin>3.5.0</version.maven-resources-plugin>
+    <version.maven-site-plugin>3.22.0</version.maven-site-plugin>
     <version.maven-eclipse-plugin>2.10</version.maven-eclipse-plugin>
-    <version.maven-antrun-plugin>1.8</version.maven-antrun-plugin>
-    <version.maven-enforcer-plugin>3.0.0-M3</version.maven-enforcer-plugin>
-    <version.maven-surefire-plugin>2.22.0</version.maven-surefire-plugin>
-    <version.maven-gpg-plugin>1.6</version.maven-gpg-plugin>
-    <version.maven-javadoc-plugin>3.2.0</version.maven-javadoc-plugin>
-    <version.maven-source-plugin>3.2.1</version.maven-source-plugin>
-    <version.spotless>2.27.2</version.spotless>
+    <version.maven-antrun-plugin>3.2.0</version.maven-antrun-plugin>
+    <version.maven-enforcer-plugin>3.6.3</version.maven-enforcer-plugin>
+    <version.maven-surefire-plugin>3.6.0</version.maven-surefire-plugin>
+    <version.maven-gpg-plugin>3.2.8</version.maven-gpg-plugin>
+    <version.maven-javadoc-plugin>3.12.0</version.maven-javadoc-plugin>
+    <version.maven-source-plugin>3.4.0</version.maven-source-plugin>
+    <version.spotless>2.46.1</version.spotless>
 
     <tests.jvms>auto</tests.jvms>
     <tests.shuffle>true</tests.shuffle>
@@ -396,7 +396,7 @@
               <configuration>
                 <targetVersion>1.8</targetVersion>
                 <failOnUnsupportedJava>false</failOnUnsupportedJava>
-                <failOnUnresolvableSignatures>false</failOnUnresolvableSignatures>
+                <ignoreSignaturesOfMissingClasses>true</ignoreSignaturesOfMissingClasses>
                 <failOnMissingClasses>true</failOnMissingClasses>
                 <excludes><!-- Override in subprojects. --></excludes>
                 <suppressAnnotations>
@@ -465,7 +465,7 @@
         <configuration>
           <java>
             <googleJavaFormat>
-              <version>1.15.0</version>
+              <version>1.24.0</version>
               <style>GOOGLE</style>
               <reflowLongStrings>true</reflowLongStrings>
             </googleJavaFormat>
@@ -558,7 +558,7 @@
           <plugin>
             <groupId>org.sonatype.central</groupId>
             <artifactId>central-publishing-maven-plugin</artifactId>
-            <version>0.9.0</version>
+            <version>0.11.0</version>
             <extensions>true</extensions>
             <configuration>
               <publishingServerId>central</publishingServerId>
