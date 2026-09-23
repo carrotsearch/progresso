@@ -15,6 +15,9 @@ public final class ViewHelpers {
    */
   private static final int TIME_COL_WIDTH = 9;
 
+  /** Width of the final status column ("done", "skipped"), right-aligned. */
+  private static final int STATUS_COL_WIDTH = 8;
+
   private static final long ETA_ESTIMATE_DELAY = TimeUnit.SECONDS.toMillis(2);
 
   public static void appendTaskName(LineFormatter lf, final Task<?> task) {
@@ -85,5 +88,16 @@ public final class ViewHelpers {
         LineFormatter.Trim.RIGHT,
         LineFormatter.PRIORITY_DEFAULT,
         value);
+  }
+
+  /** Appends the final status word of a finished task, right-aligned in a fixed-width column. */
+  public static void appendStatus(LineFormatter lf, String status) {
+    lf.cell(
+        STATUS_COL_WIDTH,
+        STATUS_COL_WIDTH,
+        LineFormatter.Alignment.RIGHT,
+        LineFormatter.Trim.RIGHT,
+        LineFormatter.PRIORITY_DEFAULT,
+        status);
   }
 }

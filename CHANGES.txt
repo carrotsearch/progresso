@@ -6,6 +6,10 @@
 
  Upgraded all Maven plugins and dependencies to their latest stable versions.
 
+ Finished tasks show their elapsed time again in console views, in the last column
+ ("    done   2m 30s"), aligned with the ETA of running tasks; this was lost in
+ 1.8.0 (GH-20).
+
 [1.8.7]
 
  GH-43: TaskStats.summary reported a huge negative total time when all tasks were skipped.
