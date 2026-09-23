@@ -1,4 +1,8 @@
 
+[1.8.7]
+
+ GH-43: TaskStats.summary reported a huge negative total time when all tasks were skipped.
+
 [1.8.6]
 
  GH-40: Add an explicit annotation processor pass to progresso-log4j.
