@@ -6,9 +6,9 @@
 
  GH-46: Upgraded all Maven plugins and dependencies to their latest stable versions.
 
- Finished tasks show their elapsed time again in console views, in the last column
- ("    done   2m 30s"), aligned with the ETA of running tasks; this was lost in
- 1.8.0 (GH-20).
+ PR-44: Finished tasks show their elapsed time again in console views, in the last
+        column ("    done   2m 30s"), aligned with the ETA of running tasks; this was
+        lost in 1.8.0 (GH-20).
 
  GH-34: The sampling window used to estimate throughput and ETA of running tasks can
         be set with the progresso.eta.window.millis system property (default: 5000) or
