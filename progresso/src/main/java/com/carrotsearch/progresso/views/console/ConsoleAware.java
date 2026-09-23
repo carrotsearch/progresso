@@ -27,12 +27,12 @@ public class ConsoleAware {
   public static final String CONSOLE_UPDATEABLE_PROPERTY = "console.updateable";
 
   /**
-   * System property with the length of the sampling window, in seconds, used to estimate throughput
-   * and completion time (ETA) of running tasks. The default is 5 seconds. Bursty tasks (for example
-   * those reading from a compressed stream) benefit from a longer window; the value 0 uses all
-   * samples collected since the task started.
+   * System property with the length of the sampling window, in milliseconds, used to estimate
+   * throughput and completion time (ETA) of running tasks. The default is 5000 (5 seconds). Bursty
+   * tasks (for example those reading from a compressed stream) benefit from a longer window; the
+   * value 0 uses all samples collected since the task started.
    */
-  public static final String ETA_WINDOW_PROPERTY = "progresso.eta.window.seconds";
+  public static final String ETA_WINDOW_PROPERTY = "progresso.eta.window.millis";
 
   private static ConsoleWriter consoleWriter;
   private static int globalWidthHint = CONSOLE_WIDTH_DEFAULT;

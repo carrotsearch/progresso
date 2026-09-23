@@ -73,12 +73,12 @@ class TrackerRateCalculator {
     if (value == null) {
       return TimeWindowSampler.DEFAULT_TIME_WINDOW_MILLIS;
     }
-    long seconds = Long.parseLong(value.trim());
-    if (seconds < 0) {
+    long millis = Long.parseLong(value.trim());
+    if (millis < 0) {
       throw new IllegalArgumentException(
           ConsoleAware.ETA_WINDOW_PROPERTY + " must not be negative: " + value);
     }
-    return TimeUnit.SECONDS.toMillis(seconds);
+    return millis;
   }
 
   public TrackerStats update(Tracker tracker) {

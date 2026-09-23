@@ -188,7 +188,7 @@ public abstract class Task<T extends Tracker> implements Tasks {
    * Sets the sampling window used by console views to estimate this task's throughput and
    * completion time (ETA). Longer windows smooth out bursty progress; {@link Duration#ZERO}
    * estimates over the whole task. Overrides the process-wide default (see the {@code
-   * progresso.eta.window.seconds} system property). Must be set before the task starts.
+   * progresso.eta.window.millis} system property). Must be set before the task starts.
    *
    * @param window The sampling window, or null to use the default.
    */
