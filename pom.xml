@@ -288,7 +288,7 @@
             </jvmArgs>
             <argLine>${tests.asserts.value}</argLine> 
 
-            <shuffleOnSlave>${tests.shuffle}</shuffleOnSlave>
+            <shuffleOnForkedJvm>${tests.shuffle}</shuffleOnForkedJvm>
             <sysouts>${tests.verbose}</sysouts>
             <seed>${tests.seed}</seed>
             <haltOnFailure>${tests.failfast}</haltOnFailure>
