@@ -6,6 +6,11 @@
 
  GH-46: Upgraded all Maven plugins and dependencies to their latest stable versions.
 
+ GH-34: The sampling window used to estimate throughput and ETA of running tasks can
+        be set with the progresso.eta.window.seconds system property (default: 5) or
+        per task with Task.etaWindow(Duration). Longer windows smooth out bursty
+        tasks; 0 estimates over the whole task.
+
 [1.8.7]
 
  GH-43: TaskStats.summary reported a huge negative total time when all tasks were skipped.
