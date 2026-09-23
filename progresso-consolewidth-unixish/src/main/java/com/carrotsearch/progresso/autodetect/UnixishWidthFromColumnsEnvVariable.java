@@ -1,5 +1,6 @@
 package com.carrotsearch.progresso.autodetect;
 
+import com.carrotsearch.progresso.annotations.SuppressForbidden;
 import com.carrotsearch.progresso.util.OsDetection;
 import com.carrotsearch.progresso.views.console.ConsoleWidthSupplier;
 import java.security.AccessController;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 /** Get the console width from the COLUMNS environment variable, if it's set. */
 public final class UnixishWidthFromColumnsEnvVariable implements ConsoleWidthSupplier {
   @Override
+  @SuppressForbidden("AccessController is deprecated since Java 17 but still functional.")
   public boolean isSupported() {
     return (OsDetection.IS_OS_UNIXISH || OsDetection.IS_CYGWIN)
         && AccessController.doPrivileged(
@@ -23,6 +25,7 @@ public final class UnixishWidthFromColumnsEnvVariable implements ConsoleWidthSup
                 });
   }
 
+  @SuppressForbidden("AccessController is deprecated since Java 17 but still functional.")
   public int getConsoleWidth() {
     return AccessController.doPrivileged(
         (PrivilegedAction<Integer>)

@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.carrotsearch.progresso</groupId>
     <artifactId>progresso-parent</artifactId> 
-    <version>1.8.8-SNAPSHOT</version>
+    <version>1.9.0-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
 
@@ -17,19 +17,37 @@
 
   <properties>
     <project.moduleId>com.carrotsearch.progresso.jvmversion</project.moduleId>
+    <!--
+      JvmVersion must load on any JVM, including ancient ones (Java 6), which no modern javac
+      can target. The class file is therefore not compiled but checked in as a resource
+      (src/main/resources/.../JvmVersion.class, class file version 50) and only packaged here.
+      See src/main/java/.../JvmVersion.java for the source and how to regenerate the binary.
+    -->
+    <maven.main.skip>true</maven.main.skip>
   </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.carrotsearch.randomizedtesting</groupId>
+      <artifactId>randomizedtesting-runner</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -42,6 +60,11 @@
             </manifest>
           </archive>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>com.carrotsearch.randomizedtesting</groupId>
+        <artifactId>junit4-maven-plugin</artifactId>
       </plugin>
 
       <plugin>

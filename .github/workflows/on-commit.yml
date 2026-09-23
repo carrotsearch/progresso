@@ -16,7 +16,7 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v5
       with:
-        java-version: '11'
+        java-version: '21'
         distribution: 'temurin'
         cache: maven
 
@@ -34,7 +34,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        java-version: [11, 17, 21, 24, 25]
+        java-version: [17, 21, 25]
 
     steps:
     - name: Download built JAR

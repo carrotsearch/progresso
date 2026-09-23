@@ -6,6 +6,15 @@ import java.io.PrintStream;
  * A simple utility that emits JVM specification version (normalized to single-digit major). This is
  * useful in script conditionals to determine whether an application can launch on a given JVM or
  * whether special options are necessary.
+ *
+ * <p><b>This class is not compiled by the build.</b> It has to run on any JVM, including ones far
+ * older than what current compilers can target, so the build packages a checked-in class file
+ * (version 50, Java 6) from {@code src/main/resources} instead. If this source ever changes,
+ * regenerate the binary with a JDK 11 or older compiler and copy it over the resource:
+ *
+ * <pre>
+ * javac -source 1.6 -target 1.6 -d out JvmVersion.java
+ * </pre>
  */
 public class JvmVersion {
   public static void main(String[] args) {
