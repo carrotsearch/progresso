@@ -1,10 +1,10 @@
 
 [1.9.0]
 
- Building progresso now requires JDK 21 or later; the produced artifacts require Java 17
- or later at runtime.
+ GH-45: Building progresso now requires JDK 21 or later; the produced artifacts require
+        Java 17 or later at runtime.
 
- Upgraded all Maven plugins and dependencies to their latest stable versions.
+ GH-46: Upgraded all Maven plugins and dependencies to their latest stable versions.
 
 [1.8.7]
 
