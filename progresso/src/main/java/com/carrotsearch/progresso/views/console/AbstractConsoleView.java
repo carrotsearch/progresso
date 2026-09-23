@@ -132,18 +132,19 @@ public abstract class AbstractConsoleView implements ProgressView {
       trackerStats = Optional.empty();
     }
 
-    // Add status.
+    // Finished tasks: status word (aligned with the progress column of running tasks) followed
+    // by the elapsed time in the last column, so times line up with the running tasks' ETA.
     switch (taskStatus) {
       case DONE:
-        lf.cell(" done");
+        ViewHelpers.appendStatus(lf, "done");
         break;
       case SKIPPED:
-        lf.cell(" skipped");
+        ViewHelpers.appendStatus(lf, "skipped");
         break;
       default:
-        ViewHelpers.appendTime(lf, task, trackerStats);
         break;
     }
+    ViewHelpers.appendTime(lf, task, trackerStats);
 
     return lf.format(lineWidth);
   }
