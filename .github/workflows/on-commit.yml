@@ -6,15 +6,30 @@ on:
   pull_request:
     branches: [ "master" ]
 
+# The build only reads the repository.
+permissions:
+  contents: read
+
+# A newer push to the same branch or pull request supersedes a run still in progress.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
+    name: Build with Maven
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
 
     - name: Set up JDK
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
       with:
         java-version: '21'
         distribution: 'temurin'
@@ -24,35 +39,43 @@ jobs:
       run: mvn -B package --file pom.xml
 
     - name: Upload built JAR
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: progresso-jar
         path: progresso/target/progresso-*.jar
 
   test-console-aware:
+    name: Test ConsoleAware (JDK ${{ matrix.java-version }})
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: build
+    permissions:
+      contents: read
     strategy:
       matrix:
         java-version: [17, 21, 25]
 
     steps:
     - name: Download built JAR
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
       with:
         name: progresso-jar
         path: target/
     - name: Set up JDK ${{ matrix.java-version }}
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
       with:
         java-version: ${{ matrix.java-version }}
         distribution: 'temurin'
     - name: Test ConsoleAware invocation
+      # Passed through the environment rather than expanded into the script, see
+      # https://docs.zizmor.sh/audits/#template-injection
+      env:
+        JAVA_VERSION: ${{ matrix.java-version }}
       run: |
         OUTPUT=$(java -cp target/progresso-*.jar com.carrotsearch.progresso.views.console.ConsoleAware)
         echo "Output: $OUTPUT"
         if [[ $OUTPUT == Console* ]]; then
-          echo "✓ ConsoleAware test passed on JDK ${{ matrix.java-version }}"
+          echo "✓ ConsoleAware test passed on JDK ${JAVA_VERSION}"
         else
           echo "✗ ConsoleAware test failed: output does not start with 'Console'"
           echo "Actual output: $OUTPUT"
