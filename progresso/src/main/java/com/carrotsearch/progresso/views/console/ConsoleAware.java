@@ -249,9 +249,6 @@ public class ConsoleAware {
 
   /**
    * @return Returns the supported {@link ConsoleWidthSupplier} with the highest priority, if any.
-   *     Suppliers are sorted from the highest priority to the lowest (ties keep the service loading
-   *     order) before they are probed, so the support check of a lower-priority supplier, which may
-   *     be expensive, does not run when a higher-priority one is supported.
    */
   public static Optional<ConsoleWidthSupplier> consoleWidthSupplier() {
     return ServiceLoader.load(ConsoleWidthSupplier.class).stream()
