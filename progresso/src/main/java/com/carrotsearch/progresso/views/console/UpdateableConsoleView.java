@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * A progress view which assumes the terminal supports "backtracking" (carriage return) properly.
  */
 public class UpdateableConsoleView extends AbstractConsoleView {
-  private static final long DEFAULT_UPDATE_INTERVAL = TimeUnit.SECONDS.toMillis(1);
+  private static final long DEFAULT_UPDATE_INTERVAL = TimeUnit.MILLISECONDS.toMillis(500);
 
   private long nextUpdate = 0L;
   private long modHash = 0L;

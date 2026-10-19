@@ -251,19 +251,13 @@ public class ConsoleAware {
 
   /**
    * @return Returns the supported {@link ConsoleWidthSupplier} with the highest priority, if any.
+   *     Suppliers are sorted from the highest priority to the lowest (ties keep the service loading
+   *     order) before they are probed, so the support check of a lower-priority supplier, which may
+   *     be expensive, does not run when a higher-priority one is supported.
    */
   public static Optional<ConsoleWidthSupplier> consoleWidthSupplier() {
     List<ConsoleWidthSupplier> suppliers = new ArrayList<>();
     ServiceLoader.load(ConsoleWidthSupplier.class).forEach(suppliers::add);
-    return selectSupplier(suppliers);
-  }
-
-  /**
-   * Sorts the suppliers from the highest priority to the lowest (ties keep their order) and returns
-   * the first supported one. Sorting first means lower-priority suppliers, whose support check may
-   * be expensive, are not probed when a higher-priority one is supported.
-   */
-  static Optional<ConsoleWidthSupplier> selectSupplier(List<ConsoleWidthSupplier> suppliers) {
     suppliers.sort(Comparator.comparingInt(ConsoleWidthSupplier::priority).reversed());
     return suppliers.stream().filter(ConsoleWidthSupplier::isSupported).findFirst();
   }

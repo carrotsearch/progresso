@@ -1,9 +1,6 @@
 package com.carrotsearch.progresso.views.console;
 
 import com.carrotsearch.randomizedtesting.RandomizedTest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.ServiceLoader;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
@@ -14,63 +11,48 @@ public class ConsoleWidthSupplierTest extends RandomizedTest {
   private String savedProperty;
 
   @Before
-  public void saveProperty() {
+  public void reset() {
     savedProperty = System.getProperty(ConsoleAware.CONSOLE_WIDTH_PROPERTY);
     System.clearProperty(ConsoleAware.CONSOLE_WIDTH_PROPERTY);
+    FakeWidthSuppliers.widths.clear();
   }
 
   @After
-  public void restoreProperty() {
+  public void restore() {
     if (savedProperty == null) {
       System.clearProperty(ConsoleAware.CONSOLE_WIDTH_PROPERTY);
     } else {
       System.setProperty(ConsoleAware.CONSOLE_WIDTH_PROPERTY, savedProperty);
     }
-  }
-
-  private record Fixed(String name, int priority, boolean supported, int width)
-      implements ConsoleWidthSupplier {
-    @Override
-    public boolean isSupported() {
-      return supported;
-    }
-
-    @Override
-    public int getConsoleWidth() {
-      return width;
-    }
+    FakeWidthSuppliers.widths.clear();
   }
 
   @Test
   public void highestSupportedPriorityWins() {
-    List<ConsoleWidthSupplier> suppliers =
-        new ArrayList<>(
-            List.of(
-                new Fixed("low", 0, true, 10),
-                new Fixed("high-unsupported", 100, false, 20),
-                new Fixed("mid", 50, true, 30)));
-    Optional<ConsoleWidthSupplier> selected = ConsoleAware.selectSupplier(suppliers);
-    Assertions.assertThat(selected).map(ConsoleWidthSupplier::getConsoleWidth).hasValue(30);
+    FakeWidthSuppliers.widths.put("Low", 10);
+    FakeWidthSuppliers.widths.put("Mid", 30);
+    // High stays unsupported.
+    Assertions.assertThat(ConsoleAware.consoleWidthSupplier())
+        .containsInstanceOf(FakeWidthSuppliers.Mid.class);
+    Assertions.assertThat(ConsoleAware.consoleWidth()).isEqualTo(30);
+
+    FakeWidthSuppliers.widths.put("High", 20);
+    Assertions.assertThat(ConsoleAware.consoleWidth()).isEqualTo(20);
   }
 
   @Test
   public void tiesKeepLoadingOrder() {
-    List<ConsoleWidthSupplier> suppliers =
-        new ArrayList<>(
-            List.of(
-                new Fixed("first", 5, true, 1),
-                new Fixed("second", 5, true, 2),
-                new Fixed("third", 5, true, 3)));
-    Assertions.assertThat(ConsoleAware.selectSupplier(suppliers))
-        .map(ConsoleWidthSupplier::getConsoleWidth)
-        .hasValue(1);
+    FakeWidthSuppliers.widths.put("MidToo", 2);
+    FakeWidthSuppliers.widths.put("Mid", 1);
+    Assertions.assertThat(ConsoleAware.consoleWidthSupplier())
+        .containsInstanceOf(FakeWidthSuppliers.Mid.class);
   }
 
   @Test
-  public void noneSupported() {
-    List<ConsoleWidthSupplier> suppliers =
-        new ArrayList<>(List.of(new Fixed("a", 1, false, 1), new Fixed("b", 2, false, 2)));
-    Assertions.assertThat(ConsoleAware.selectSupplier(suppliers)).isEmpty();
+  public void defaultHintWhenNothingSupported() {
+    Assertions.assertThat(ConsoleAware.consoleWidthSupplier()).isEmpty();
+    Assertions.assertThat(ConsoleAware.consoleWidth())
+        .isEqualTo(ConsoleAware.CONSOLE_WIDTH_DEFAULT);
   }
 
   @Test
@@ -101,15 +83,11 @@ public class ConsoleWidthSupplierTest extends RandomizedTest {
 
   @Test
   public void systemPropertyOverridesEverything() {
-    ConsoleWidthFromSystemProperty supplier = new ConsoleWidthFromSystemProperty();
-    Assertions.assertThat(supplier.isSupported()).isFalse();
-
+    FakeWidthSuppliers.widths.put("High", 20);
     System.setProperty(ConsoleAware.CONSOLE_WIDTH_PROPERTY, " 132 ");
-    Assertions.assertThat(supplier.isSupported()).isTrue();
-    Assertions.assertThat(supplier.getConsoleWidth()).isEqualTo(132);
-    Assertions.assertThat(ConsoleAware.consoleWidth()).isEqualTo(132);
     Assertions.assertThat(ConsoleAware.consoleWidthSupplier())
         .containsInstanceOf(ConsoleWidthFromSystemProperty.class);
+    Assertions.assertThat(ConsoleAware.consoleWidth()).isEqualTo(132);
   }
 
   @Test
@@ -120,13 +98,5 @@ public class ConsoleWidthSupplierTest extends RandomizedTest {
           .as("console.width=%s", bad)
           .isInstanceOf(IllegalArgumentException.class);
     }
-  }
-
-  @Test
-  public void defaultHintWhenNothingSupported() {
-    // In the core module's tests, only the property supplier is on the classpath.
-    Assertions.assertThat(ConsoleAware.consoleWidthSupplier()).isEmpty();
-    Assertions.assertThat(ConsoleAware.consoleWidth())
-        .isEqualTo(ConsoleAware.CONSOLE_WIDTH_DEFAULT);
   }
 }
