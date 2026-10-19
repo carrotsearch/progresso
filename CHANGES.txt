@@ -1,7 +1,7 @@
 
 [1.9.1]
 
- Progress bars can be drawn with fractional Unicode glyphs. Four styles are available
+ PR-49: Progress bars can be drawn with fractional Unicode glyphs. Four styles are available
         (ProgressBarStyle): ascii (the previous "[====>   ]" bar), shades (block shades,
         encodable in OEM code pages), blocks (one-eighth blocks, the smoothest) and line
         (box drawing). The style is picked automatically from the terminal, operating
@@ -9,7 +9,7 @@
         with the console.progressbar system property or the PROGRESSO_PROGRESSBAR
         environment variable. ConsoleAware.main reports the detected charset and style.
 
- Progress output goes through System.out unless the console is an interactive
+ PR-49: Progress output goes through System.out unless the console is an interactive
         terminal. On JDK 22 and 23, System.console() is non-null even for redirected
         output and its writer bypasses System.setOut, so IDE test runners and other
         tools capturing standard output never saw the progress lines.
