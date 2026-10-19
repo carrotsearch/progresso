@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.Console;
 import java.io.PrintStream;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import org.assertj.core.api.Assertions;
 import org.junit.Assume;
@@ -27,15 +28,19 @@ public class ConsoleAwareWriterTest extends RandomizedTest {
     PrintStream original = System.out;
     ByteArrayOutputStream captured = new ByteArrayOutputStream();
     System.setOut(new PrintStream(captured, true, StandardCharsets.UTF_8));
+    String text = "captured \u2588\u258d";
     try {
       Writer writer = ConsoleAware.outputWriter();
-      writer.write("captured \u2588\u258d");
+      writer.write(text);
       writer.flush();
     } finally {
       System.setOut(original);
     }
 
-    Assertions.assertThat(captured.toString(ConsoleAware.outputCharset()))
-        .isEqualTo("captured \u2588\u258d");
+    // The writer encodes in the output charset, which may not cover the block glyphs (the ANSI
+    // code page on Windows): expect whatever that charset makes of them.
+    Charset charset = ConsoleAware.outputCharset();
+    Assertions.assertThat(captured.toString(charset))
+        .isEqualTo(new String(text.getBytes(charset), charset));
   }
 }
