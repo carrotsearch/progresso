@@ -5,6 +5,12 @@
         (except progresso-jvmversion, whose only class predates module descriptors) are
         now JPMS modules.
 
+ The console width modules log through java.util.logging and no longer depend on slf4j.
+
+ Braille is the preferred progress bar style wherever the output charset can encode it;
+        ConsoleAware.supportedProgressBarStyles() lists the usable styles and Demo skips
+        the others.
+
  PR-51: New module progresso-consolewidth-windows detects the console width on Windows by
         reading the console screen buffer through kernel32. It requires native access:
         --enable-native-access=com.carrotsearch.progresso.windows

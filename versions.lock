@@ -7,17 +7,15 @@
       "com.google.errorprone:error_prone_annotations:2.38.0" : "020a82af,refs=2",
       "junit:junit:4.13.2" : "b0ab51ba,refs=10",
       "net.bytebuddy:byte-buddy:1.18.3" : "b0ab51ba,refs=10",
-      "org.apache.logging.log4j:log4j-api:2.25.4" : "53fce36a,refs=6",
-      "org.apache.logging.log4j:log4j-core:2.25.4" : "53fce36a,refs=6",
-      "org.apache.logging.log4j:log4j-slf4j2-impl:2.25.4" : "9c72c2f2,refs=1",
+      "org.apache.logging.log4j:log4j-api:2.25.4" : "51c677bb,refs=5",
+      "org.apache.logging.log4j:log4j-core:2.25.4" : "51c677bb,refs=5",
       "org.assertj:assertj-core:3.27.7" : "b0ab51ba,refs=10",
       "org.hamcrest:hamcrest-core:1.3" : "b0ab51ba,refs=10",
       "org.jspecify:jspecify:1.0.0" : "020a82af,refs=2",
       "org.osgi:org.osgi.annotation.bundle:2.0.0" : "020a82af,refs=2",
       "org.osgi:org.osgi.annotation.versioning:1.1.2" : "020a82af,refs=2",
       "org.osgi:org.osgi.resource:1.0.0" : "020a82af,refs=2",
-      "org.osgi:org.osgi.service.serviceloader:1.0.0" : "020a82af,refs=2",
-      "org.slf4j:slf4j-api:2.0.20" : "e5a79555,refs=8"
+      "org.osgi:org.osgi.service.serviceloader:1.0.0" : "020a82af,refs=2"
     }
   },
   "because" : {
@@ -31,11 +29,7 @@
         "projectPath" : ":progresso-log4j"
       }
     ],
-    "53fce36a" : [
-      {
-        "configuration" : "testRuntimeClasspath",
-        "projectPath" : ":progresso-consolewidth-windows"
-      },
+    "51c677bb" : [
       {
         "configuration" : "annotationProcessor",
         "projectPath" : ":progresso-log4j"
@@ -55,12 +49,6 @@
       {
         "configuration" : "testRuntimeClasspath",
         "projectPath" : ":progresso-log4j"
-      }
-    ],
-    "9c72c2f2" : [
-      {
-        "configuration" : "testRuntimeClasspath",
-        "projectPath" : ":progresso-consolewidth-windows"
       }
     ],
     "b0ab51ba" : [
@@ -103,40 +91,6 @@
       {
         "configuration" : "testRuntimeClasspath",
         "projectPath" : ":progresso-log4j"
-      }
-    ],
-    "e5a79555" : [
-      {
-        "configuration" : "compileClasspath",
-        "projectPath" : ":progresso-consolewidth-unixish"
-      },
-      {
-        "configuration" : "runtimeClasspath",
-        "projectPath" : ":progresso-consolewidth-unixish"
-      },
-      {
-        "configuration" : "testCompileClasspath",
-        "projectPath" : ":progresso-consolewidth-unixish"
-      },
-      {
-        "configuration" : "testRuntimeClasspath",
-        "projectPath" : ":progresso-consolewidth-unixish"
-      },
-      {
-        "configuration" : "compileClasspath",
-        "projectPath" : ":progresso-consolewidth-windows"
-      },
-      {
-        "configuration" : "runtimeClasspath",
-        "projectPath" : ":progresso-consolewidth-windows"
-      },
-      {
-        "configuration" : "testCompileClasspath",
-        "projectPath" : ":progresso-consolewidth-windows"
-      },
-      {
-        "configuration" : "testRuntimeClasspath",
-        "projectPath" : ":progresso-consolewidth-windows"
       }
     ]
   }

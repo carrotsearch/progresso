@@ -2,8 +2,8 @@ package com.carrotsearch.progresso.autodetect.windows;
 
 import com.carrotsearch.progresso.util.OsDetection;
 import com.carrotsearch.progresso.views.console.ConsoleWidthSupplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Console width on Windows, read from the console's screen buffer through {@link
@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * --enable-native-access=ALL-UNNAMED}), in which case the reason is logged at debug level.
  */
 public final class WindowsConsoleWidth implements ConsoleWidthSupplier {
-  private static final Logger LOG = LoggerFactory.getLogger(WindowsConsoleWidth.class);
+  private static final Logger LOG = Logger.getLogger(WindowsConsoleWidth.class.getName());
 
   /** Width detected by {@link #isSupported()}, reused by {@link #getConsoleWidth()}; 0 if none. */
   private int width;
@@ -27,7 +27,7 @@ public final class WindowsConsoleWidth implements ConsoleWidthSupplier {
     }
 
     if (!WindowsConsoleWidth.class.getModule().isNativeAccessEnabled()) {
-      LOG.debug(
+      LOG.fine(
           "Native access is not enabled for this JVM, console width not detected"
               + " (start with --enable-native-access=ALL-UNNAMED).");
       return false;
@@ -58,20 +58,20 @@ public final class WindowsConsoleWidth implements ConsoleWidthSupplier {
     try {
       WindowsConsoleSize.Info info = WindowsConsoleSize.detect();
       if (info == null) {
-        LOG.debug("No console attached, console width not detected.");
+        LOG.fine("No console attached, console width not detected.");
         return 0;
       }
 
-      LOG.debug(
-          "Auto-detected console size: buffer={}x{}, window={}x{}.",
-          info.bufferWidth(),
-          info.bufferHeight(),
-          info.windowWidth(),
-          info.windowHeight());
+      LOG.log(
+          Level.FINE,
+          "Auto-detected console size: buffer={0}x{1}, window={2}x{3}.",
+          new Object[] {
+            info.bufferWidth(), info.bufferHeight(), info.windowWidth(), info.windowHeight()
+          });
       return info.bufferWidth();
     } catch (Throwable t) {
       // Never fail because of this, but report the problem.
-      LOG.warn("Could not acquire console size: {}", t.toString());
+      LOG.log(Level.WARNING, "Could not acquire console size: {0}", t.toString());
       return 0;
     }
   }

@@ -2,7 +2,8 @@ package com.carrotsearch.progresso.autodetect;
 
 import com.carrotsearch.progresso.util.OsDetection;
 import com.carrotsearch.progresso.views.console.ConsoleWidthSupplier;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** Get the console width from the COLUMNS environment variable, if it's set. */
 public final class UnixishWidthFromColumnsEnvVariable implements ConsoleWidthSupplier {
@@ -28,8 +29,8 @@ public final class UnixishWidthFromColumnsEnvVariable implements ConsoleWidthSup
   @Override
   public int getConsoleWidth() {
     int columns = Integer.parseInt(System.getenv("COLUMNS"));
-    LoggerFactory.getLogger(getClass())
-        .debug("Console width from COLUMNS environment variable: {}", columns);
+    Logger.getLogger(getClass().getName())
+        .log(Level.FINE, "Console width from COLUMNS environment variable: {0}", columns);
     return columns;
   }
 }

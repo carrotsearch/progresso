@@ -22,3 +22,34 @@ tasks.named('jar') {
     attributes("Main-Class": demoClass)
   }
 }
+
+// Assembles build/demo with this module and the console width suppliers, ready to run the Demo
+// entry point with every supplier on the module path:
+//   ./gradlew :progresso:demo
+configurations {
+  demo
+}
+
+dependencies {
+  demo project(':progresso-consolewidth-unixish')
+  demo project(':progresso-consolewidth-windows')
+}
+
+tasks.register('demo', Sync) {
+  description = 'Assembles build/demo (progresso and the console width modules) and prints how to run the demo.'
+  group = 'verification'
+
+  from configurations.demo
+  into layout.buildDirectory.dir('demo')
+
+  def demoDir = rootProject.relativePath(layout.buildDirectory.dir('demo').get())
+  doLast {
+    println """
+Demo assembled in ${demoDir}. Run it with every console width supplier on the module path:
+
+  java --enable-native-access=com.carrotsearch.progresso.windows -p ${demoDir} -m com.carrotsearch.progresso
+
+Force a style with -Dconsole.progressbar=ascii|shades|blocks|line|braille.
+"""
+  }
+}

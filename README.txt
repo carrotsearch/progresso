@@ -20,3 +20,6 @@ Building requires JDK 25:
 The core jar's entry point draws a progress bar in every available style:
 
   java -jar progresso/build/libs/progresso-*.jar
+
+./gradlew :progresso:demo assembles progresso/build/demo with the console width modules
+and prints the command line to run the demo from the module path.

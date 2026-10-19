@@ -1,7 +1,7 @@
 /** Console width from the COLUMNS environment variable (Unix-like systems and Cygwin). */
 module com.carrotsearch.progresso.consolewidth_unixish {
   requires com.carrotsearch.progresso;
-  requires org.slf4j;
+  requires java.logging;
 
   exports com.carrotsearch.progresso.autodetect;
 

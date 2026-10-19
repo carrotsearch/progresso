@@ -4,7 +4,7 @@
  */
 module com.carrotsearch.progresso.windows {
   requires com.carrotsearch.progresso;
-  requires org.slf4j;
+  requires java.logging;
 
   exports com.carrotsearch.progresso.autodetect.windows;
 

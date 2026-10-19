@@ -42,9 +42,9 @@ public class ProgressBarStyleDetectionTest extends RandomizedTest {
 
     // "auto" and blanks fall through to detection.
     Assertions.assertThat(detect("auto", env(), TERMINAL, UNIX, utf8()))
-        .isEqualTo(ProgressBarStyle.BLOCKS);
+        .isEqualTo(ProgressBarStyle.BRAILLE);
     Assertions.assertThat(detect(" ", env("PROGRESSO_PROGRESSBAR", "AUTO"), TERMINAL, UNIX, utf8()))
-        .isEqualTo(ProgressBarStyle.BLOCKS);
+        .isEqualTo(ProgressBarStyle.BRAILLE);
 
     // Braille is never auto-detected, only requested.
     Assertions.assertThat(detect("braille", env(), TERMINAL, UNIX, utf8()))
@@ -65,7 +65,7 @@ public class ProgressBarStyleDetectionTest extends RandomizedTest {
   @Test
   public void unix() {
     Assertions.assertThat(detect(null, env("TERM", "xterm-256color"), TERMINAL, UNIX, utf8()))
-        .isEqualTo(ProgressBarStyle.BLOCKS);
+        .isEqualTo(ProgressBarStyle.BRAILLE);
     // Non-unicode locale: nothing fancy is encodable.
     Assertions.assertThat(detect(null, env(), TERMINAL, UNIX, StandardCharsets.ISO_8859_1))
         .isEqualTo(ProgressBarStyle.ASCII);
@@ -86,7 +86,7 @@ public class ProgressBarStyleDetectionTest extends RandomizedTest {
     Assertions.assertThat(
             detect(
                 null, env("LC_ALL", "en_US.UTF-8", "LANG", "ja_JP.UTF-8"), TERMINAL, UNIX, utf8()))
-        .isEqualTo(ProgressBarStyle.BLOCKS);
+        .isEqualTo(ProgressBarStyle.BRAILLE);
     Assertions.assertThat(
             detect(
                 null,
@@ -104,7 +104,7 @@ public class ProgressBarStyleDetectionTest extends RandomizedTest {
     for (String lang : new String[] {"C", "C.UTF-8", "POSIX", "en_US.UTF-8", "pl_PL.UTF-8", ""}) {
       Assertions.assertThat(detect(null, env("LANG", lang), TERMINAL, UNIX, utf8()))
           .as("LANG=%s", lang)
-          .isEqualTo(ProgressBarStyle.BLOCKS);
+          .isEqualTo(ProgressBarStyle.BRAILLE);
     }
     Assertions.assertThat(
             detect(null, env("TERM", "dumb", "LANG", "ja_JP.UTF-8"), TERMINAL, UNIX, utf8()))
@@ -115,11 +115,11 @@ public class ProgressBarStyleDetectionTest extends RandomizedTest {
   public void windows() {
     // Known unicode-capable hosts.
     Assertions.assertThat(detect(null, env("WT_SESSION", "x"), TERMINAL, WINDOWS, utf8()))
-        .isEqualTo(ProgressBarStyle.BLOCKS);
+        .isEqualTo(ProgressBarStyle.BRAILLE);
     Assertions.assertThat(detect(null, env("ConEmuANSI", "ON"), TERMINAL, WINDOWS, utf8()))
-        .isEqualTo(ProgressBarStyle.BLOCKS);
+        .isEqualTo(ProgressBarStyle.BRAILLE);
     Assertions.assertThat(detect(null, env("TERM", "xterm"), TERMINAL, WINDOWS, utf8()))
-        .isEqualTo(ProgressBarStyle.BLOCKS);
+        .isEqualTo(ProgressBarStyle.BRAILLE);
 
     // Legacy console host: at most shades, even when the code page is UTF-8.
     Assertions.assertThat(detect(null, env(), TERMINAL, WINDOWS, utf8()))
@@ -136,6 +136,31 @@ public class ProgressBarStyleDetectionTest extends RandomizedTest {
     Assume.assumeTrue(Charset.isSupported("IBM437"));
     Assertions.assertThat(detect(null, env(), TERMINAL, WINDOWS, Charset.forName("IBM437")))
         .isEqualTo(ProgressBarStyle.SHADES);
+  }
+
+  @Test
+  public void supportedStyles() {
+    Assertions.assertThat(
+            ConsoleAware.supportedProgressBarStyles(env("TERM", "xterm"), TERMINAL, UNIX, utf8()))
+        .containsExactly(
+            ProgressBarStyle.BRAILLE,
+            ProgressBarStyle.BLOCKS,
+            ProgressBarStyle.SHADES,
+            ProgressBarStyle.LINE,
+            ProgressBarStyle.ASCII);
+    Assertions.assertThat(
+            ConsoleAware.supportedProgressBarStyles(
+                env(), TERMINAL, UNIX, StandardCharsets.ISO_8859_1))
+        .containsExactly(ProgressBarStyle.ASCII);
+    Assertions.assertThat(
+            ConsoleAware.supportedProgressBarStyles(env(), NOT_TERMINAL, UNIX, utf8()))
+        .containsExactly(ProgressBarStyle.ASCII);
+    Assertions.assertThat(
+            ConsoleAware.supportedProgressBarStyles(
+                env("LANG", "ja_JP.UTF-8"), TERMINAL, UNIX, utf8()))
+        .containsExactly(ProgressBarStyle.BRAILLE, ProgressBarStyle.ASCII);
+    Assertions.assertThat(ConsoleAware.supportedProgressBarStyles(env(), TERMINAL, WINDOWS, utf8()))
+        .containsExactly(ProgressBarStyle.SHADES, ProgressBarStyle.ASCII);
   }
 
   @Test

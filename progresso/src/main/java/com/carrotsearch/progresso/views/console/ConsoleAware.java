@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -50,17 +51,26 @@ public class ConsoleAware {
 
   private static final String PROGRESS_BAR_AUTO = "auto";
 
-  /** Styles tried in auto-detection, from the most to the least demanding. */
-  private static final ProgressBarStyle[] PROGRESS_BAR_PREFERENCE = {
-    ProgressBarStyle.BLOCKS, ProgressBarStyle.SHADES, ProgressBarStyle.ASCII
+  /** Candidate styles, from the most to the least preferred; ASCII is always last. */
+  private static final ProgressBarStyle[] CANDIDATES = {
+    ProgressBarStyle.BRAILLE,
+    ProgressBarStyle.BLOCKS,
+    ProgressBarStyle.SHADES,
+    ProgressBarStyle.LINE,
+    ProgressBarStyle.ASCII
   };
 
   /**
-   * Styles tried in CJK locales, where terminals commonly render ambiguous-width glyphs (block
+   * Candidates in CJK locales, where terminals commonly render ambiguous-width glyphs (block
    * elements, box drawing) two columns wide; only neutral-width styles are safe there.
    */
-  private static final ProgressBarStyle[] PROGRESS_BAR_PREFERENCE_CJK = {
+  private static final ProgressBarStyle[] CANDIDATES_CJK = {
     ProgressBarStyle.BRAILLE, ProgressBarStyle.ASCII
+  };
+
+  /** Candidates in the legacy Windows console host: shades exist in the OEM code pages. */
+  private static final ProgressBarStyle[] CANDIDATES_WINDOWS_LEGACY = {
+    ProgressBarStyle.SHADES, ProgressBarStyle.ASCII
   };
 
   private static ConsoleWriter consoleWriter;
@@ -103,17 +113,21 @@ public class ConsoleAware {
    * <ul>
    *   <li>If the output is not a terminal (see {@link #isUpdateable()}) or {@code TERM} is {@code
    *       dumb}, {@link ProgressBarStyle#ASCII}.
-   *   <li>In Chinese, Japanese and Korean locales ({@code LC_ALL}, {@code LC_CTYPE} or {@code
-   *       LANG}), terminals commonly render East Asian "ambiguous width" characters two columns
-   *       wide, which misaligns block elements and box drawing glyphs. Only {@link
-   *       ProgressBarStyle#BRAILLE}, whose glyphs are neutral-width, or {@link
-   *       ProgressBarStyle#ASCII} are used there.
-   *   <li>On Windows, the one-eighth blocks are used only in hosts known to render them (Windows
-   *       Terminal, ConEmu, mintty/Cygwin/MSYS, detected via the {@code WT_SESSION}, {@code
-   *       ConEmuANSI}, {@code TERM} or {@code TERM_PROGRAM} variables). The legacy console host is
-   *       limited to {@link ProgressBarStyle#SHADES}, whose glyphs exist in OEM code pages.
-   *   <li>The most detailed style whose glyphs the output charset can encode is used; see {@link
-   *       #outputCharset()}.
+   *   <li>Otherwise the candidates are, in order of preference, {@link ProgressBarStyle#BRAILLE},
+   *       {@link ProgressBarStyle#BLOCKS}, {@link ProgressBarStyle#SHADES}, {@link
+   *       ProgressBarStyle#LINE} and {@link ProgressBarStyle#ASCII}, except:
+   *       <ul>
+   *         <li>in Chinese, Japanese and Korean locales ({@code LC_ALL}, {@code LC_CTYPE} or {@code
+   *             LANG}), terminals commonly render East Asian "ambiguous width" characters two
+   *             columns wide, which misaligns block elements and box drawing glyphs: only the
+   *             neutral-width {@link ProgressBarStyle#BRAILLE} or {@link ProgressBarStyle#ASCII};
+   *         <li>in the legacy Windows console host (no {@code WT_SESSION}, {@code ConEmuANSI},
+   *             {@code TERM} or {@code TERM_PROGRAM} variable), only {@link
+   *             ProgressBarStyle#SHADES}, whose glyphs exist in OEM code pages, or {@link
+   *             ProgressBarStyle#ASCII}.
+   *       </ul>
+   *   <li>The first candidate whose glyphs the output charset can encode is used; see {@link
+   *       #outputCharset()} and {@link #supportedProgressBarStyles()}.
    * </ul>
    *
    * @throws IllegalArgumentException if the explicitly requested style is unknown.
@@ -141,15 +155,29 @@ public class ConsoleAware {
       }
     }
 
+    return supportedProgressBarStyles(env, isTerminal, isWindows, charset).get(0);
+  }
+
+  /**
+   * @return Returns the styles usable in the current environment, the most preferred first. The
+   *     list always ends with {@link ProgressBarStyle#ASCII}; see {@link #progressBarStyle()} for
+   *     the heuristics.
+   */
+  public static List<ProgressBarStyle> supportedProgressBarStyles() {
+    return supportedProgressBarStyles(
+        System.getenv(), isUpdateable(), OsDetection.IS_OS_WINDOWS, outputCharset());
+  }
+
+  static List<ProgressBarStyle> supportedProgressBarStyles(
+      Map<String, String> env, boolean isTerminal, boolean isWindows, Charset charset) {
     String term = env.get("TERM");
     if (!isTerminal || "dumb".equals(term)) {
-      return ProgressBarStyle.ASCII;
+      return List.of(ProgressBarStyle.ASCII);
     }
 
-    ProgressBarStyle[] preference = PROGRESS_BAR_PREFERENCE;
-    int first = 0;
+    ProgressBarStyle[] candidates = CANDIDATES;
     if (isCjkLocale(env)) {
-      preference = PROGRESS_BAR_PREFERENCE_CJK;
+      candidates = CANDIDATES_CJK;
     } else if (isWindows) {
       boolean knownUnicodeHost =
           env.containsKey("WT_SESSION")
@@ -157,16 +185,13 @@ public class ConsoleAware {
               || env.containsKey("TERM_PROGRAM")
               || term != null;
       if (!knownUnicodeHost) {
-        first = Arrays.asList(PROGRESS_BAR_PREFERENCE).indexOf(ProgressBarStyle.SHADES);
+        candidates = CANDIDATES_WINDOWS_LEGACY;
       }
     }
 
-    for (int i = first; i < preference.length; i++) {
-      if (preference[i].isEncodable(charset)) {
-        return preference[i];
-      }
-    }
-    return ProgressBarStyle.ASCII;
+    List<ProgressBarStyle> supported =
+        Arrays.stream(candidates).filter(style -> style.isEncodable(charset)).toList();
+    return supported.isEmpty() ? List.of(ProgressBarStyle.ASCII) : supported;
   }
 
   /**
