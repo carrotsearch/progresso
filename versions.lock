@@ -3,17 +3,17 @@
   "configurationGroups" : {
     "all" : {
       "biz.aQute.bnd:biz.aQute.bnd.annotation:7.1.0" : "020a82af,refs=2",
-      "com.carrotsearch.randomizedtesting:randomizedtesting-runner:2.9.2" : "05673a3f,refs=12",
+      "com.carrotsearch.randomizedtesting:randomizedtesting-runner:2.9.2" : "20a3365f,refs=12",
       "com.google.errorprone:error_prone_annotations:2.38.0" : "020a82af,refs=2",
-      "junit:junit:4.13.2" : "05673a3f,refs=12",
-      "net.bytebuddy:byte-buddy:1.18.3" : "05673a3f,refs=12",
+      "junit:junit:4.13.2" : "20a3365f,refs=12",
+      "net.bytebuddy:byte-buddy:1.18.3" : "20a3365f,refs=12",
       "org.apache.logging.log4j:log4j-api:2.25.4" : "51c677bb,refs=5",
       "org.apache.logging.log4j:log4j-core:2.25.4" : "51c677bb,refs=5",
-      "org.assertj:assertj-core:3.27.7" : "05673a3f,refs=12",
-      "org.hamcrest:hamcrest-core:1.3" : "05673a3f,refs=12",
-      "org.jline:jline-native:4.4.8" : "1e79968b,refs=4",
-      "org.jline:jline-terminal:4.4.8" : "1e79968b,refs=4",
-      "org.jline:jline-terminal-ffm:4.4.8" : "8ac83bcf,refs=2",
+      "org.assertj:assertj-core:3.27.7" : "20a3365f,refs=12",
+      "org.hamcrest:hamcrest-core:1.3" : "20a3365f,refs=12",
+      "org.jline:jline-native:4.4.8" : "5001f6cb,refs=4",
+      "org.jline:jline-terminal:4.4.8" : "5001f6cb,refs=4",
+      "org.jline:jline-terminal-ffm:4.4.8" : "f3f2afef,refs=2",
       "org.jspecify:jspecify:1.0.0" : "020a82af,refs=2",
       "org.osgi:org.osgi.annotation.bundle:2.0.0" : "020a82af,refs=2",
       "org.osgi:org.osgi.annotation.versioning:1.1.2" : "020a82af,refs=2",
@@ -32,7 +32,7 @@
         "projectPath" : ":progresso-log4j"
       }
     ],
-    "05673a3f" : [
+    "20a3365f" : [
       {
         "configuration" : "testCompileClasspath",
         "projectPath" : ":progresso"
@@ -59,14 +59,6 @@
       },
       {
         "configuration" : "testCompileClasspath",
-        "projectPath" : ":progresso-jline"
-      },
-      {
-        "configuration" : "testRuntimeClasspath",
-        "projectPath" : ":progresso-jline"
-      },
-      {
-        "configuration" : "testCompileClasspath",
         "projectPath" : ":progresso-jvmversion"
       },
       {
@@ -80,24 +72,32 @@
       {
         "configuration" : "testRuntimeClasspath",
         "projectPath" : ":progresso-log4j"
+      },
+      {
+        "configuration" : "testCompileClasspath",
+        "projectPath" : ":progresso-views-jline"
+      },
+      {
+        "configuration" : "testRuntimeClasspath",
+        "projectPath" : ":progresso-views-jline"
       }
     ],
-    "1e79968b" : [
+    "5001f6cb" : [
       {
         "configuration" : "compileClasspath",
-        "projectPath" : ":progresso-jline"
+        "projectPath" : ":progresso-views-jline"
       },
       {
         "configuration" : "runtimeClasspath",
-        "projectPath" : ":progresso-jline"
+        "projectPath" : ":progresso-views-jline"
       },
       {
         "configuration" : "testCompileClasspath",
-        "projectPath" : ":progresso-jline"
+        "projectPath" : ":progresso-views-jline"
       },
       {
         "configuration" : "testRuntimeClasspath",
-        "projectPath" : ":progresso-jline"
+        "projectPath" : ":progresso-views-jline"
       }
     ],
     "51c677bb" : [
@@ -122,14 +122,14 @@
         "projectPath" : ":progresso-log4j"
       }
     ],
-    "8ac83bcf" : [
+    "f3f2afef" : [
       {
         "configuration" : "runtimeClasspath",
-        "projectPath" : ":progresso-jline"
+        "projectPath" : ":progresso-views-jline"
       },
       {
         "configuration" : "testRuntimeClasspath",
-        "projectPath" : ":progresso-jline"
+        "projectPath" : ":progresso-views-jline"
       }
     ]
   }

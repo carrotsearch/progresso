@@ -25,8 +25,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.jline.terminal.Size;
 import org.jline.terminal.Terminal;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
@@ -42,7 +45,11 @@ import org.jline.utils.InfoCmp.Capability;
  * <p>Experimental.
  */
 public final class JLineConsoleView implements ProgressView, Closeable {
+  private static final Logger LOG = Logger.getLogger(JLineConsoleView.class.getName());
+
   private final Terminal terminal;
+  private final boolean interactive;
+  private final int dumbColumns;
   private final boolean colors;
   private final Display display;
   private final List<? extends TrackerFormatter> formatters;
@@ -53,7 +60,27 @@ public final class JLineConsoleView implements ProgressView, Closeable {
   private final LinkedHashSet<Task<?>> running = new LinkedHashSet<>();
   private List<AttributedString> live = List.of();
 
-  /** A view on the shared {@link JLineTerminals#system() system terminal}. */
+  /**
+   * Returns true if this view can draw live lines: the {@link JLineTerminals#system() system
+   * terminal} is an interactive terminal. False when stdout is redirected (a pipe, tee, a file) or
+   * there is no terminal at all, as under a test runner; never throws.
+   *
+   * @see JLineConsoleViewSupplier
+   */
+  public static boolean isSupported() {
+    try {
+      return JLineTerminals.isInteractive(JLineTerminals.system());
+    } catch (IOException | RuntimeException e) {
+      LOG.log(Level.FINE, "Could not open the terminal: {0}", e.toString());
+      return false;
+    }
+  }
+
+  /**
+   * A view on the shared {@link JLineTerminals#system() system terminal}, whatever it is. {@link
+   * ConsoleAware#newConsoleProgressView()} picks this view through {@link JLineConsoleViewSupplier}
+   * only when {@link #isSupported() it is supported}, and plain output otherwise.
+   */
   public static JLineConsoleView open() throws IOException {
     return open(Collections.emptyList());
   }
@@ -88,6 +115,10 @@ public final class JLineConsoleView implements ProgressView, Closeable {
       List<? extends TrackerFormatter> formatters,
       boolean colors) {
     this.terminal = terminal;
+    this.interactive = JLineTerminals.isInteractive(terminal);
+    // A dumb terminal has no size of its own: use the width progresso's suppliers find (the
+    // terminal on stderr if stdout is redirected, COLUMNS, an explicit setting or the default).
+    this.dumbColumns = interactive ? 0 : ConsoleAware.consoleWidth();
     this.topTasks = new HashSet<>(topTasks);
     this.formatters = new ArrayList<>(formatters);
     this.colors = colors;
@@ -96,6 +127,11 @@ public final class JLineConsoleView implements ProgressView, Closeable {
 
   public Terminal terminal() {
     return terminal;
+  }
+
+  /** The size the view lays out for: the terminal's own, or its substitute for a dumb terminal. */
+  public Size size() {
+    return interactive ? terminal.getSize() : Size.of(dumbColumns, 0);
   }
 
   /** True if the terminal reports at least 8 colors. */
@@ -163,14 +199,14 @@ public final class JLineConsoleView implements ProgressView, Closeable {
       return;
     }
     display.reset();
-    display.resize(terminal.getSize());
+    display.resize(size());
     display.update(lines, -1);
     live = lines;
   }
 
   private AttributedString render(Task<?> task) {
     // Leave a column for the cursor; some terminals wrap otherwise.
-    int lineWidth = Math.max(20, terminal.getSize().getColumns() - 1);
+    int lineWidth = Math.max(20, size().getColumns() - 1);
     return colorize(formatStatusLine(task, lineWidth), colors);
   }
 

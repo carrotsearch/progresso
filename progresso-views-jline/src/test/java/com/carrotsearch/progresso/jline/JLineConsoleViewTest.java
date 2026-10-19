@@ -1,16 +1,23 @@
 package com.carrotsearch.progresso.jline;
 
+import com.carrotsearch.progresso.ProgressView;
 import com.carrotsearch.progresso.RangeTask;
 import com.carrotsearch.progresso.RangeTracker;
 import com.carrotsearch.progresso.Task;
 import com.carrotsearch.progresso.Tasks;
 import com.carrotsearch.progresso.views.console.AbstractConsoleView;
+import com.carrotsearch.progresso.views.console.ConsoleAware;
+import com.carrotsearch.progresso.views.console.ConsoleViewSupplier;
+import com.carrotsearch.progresso.views.console.PlainConsoleView;
+import com.carrotsearch.progresso.views.console.PlainConsoleViewSupplier;
 import com.carrotsearch.progresso.views.console.ProgressBarStyle;
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.Set;
 import org.assertj.core.api.Assertions;
 import org.jline.terminal.Attributes;
@@ -90,5 +97,25 @@ public class JLineConsoleViewTest extends RandomizedTest {
   public void widthSupplierWithoutTerminal() {
     // Under the test runner there is no interactive terminal: unsupported, never an exception.
     Assertions.assertThat(new JLineConsoleWidth().isSupported()).isFalse();
+  }
+
+  @Test
+  public void plainViewWithoutTerminal() {
+    // The JLine supplier is registered and ranks first, but under the test runner stdout is not a
+    // terminal: it is unsupported and the core's plain view takes over.
+    List<ConsoleViewSupplier> suppliers =
+        ServiceLoader.load(ConsoleViewSupplier.class).stream()
+            .map(ServiceLoader.Provider::get)
+            .sorted(Comparator.comparingInt(ConsoleViewSupplier::priority).reversed())
+            .toList();
+    Assertions.assertThat(suppliers).first().isInstanceOf(JLineConsoleViewSupplier.class);
+    Assertions.assertThat(JLineConsoleView.isSupported()).isFalse();
+    Assertions.assertThat(suppliers.get(0).isSupported()).isFalse();
+
+    Assertions.assertThat(ConsoleAware.consoleViewSupplier())
+        .get()
+        .isInstanceOf(PlainConsoleViewSupplier.class);
+    ProgressView view = ConsoleAware.newConsoleProgressView();
+    Assertions.assertThat(view).isInstanceOf(PlainConsoleView.class);
   }
 }

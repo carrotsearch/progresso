@@ -19,7 +19,7 @@ tasks.named('jar') {
 }
 
 // Assembles build/demo with this module, its dependencies and the console width suppliers:
-//   ./gradlew :progresso-jline:demo
+//   ./gradlew :progresso-views-jline:demo
 configurations {
   demo {
     extendsFrom runtimeClasspath

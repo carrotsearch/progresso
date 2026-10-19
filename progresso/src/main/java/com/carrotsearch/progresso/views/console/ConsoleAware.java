@@ -76,16 +76,36 @@ public class ConsoleAware {
     return console != null && console.isTerminal();
   }
 
+  /**
+   * Returns the console view for this process: from the supported {@link ConsoleViewSupplier} with
+   * the highest priority. The core supplies {@link UpdateableConsoleView} on an interactive console
+   * and {@link PlainConsoleView} otherwise; modules on the class or module path may supply richer
+   * views for the terminals they support.
+   */
   public static ProgressView newConsoleProgressView() {
     return newConsoleProgressView(Collections.emptyList());
   }
 
+  /**
+   * @param topLevelSteps The top-level tasks, for the overall progress counter; may be empty.
+   * @see #newConsoleProgressView()
+   */
   public static ProgressView newConsoleProgressView(Collection<Task<?>> topLevelSteps) {
-    if (isUpdateable()) {
-      return new UpdateableConsoleView(writer(), topLevelSteps);
-    } else {
-      return new PlainConsoleView(writer(), topLevelSteps);
-    }
+    return consoleViewSupplier()
+        .map(supplier -> supplier.newConsoleProgressView(topLevelSteps))
+        .orElseGet(() -> new PlainConsoleView(writer(), topLevelSteps));
+  }
+
+  /**
+   * @return Returns the supported {@link ConsoleViewSupplier} with the highest priority, if any
+   *     (there always is one if the core's own services are visible).
+   */
+  public static Optional<ConsoleViewSupplier> consoleViewSupplier() {
+    return ServiceLoader.load(ConsoleViewSupplier.class).stream()
+        .map(ServiceLoader.Provider::get)
+        .sorted(Comparator.comparingInt(ConsoleViewSupplier::priority).reversed())
+        .filter(ConsoleViewSupplier::isSupported)
+        .findFirst();
   }
 
   public static boolean isUpdateable() {
@@ -189,7 +209,7 @@ public class ConsoleAware {
    *     ProgressBarStyle#ASCII}. Unlike {@link #supportedProgressBarStyles()}, this does not look
    *     at the operating system or at whether the output is a terminal, only at the charset and the
    *     locale (CJK locales get neutral-width styles only). Meant for terminal libraries
-   *     (progresso-jline) that bypass the console code page.
+   *     (progresso-views-jline) that bypass the console code page.
    */
   public static List<ProgressBarStyle> supportedProgressBarStyles(Charset charset) {
     return supportedProgressBarStyles(System.getenv(), charset);
@@ -314,8 +334,11 @@ public class ConsoleAware {
       w.printLine(
           String.format(
               Locale.ROOT,
-              "Console %s, width: %s (%s), charset: %s, progress bar: %s.",
+              "Console %s, view: %s, width: %s (%s), charset: %s, progress bar: %s.",
               ConsoleAware.isUpdateable() ? "is updateable" : "is not updateable",
+              ConsoleAware.consoleViewSupplier()
+                  .map(supplier -> supplier.getClass().getSimpleName())
+                  .orElse("none"),
               ConsoleAware.consoleWidth(),
               ConsoleAware.consoleWidthSupplier()
                   .map(supplier -> supplier.getClass().getSimpleName())

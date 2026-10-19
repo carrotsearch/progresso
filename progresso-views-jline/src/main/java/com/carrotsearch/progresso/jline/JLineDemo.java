@@ -4,37 +4,32 @@ import com.carrotsearch.progresso.CompositeTask;
 import com.carrotsearch.progresso.GenericTask;
 import com.carrotsearch.progresso.LongTracker;
 import com.carrotsearch.progresso.Progress;
+import com.carrotsearch.progresso.ProgressView;
 import com.carrotsearch.progresso.RangeTask;
 import com.carrotsearch.progresso.RangeTracker;
 import com.carrotsearch.progresso.Tasks;
 import com.carrotsearch.progresso.Tracker;
 import com.carrotsearch.progresso.views.console.ConsoleAware;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.IntConsumer;
 import org.jline.terminal.Terminal;
 import org.jline.utils.InfoCmp.Capability;
 
-/** Several tasks running at once on a {@link JLineConsoleView}, with log lines in between. */
+/**
+ * Several tasks running at once on a {@link JLineConsoleView}, with log lines in between. With the
+ * output redirected ({@code | cat}, {@code | tee log}) the core's plain view takes over.
+ */
 public final class JLineDemo {
   private JLineDemo() {}
 
   static void main() throws Exception {
-    try (JLineConsoleView view = JLineConsoleView.open()) {
-      Terminal terminal = view.terminal();
-      view.printLine(
-          String.format(
-              Locale.ROOT,
-              "Terminal: %s (%s), %dx%d, colors: %s, width supplier: %s, progress bar: %s",
-              terminal.getName(),
-              terminal.getType(),
-              terminal.getSize().getColumns(),
-              terminal.getSize().getRows(),
-              terminal.getNumericCapability(Capability.max_colors),
-              ConsoleAware.consoleWidthSupplier()
-                  .map(s -> s.getClass().getSimpleName())
-                  .orElse("default"),
-              JLineConsoleView.progressBarStyle(terminal).name().toLowerCase(Locale.ROOT)));
+    ProgressView view = ConsoleAware.newConsoleProgressView();
+    try (Closeable closeView = view instanceof Closeable c ? c : () -> {}) {
+      printLine(view, describe(view));
 
       try (Progress progress = new Progress(view)) {
         RangeTracker download = progress.newByteRangeSubtask("Download").start(0, 40_000_000L);
@@ -52,7 +47,7 @@ public final class JLineDemo {
         }
 
         Thread.sleep(1_000);
-        view.printLine("[log] A line printed while the tasks run: it stays above the live block.");
+        printLine(view, "[log] A line printed while the tasks run: it stays above the live block.");
 
         for (Thread worker : workers) {
           worker.join();
@@ -101,6 +96,46 @@ public final class JLineDemo {
           }
         }
       }
+    }
+  }
+
+  private static String describe(ProgressView view) {
+    String widthSupplier =
+        ConsoleAware.consoleWidthSupplier()
+            .map(s -> s.getClass().getSimpleName())
+            .orElse("default");
+    if (view instanceof JLineConsoleView jline) {
+      Terminal terminal = jline.terminal();
+      return String.format(
+          Locale.ROOT,
+          "Terminal: %s (%s), %dx%d, colors: %s, width supplier: %s, progress bar: %s",
+          terminal.getName(),
+          terminal.getType(),
+          terminal.getSize().getColumns(),
+          terminal.getSize().getRows(),
+          terminal.getNumericCapability(Capability.max_colors),
+          widthSupplier,
+          JLineConsoleView.progressBarStyle(terminal).name().toLowerCase(Locale.ROOT));
+    } else {
+      return String.format(
+          Locale.ROOT,
+          "No interactive terminal on stdout: %s, width: %d (%s), progress bar: %s",
+          ConsoleAware.consoleViewSupplier().map(s -> s.getClass().getSimpleName()).orElse("none"),
+          ConsoleAware.consoleWidth(),
+          widthSupplier,
+          ConsoleAware.progressBarStyle().name().toLowerCase(Locale.ROOT));
+    }
+  }
+
+  /** A permanent line: above the live block of a JLine view, in sequence otherwise. */
+  private static void printLine(ProgressView view, String line) throws IOException {
+    if (view instanceof JLineConsoleView jline) {
+      jline.printLine(line);
+    } else {
+      Writer out = ConsoleAware.writer();
+      out.write(line);
+      out.write(System.lineSeparator());
+      out.flush();
     }
   }
 

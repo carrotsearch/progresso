@@ -8,4 +8,6 @@ module com.carrotsearch.progresso.jline {
 
   provides com.carrotsearch.progresso.views.console.ConsoleWidthSupplier with
       com.carrotsearch.progresso.jline.JLineConsoleWidth;
+  provides com.carrotsearch.progresso.views.console.ConsoleViewSupplier with
+      com.carrotsearch.progresso.jline.JLineConsoleViewSupplier;
 }
