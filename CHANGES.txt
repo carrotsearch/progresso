@@ -1,5 +1,5 @@
 
-[1.9.1]
+[2.0.0]
 
  PR-51: New module progresso-consolewidth-windows detects the console width on Windows by
         reading the console screen buffer through kernel32 (foreign function API), ported
