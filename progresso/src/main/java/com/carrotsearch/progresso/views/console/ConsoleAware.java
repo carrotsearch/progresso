@@ -13,8 +13,10 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ServiceLoader;
 
 @SuppressForbidden("Legitimate use of System.out and properties.")
@@ -232,27 +234,28 @@ public class ConsoleAware {
   }
 
   /**
-   * @return Returns current console width based on the global hint or user property override.
+   * Returns the current console width: the width from the supported {@link ConsoleWidthSupplier}
+   * with the highest priority, or the default width hint if there is none. The {@link
+   * #CONSOLE_WIDTH_PROPERTY} system property is one of the suppliers, with the highest priority.
+   *
+   * @throws IllegalArgumentException if the property is set to an invalid value.
+   * @see #setDefaultConsoleWidth(int)
    */
   public static int consoleWidth() throws IllegalArgumentException {
-    // The sane default.
-    int width = globalWidthHint;
+    return consoleWidthSupplier()
+        .map(ConsoleWidthSupplier::getConsoleWidth)
+        .orElse(globalWidthHint);
+  }
 
-    String manual = System.getProperty(CONSOLE_WIDTH_PROPERTY);
-    if (manual != null) {
-      width = Integer.parseInt(manual);
-      checkWidth(width);
-    } else {
-      ServiceLoader<ConsoleWidthSupplier> loader = ServiceLoader.load(ConsoleWidthSupplier.class);
-      for (ConsoleWidthSupplier supplier : loader) {
-        if (supplier.isSupported()) {
-          width = supplier.getConsoleWidth();
-          break;
-        }
-      }
-    }
-
-    return width;
+  /**
+   * @return Returns the supported {@link ConsoleWidthSupplier} with the highest priority, if any.
+   */
+  public static Optional<ConsoleWidthSupplier> consoleWidthSupplier() {
+    return ServiceLoader.load(ConsoleWidthSupplier.class).stream()
+        .map(ServiceLoader.Provider::get)
+        .sorted(Comparator.comparingInt(ConsoleWidthSupplier::priority).reversed())
+        .filter(ConsoleWidthSupplier::isSupported)
+        .findFirst();
   }
 
   /**
@@ -277,9 +280,12 @@ public class ConsoleAware {
       w.printLine(
           String.format(
               Locale.ROOT,
-              "Console %s, width: %s, charset: %s, progress bar: %s.",
+              "Console %s, width: %s (%s), charset: %s, progress bar: %s.",
               ConsoleAware.isUpdateable() ? "is updateable" : "is not updateable",
               ConsoleAware.consoleWidth(),
+              ConsoleAware.consoleWidthSupplier()
+                  .map(supplier -> supplier.getClass().getSimpleName())
+                  .orElse("default"),
               ConsoleAware.outputCharset().name(),
               ConsoleAware.progressBarStyle().name().toLowerCase(Locale.ROOT)));
     }

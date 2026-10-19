@@ -5,8 +5,8 @@ on:
   push:
     branches: [master]
     paths: [".github/**"]
+  # Any pull request, whatever its base, so that stacked pull requests are audited too.
   pull_request:
-    branches: [master]
     paths: [".github/**"]
 
 permissions:

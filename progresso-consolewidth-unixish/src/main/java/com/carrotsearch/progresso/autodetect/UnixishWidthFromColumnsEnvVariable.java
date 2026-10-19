@@ -21,6 +21,11 @@ public final class UnixishWidthFromColumnsEnvVariable implements ConsoleWidthSup
   }
 
   @Override
+  public int priority() {
+    return PRIORITY_ENVIRONMENT;
+  }
+
+  @Override
   public int getConsoleWidth() {
     int columns = Integer.parseInt(System.getenv("COLUMNS"));
     LoggerFactory.getLogger(getClass())

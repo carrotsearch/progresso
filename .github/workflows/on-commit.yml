@@ -3,8 +3,8 @@ name: on commit checks
 on:
   push:
     branches: [ "master" ]
+  # Any pull request, whatever its base, so that stacked pull requests are checked too.
   pull_request:
-    branches: [ "master" ]
 
 # The build only reads the repository.
 permissions:
@@ -81,3 +81,27 @@ jobs:
           echo "Actual output: $OUTPUT"
           exit 1
         fi
+
+  test-console-width-windows:
+    name: Test console width detection (Windows)
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Set up JDK
+      uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+      with:
+        java-version: '25'
+        distribution: 'temurin'
+        cache: maven
+
+    # bash rather than pwsh: PowerShell splits -Dprop.name=value arguments at the dots.
+    - name: Build and test
+      shell: bash
+      run: mvn -B verify --file pom.xml -pl progresso-consolewidth-windows -am
