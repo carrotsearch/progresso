@@ -38,6 +38,11 @@ public final class WindowsConsoleWidth implements ConsoleWidthSupplier {
   }
 
   @Override
+  public int priority() {
+    return PRIORITY_NATIVE;
+  }
+
+  @Override
   public int getConsoleWidth() {
     if (width <= 0) {
       width = detectWidth();

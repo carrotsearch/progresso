@@ -1,6 +1,13 @@
 
 [2.0.0]
 
+ PR-51: ConsoleWidthSupplier has a priority (default 0); suppliers are consulted from the
+        highest priority to the lowest and the first supported one provides the width.
+        The console.width system property is itself a supplier now, with the highest
+        priority; the Windows module uses PRIORITY_NATIVE (100) and the unixish one
+        PRIORITY_ENVIRONMENT (50). ConsoleAware.consoleWidthSupplier() tells which one
+        won and ConsoleAware.main prints it.
+
  PR-51: New module progresso-consolewidth-windows detects the console width on Windows by
         reading the console screen buffer through kernel32 (foreign function API), ported
         from Lingo4G. Register it like progresso-consolewidth-unixish (it is a
