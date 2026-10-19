@@ -153,10 +153,19 @@ public abstract class AbstractConsoleView implements ProgressView {
     return TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
   }
 
+  /**
+   * Returns the default set of formatters, with the progress bar style detected by {@link
+   * ConsoleAware#progressBarStyle()}.
+   */
   public static List<AbstractTrackerFormatter<?>> defaultFormatters() {
+    return defaultFormatters(ConsoleAware.progressBarStyle());
+  }
+
+  /** Returns the default set of formatters, with the given progress bar style. */
+  public static List<AbstractTrackerFormatter<?>> defaultFormatters(ProgressBarStyle style) {
     return Arrays.asList(
         new UpdateablePathTrackerFormatter(),
-        new UpdateableCompletedRatioTrackerFormatter(),
+        new UpdateableCompletedRatioTrackerFormatter(style),
         new UpdateableLongTrackerFormatter(),
         new UpdateableGenericTrackerFormatter());
   }

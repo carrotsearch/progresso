@@ -1,4 +1,21 @@
 
+[1.9.1]
+
+ PR-49: Progress bars can be drawn with fractional Unicode glyphs. Five styles are available
+        (ProgressBarStyle): ascii (the previous "[====>   ]" bar), shades (block shades,
+        encodable in OEM code pages), blocks (one-eighth blocks, the smoothest), line
+        (box drawing) and braille (dot patterns; neutral-width, so aligned even in
+        terminals that render ambiguous-width glyphs double-wide). The style is picked
+        automatically from the terminal, operating system, locale (braille in CJK
+        locales) and output encoding (ConsoleAware.progressBarStyle), and can be forced
+        with the console.progressbar system property or the PROGRESSO_PROGRESSBAR
+        environment variable. ConsoleAware.main reports the detected charset and style.
+
+ PR-49: Progress output goes through System.out unless the console is an interactive
+        terminal. On JDK 22 and 23, System.console() is non-null even for redirected
+        output and its writer bypasses System.setOut, so IDE test runners and other
+        tools capturing standard output never saw the progress lines.
+
 [1.9.0]
 
  GH-45: Building progresso now requires JDK 21 or later; the produced artifacts require

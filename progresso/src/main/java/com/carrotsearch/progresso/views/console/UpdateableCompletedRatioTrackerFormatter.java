@@ -9,9 +9,24 @@ import com.carrotsearch.progresso.util.LineFormatter;
 import com.carrotsearch.progresso.util.LineFormatter.Alignment;
 import com.carrotsearch.progresso.util.UnitFormatter;
 import java.util.Locale;
+import java.util.Objects;
 
 public class UpdateableCompletedRatioTrackerFormatter extends AbstractTrackerFormatter<Tracker> {
   private final TrackerRateCalculator rateCalculator = new TrackerRateCalculator();
+  private final ProgressBarStyle style;
+
+  /** Creates a formatter with the progress bar style detected by {@link ConsoleAware}. */
+  public UpdateableCompletedRatioTrackerFormatter() {
+    this(ConsoleAware.progressBarStyle());
+  }
+
+  public UpdateableCompletedRatioTrackerFormatter(ProgressBarStyle style) {
+    this.style = Objects.requireNonNull(style);
+  }
+
+  public ProgressBarStyle style() {
+    return style;
+  }
 
   @Override
   public void taskStarted(Task<?> task) {
@@ -28,7 +43,7 @@ public class UpdateableCompletedRatioTrackerFormatter extends AbstractTrackerFor
     final double completedRatio = ((CompletedRatio) tracker).completedRatio();
 
     if (task.getStatus() != Status.DONE) {
-      String dots = dots(lineWidth, completedRatio);
+      String dots = dots(style, lineWidth, completedRatio);
       TrackerRateCalculator.TrackerStats stats = rateCalculator.update(tracker);
 
       if (tracker.task() instanceof WithUnit && tracker instanceof LongTracker) {
