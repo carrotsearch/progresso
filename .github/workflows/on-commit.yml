@@ -101,13 +101,12 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    # Spotless is skipped: the Windows checkout converts line endings. The core module's own
-    # tests run in the Linux build; here it is only installed as a dependency.
-    # bash rather than pwsh: PowerShell splits -Dprop.name=value arguments at the dots.
+    # The core module's own tests run in the Linux build; here it is only installed as a
+    # dependency. bash rather than pwsh: PowerShell splits -Dprop.name=value arguments at the dots.
     - name: Install dependencies
       shell: bash
-      run: mvn -B -Dskip.UTs=true -Dspotless.check.skip=true install --file pom.xml -pl progresso-consolewidth-windows -am
+      run: mvn -B -Dskip.UTs=true install --file pom.xml -pl progresso-consolewidth-windows -am
 
     - name: Test console width detection
       shell: bash
-      run: mvn -B -Dspotless.check.skip=true -Dtests.verbose=true verify --file pom.xml -pl progresso-consolewidth-windows
+      run: mvn -B -Dtests.verbose=true verify --file pom.xml -pl progresso-consolewidth-windows

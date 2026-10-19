@@ -1,4 +1,7 @@
-*.java text eol=lf
-*.txt text eol=lf
-*.xml text eol=lf
+# Every text file is stored and checked out with LF, on every platform, so that builds and
+# formatting checks (spotless enforces LF) behave the same on Windows as on Linux.
+* text=auto eol=lf
+
+# Checked-in binaries.
 *.class binary
+*.jar binary
