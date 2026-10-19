@@ -1,7 +1,7 @@
 
 [1.9.1]
 
- New module progresso-consolewidth-windows detects the console width on Windows by
+ PR-51: New module progresso-consolewidth-windows detects the console width on Windows by
         reading the console screen buffer through kernel32 (foreign function API), ported
         from Lingo4G. Register it like progresso-consolewidth-unixish (it is a
         ConsoleWidthSupplier service). The JVM must be started with
