@@ -208,18 +208,27 @@ public class ConsoleAware {
   /** Returns the console writer. */
   public static synchronized ConsoleWriter writer() {
     if (consoleWriter == null) {
-      Console console = System.console();
-      Writer writer;
-      if (console != null) {
-        writer = console.writer();
-      } else {
-        writer = new OutputStreamWriter(System.out, outputCharset());
-      }
-
-      consoleWriter = new ConsoleWriter(writer, ColumnCounter.DEFAULT, consoleWidth());
+      consoleWriter = new ConsoleWriter(outputWriter(), ColumnCounter.DEFAULT, consoleWidth());
     }
 
     return consoleWriter;
+  }
+
+  /**
+   * Returns the writer progress output goes to: the console's own writer if the console is an
+   * interactive terminal, otherwise {@link System#out} in the {@link #outputCharset()}.
+   *
+   * <p>Since JDK 22, {@link System#console()} is non-null even when the output is redirected, and
+   * its writer bypasses {@link System#setOut(java.io.PrintStream)}. Anything capturing standard
+   * output (IDE test runners, build tools, log capture) would then never see the progress output.
+   */
+  static Writer outputWriter() {
+    Console console = System.console();
+    if (consoleIsTerminal.test(console)) {
+      return console.writer();
+    } else {
+      return new OutputStreamWriter(System.out, outputCharset());
+    }
   }
 
   /**
