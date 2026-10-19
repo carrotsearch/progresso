@@ -78,7 +78,8 @@ public enum ProgressBarStyle {
    * have neutral East Asian Width, so the bar stays aligned in terminals that render
    * ambiguous-width characters double-wide. The background is the braille blank (U+2800), not a
    * space, so the whole bar comes from one font. Slightly fewer monospace fonts cover this range
-   * than the block elements, hence it is not picked automatically.
+   * than the block elements, hence it is picked automatically only in CJK locales, where the
+   * ambiguous-width styles are likely to misalign.
    */
   BRAILLE("[", "]", '⣿', "⡀⡄⡆⡇⣇⣧⣷", '⠀');
 

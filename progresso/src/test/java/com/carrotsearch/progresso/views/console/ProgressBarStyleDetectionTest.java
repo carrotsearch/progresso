@@ -72,6 +72,46 @@ public class ProgressBarStyleDetectionTest extends RandomizedTest {
   }
 
   @Test
+  public void cjkLocales() {
+    // Terminals in CJK locales commonly render ambiguous-width glyphs double-wide: only
+    // neutral-width styles are picked.
+    Assertions.assertThat(detect(null, env("LANG", "ja_JP.UTF-8"), TERMINAL, UNIX, utf8()))
+        .isEqualTo(ProgressBarStyle.BRAILLE);
+    Assertions.assertThat(detect(null, env("LANG", "zh_CN.UTF-8"), TERMINAL, WINDOWS, utf8()))
+        .isEqualTo(ProgressBarStyle.BRAILLE);
+    Assertions.assertThat(detect(null, env("LC_CTYPE", "ko_KR.UTF-8"), TERMINAL, UNIX, utf8()))
+        .isEqualTo(ProgressBarStyle.BRAILLE);
+
+    // POSIX precedence: LC_ALL beats LC_CTYPE beats LANG.
+    Assertions.assertThat(
+            detect(
+                null, env("LC_ALL", "en_US.UTF-8", "LANG", "ja_JP.UTF-8"), TERMINAL, UNIX, utf8()))
+        .isEqualTo(ProgressBarStyle.BLOCKS);
+    Assertions.assertThat(
+            detect(
+                null,
+                env("LC_CTYPE", "ja_JP.UTF-8", "LANG", "en_US.UTF-8"),
+                TERMINAL,
+                UNIX,
+                utf8()))
+        .isEqualTo(ProgressBarStyle.BRAILLE);
+
+    // Braille not encodable: never fall back to the ambiguous-width styles.
+    Assertions.assertThat(detect(null, env("LANG", "ja_JP.UTF-8"), TERMINAL, UNIX, ascii()))
+        .isEqualTo(ProgressBarStyle.ASCII);
+
+    // Non-CJK and odd values are not CJK.
+    for (String lang : new String[] {"C", "C.UTF-8", "POSIX", "en_US.UTF-8", "pl_PL.UTF-8", ""}) {
+      Assertions.assertThat(detect(null, env("LANG", lang), TERMINAL, UNIX, utf8()))
+          .as("LANG=%s", lang)
+          .isEqualTo(ProgressBarStyle.BLOCKS);
+    }
+    Assertions.assertThat(
+            detect(null, env("TERM", "dumb", "LANG", "ja_JP.UTF-8"), TERMINAL, UNIX, utf8()))
+        .isEqualTo(ProgressBarStyle.ASCII);
+  }
+
+  @Test
   public void windows() {
     // Known unicode-capable hosts.
     Assertions.assertThat(detect(null, env("WT_SESSION", "x"), TERMINAL, WINDOWS, utf8()))

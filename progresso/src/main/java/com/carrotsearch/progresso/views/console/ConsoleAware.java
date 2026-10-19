@@ -57,6 +57,14 @@ public class ConsoleAware {
     ProgressBarStyle.BLOCKS, ProgressBarStyle.SHADES, ProgressBarStyle.ASCII
   };
 
+  /**
+   * Styles tried in CJK locales, where terminals commonly render ambiguous-width glyphs (block
+   * elements, box drawing) two columns wide; only neutral-width styles are safe there.
+   */
+  private static final ProgressBarStyle[] PROGRESS_BAR_PREFERENCE_CJK = {
+    ProgressBarStyle.BRAILLE, ProgressBarStyle.ASCII
+  };
+
   private static ConsoleWriter consoleWriter;
   private static int globalWidthHint = CONSOLE_WIDTH_DEFAULT;
 
@@ -122,6 +130,11 @@ public class ConsoleAware {
    * <ul>
    *   <li>If the output is not a terminal (see {@link #isUpdateable()}) or {@code TERM} is {@code
    *       dumb}, {@link ProgressBarStyle#ASCII}.
+   *   <li>In Chinese, Japanese and Korean locales ({@code LC_ALL}, {@code LC_CTYPE} or {@code
+   *       LANG}), terminals commonly render East Asian "ambiguous width" characters two columns
+   *       wide, which misaligns block elements and box drawing glyphs. Only {@link
+   *       ProgressBarStyle#BRAILLE}, whose glyphs are neutral-width, or {@link
+   *       ProgressBarStyle#ASCII} are used there.
    *   <li>On Windows, the one-eighth blocks are used only in hosts known to render them (Windows
    *       Terminal, ConEmu, mintty/Cygwin/MSYS, detected via the {@code WT_SESSION}, {@code
    *       ConEmuANSI}, {@code TERM} or {@code TERM_PROGRAM} variables). The legacy console host is
@@ -160,8 +173,11 @@ public class ConsoleAware {
       return ProgressBarStyle.ASCII;
     }
 
+    ProgressBarStyle[] preference = PROGRESS_BAR_PREFERENCE;
     int first = 0;
-    if (isWindows) {
+    if (isCjkLocale(env)) {
+      preference = PROGRESS_BAR_PREFERENCE_CJK;
+    } else if (isWindows) {
       boolean knownUnicodeHost =
           env.containsKey("WT_SESSION")
               || env.containsKey("ConEmuANSI")
@@ -172,12 +188,27 @@ public class ConsoleAware {
       }
     }
 
-    for (int i = first; i < PROGRESS_BAR_PREFERENCE.length; i++) {
-      if (PROGRESS_BAR_PREFERENCE[i].isEncodable(charset)) {
-        return PROGRESS_BAR_PREFERENCE[i];
+    for (int i = first; i < preference.length; i++) {
+      if (preference[i].isEncodable(charset)) {
+        return preference[i];
       }
     }
     return ProgressBarStyle.ASCII;
+  }
+
+  /**
+   * Returns true if the character-type locale, as POSIX resolves it ({@code LC_ALL}, then {@code
+   * LC_CTYPE}, then {@code LANG}), is Chinese, Japanese or Korean.
+   */
+  static boolean isCjkLocale(Map<String, String> env) {
+    for (String variable : new String[] {"LC_ALL", "LC_CTYPE", "LANG"}) {
+      String value = env.get(variable);
+      if (value != null && !value.isEmpty()) {
+        String language = value.toLowerCase(Locale.ROOT);
+        return language.startsWith("zh") || language.startsWith("ja") || language.startsWith("ko");
+      }
+    }
+    return false;
   }
 
   /**

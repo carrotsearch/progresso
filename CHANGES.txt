@@ -5,9 +5,9 @@
         (ProgressBarStyle): ascii (the previous "[====>   ]" bar), shades (block shades,
         encodable in OEM code pages), blocks (one-eighth blocks, the smoothest), line
         (box drawing) and braille (dot patterns; neutral-width, so aligned even in
-        terminals that render ambiguous-width glyphs double-wide, but not picked
-        automatically). The style is picked automatically from the terminal, operating
-        system and output encoding (ConsoleAware.progressBarStyle), and can be forced
+        terminals that render ambiguous-width glyphs double-wide). The style is picked
+        automatically from the terminal, operating system, locale (braille in CJK
+        locales) and output encoding (ConsoleAware.progressBarStyle), and can be forced
         with the console.progressbar system property or the PROGRESSO_PROGRESSBAR
         environment variable. ConsoleAware.main reports the detected charset and style.
 
