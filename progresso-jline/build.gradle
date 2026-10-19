@@ -1,0 +1,51 @@
+// Experimental: console views and width detection on top of JLine (multiple live trackers,
+// colors, terminal size on every platform through JLine's FFM provider).
+dependencies {
+  api project(':progresso')
+  api libs.jline.terminal
+  runtimeOnly libs.jline.terminal.ffm
+}
+
+def demoClass = 'com.carrotsearch.progresso.jline.JLineDemo'
+
+tasks.named('compileJava') {
+  options.javaModuleMainClass = demoClass
+}
+
+tasks.named('jar') {
+  manifest {
+    attributes("Main-Class": demoClass)
+  }
+}
+
+// Assembles build/demo with this module, its dependencies and the console width suppliers:
+//   ./gradlew :progresso-jline:demo
+configurations {
+  demo {
+    extendsFrom runtimeClasspath
+  }
+}
+
+dependencies {
+  demo project(':progresso-consolewidth-unixish')
+  demo project(':progresso-consolewidth-windows')
+}
+
+tasks.register('demo', Sync) {
+  description = 'Assembles build/demo for the JLine demo and prints how to run it.'
+  group = 'verification'
+
+  from configurations.demo
+  from tasks.named('jar')
+  into layout.buildDirectory.dir('demo')
+
+  def demoDir = rootProject.relativePath(layout.buildDirectory.dir('demo').get())
+  doLast {
+    println """
+JLine demo assembled in ${demoDir}. Run it from a terminal (native access is for JLine's FFM
+terminal provider and for the Windows console width module):
+
+  java --enable-native-access=org.jline.terminal.ffm,com.carrotsearch.progresso.windows -p ${demoDir} -m com.carrotsearch.progresso.jline
+"""
+  }
+}

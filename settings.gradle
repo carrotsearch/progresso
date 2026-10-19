@@ -3,5 +3,6 @@ include 'progresso-log4j'
 include 'progresso-consolewidth-unixish'
 include 'progresso-consolewidth-windows'
 include 'progresso-jvmversion'
+include 'progresso-jline'
 
 rootProject.name = 'progresso'

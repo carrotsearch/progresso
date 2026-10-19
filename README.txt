@@ -23,3 +23,6 @@ The core jar's entry point draws a progress bar in every available style:
 
 ./gradlew :progresso:demo assembles progresso/build/demo with the console width modules
 and prints the command line to run the demo from the module path.
+
+./gradlew :progresso-jline:demo assembles the experimental JLine-based demo (several live
+tasks at once, colors) and prints its command line.

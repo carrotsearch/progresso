@@ -8,7 +8,7 @@ import java.time.Duration;
 import java.util.IdentityHashMap;
 import java.util.concurrent.TimeUnit;
 
-class TrackerRateCalculator {
+public class TrackerRateCalculator {
   private static class TrackerState {
     long at;
     double completedRatio;
@@ -23,7 +23,7 @@ class TrackerRateCalculator {
     }
   }
 
-  static class TrackerStats {
+  public static class TrackerStats {
     private Double completionEta;
     private Long itemsPerSec;
 
