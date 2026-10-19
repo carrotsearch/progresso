@@ -7,7 +7,7 @@
 
  The console width modules log through java.util.logging and no longer depend on slf4j.
 
- Experimental progresso-jline module: JLineConsoleView shows every running task on its own
+ PR-55: Experimental progresso-jline module: JLineConsoleView shows every running task on its own
         live line (colors when available, log lines scroll above), JLineConsoleWidth reads the
         terminal size through JLine. See ./gradlew :progresso-jline:demo.
 
