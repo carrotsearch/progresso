@@ -9,3 +9,16 @@ tasks.register('demos', Test) {
   setExcludes([])
   outputs.upToDateWhen { false }
 }
+
+// Demo is the module's entry point: java -jar progresso-*.jar, or java -p ... -m com.carrotsearch.progresso
+def demoClass = 'com.carrotsearch.progresso.Demo'
+
+tasks.named('compileJava') {
+  options.javaModuleMainClass = demoClass
+}
+
+tasks.named('jar') {
+  manifest {
+    attributes("Main-Class": demoClass)
+  }
+}

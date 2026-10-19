@@ -82,7 +82,7 @@ public final class Progress implements AutoCloseable, Tasks {
   private void pollForUpdates() {
     assert updaterThread == Thread.currentThread();
 
-    final int pollingFrequency = 500;
+    final int pollingFrequency = 250;
     while (!Thread.interrupted()) {
       synchronized (viewSync) {
         try {

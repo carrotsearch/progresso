@@ -16,3 +16,7 @@ Building requires JDK 25:
   ./gradlew tidy           # apply source formatting
   ./gradlew buildOptions   # list build options (tests.seed, tests.verbose, ...)
   ./gradlew :progresso:demos -Ptests.verbose=true   # run the console view demos
+
+The core jar's entry point draws a progress bar in every available style:
+
+  java -jar progresso/build/libs/progresso-*.jar
