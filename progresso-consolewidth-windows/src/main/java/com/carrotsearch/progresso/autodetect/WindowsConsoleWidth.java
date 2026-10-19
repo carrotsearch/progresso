@@ -17,6 +17,9 @@ import org.slf4j.LoggerFactory;
 public final class WindowsConsoleWidth implements ConsoleWidthSupplier {
   private static final Logger LOG = LoggerFactory.getLogger(WindowsConsoleWidth.class);
 
+  /** Width detected by {@link #isSupported()}, reused by {@link #getConsoleWidth()}; 0 if none. */
+  private int width;
+
   @Override
   public boolean isSupported() {
     if (!OsDetection.IS_OS_WINDOWS || OsDetection.IS_CYGWIN) {
@@ -30,12 +33,16 @@ public final class WindowsConsoleWidth implements ConsoleWidthSupplier {
       return false;
     }
 
-    return detectWidth() > 0;
+    width = detectWidth();
+    return width > 0;
   }
 
   @Override
   public int getConsoleWidth() {
-    return detectWidth();
+    if (width <= 0) {
+      width = detectWidth();
+    }
+    return width;
   }
 
   /**
