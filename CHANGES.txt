@@ -1,19 +1,9 @@
 
 [2.0.0]
 
- The log4j module is progresso-log4j2 throughout: the project directory (like the artifact
-        it publishes, so composite builds substitute it without extra rules), the JPMS module
-        name and the package, com.carrotsearch.progresso.log4j2 (ProgressAwareAppender moved
-        there; log4j configuration files referring to the plugin by name are unaffected).
-
- The Gradle root project is progresso-parent (as the Maven parent was), so that the root
-        and the progresso module do not share coordinates in composite builds.
-
  PR-52: The build moved from Maven to Gradle (./gradlew check); see README.txt. All artifacts
         (except progresso-jvmversion, whose only class predates module descriptors) are
         now JPMS modules.
-
- The console width modules log through java.util.logging and no longer depend on slf4j.
 
  PR-55: Experimental progresso-views-jline module: JLineConsoleView shows every running task
         on its own live line (colors when available, log lines scroll above),
@@ -23,19 +13,6 @@
         redirected (a pipe, tee, a file) the view is not supported and JLineConsoleWidth
         still reports the width of the terminal on stderr, if any.
         See ./gradlew :progresso-views-jline:demo.
-
- Console views are pluggable, like console width suppliers:
-        ConsoleAware.newConsoleProgressView() picks the supported ConsoleViewSupplier with
-        the highest priority (ServiceLoader). The core supplies UpdateableConsoleView on an
-        interactive console and PlainConsoleView otherwise; progresso-views-jline supplies
-        JLineConsoleView on interactive terminals.
-
- On Windows only the ascii progress bar is picked automatically (console code pages and
-        glyph fallback vary too much between hosts); other styles must be requested explicitly.
-
- Braille is the preferred progress bar style wherever the output charset can encode it;
-        ConsoleAware.supportedProgressBarStyles() lists the usable styles and Demo skips
-        the others.
 
  PR-51: New module progresso-consolewidth-windows detects the console width on Windows by
         reading the console screen buffer through kernel32. It requires native access:

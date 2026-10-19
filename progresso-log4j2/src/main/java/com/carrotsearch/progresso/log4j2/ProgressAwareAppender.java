@@ -27,8 +27,6 @@ import org.apache.logging.log4j.core.config.plugins.PluginFactory;
     elementType = "appender",
     printObject = false)
 public class ProgressAwareAppender extends AbstractAppender {
-  private final ConsoleWriter consoleWriter = ConsoleAware.writer();
-
   /** Print stack traces of logging events. */
   private boolean printStackTraces = true;
 
@@ -67,7 +65,7 @@ public class ProgressAwareAppender extends AbstractAppender {
     }
 
     try {
-      consoleWriter.printLine(builder.toString());
+      ConsoleAware.printLine(builder.toString());
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

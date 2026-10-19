@@ -69,6 +69,10 @@ public class ConsoleAware {
   };
 
   private static ConsoleWriter consoleWriter;
+
+  /** The printer that {@link #printLine(String)} routes through, if a view installed one. */
+  private static volatile LinePrinter linePrinter;
+
   private static int globalWidthHint = CONSOLE_WIDTH_DEFAULT;
 
   /** Returns true if the given console is attached to an interactive terminal. */
@@ -259,6 +263,37 @@ public class ConsoleAware {
     }
 
     return Charset.defaultCharset();
+  }
+
+  /**
+   * Prints a line to the console. If a progress view with a live area installed itself with {@link
+   * #installLinePrinter(LinePrinter)}, the line goes through it (above the live area); otherwise it
+   * is written with the console {@link #writer()}, which cooperates with the core views. Log
+   * appenders and other console output should use this rather than the writer.
+   */
+  public static void printLine(String line) throws IOException {
+    LinePrinter printer = linePrinter;
+    if (printer != null) {
+      printer.printLine(line);
+    } else {
+      writer().printLine(line);
+    }
+  }
+
+  /**
+   * Routes {@link #printLine(String)} through the given printer until it is released. Meant for the
+   * owner of a terminal (one printer per terminal; progresso-views-jline installs one for the
+   * shared JLine terminal and dispatches to whichever of its views is live).
+   */
+  public static void installLinePrinter(LinePrinter printer) {
+    linePrinter = printer;
+  }
+
+  /** Stops routing {@link #printLine(String)} through the printer, if it is the installed one. */
+  public static synchronized void releaseLinePrinter(LinePrinter printer) {
+    if (linePrinter == printer) {
+      linePrinter = null;
+    }
   }
 
   /** Returns the console writer. */

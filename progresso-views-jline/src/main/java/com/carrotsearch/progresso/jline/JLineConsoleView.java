@@ -9,6 +9,7 @@ import com.carrotsearch.progresso.util.LineFormatter;
 import com.carrotsearch.progresso.util.LineFormatter.Alignment;
 import com.carrotsearch.progresso.views.console.AbstractConsoleView;
 import com.carrotsearch.progresso.views.console.ConsoleAware;
+import com.carrotsearch.progresso.views.console.LinePrinter;
 import com.carrotsearch.progresso.views.console.ProgressBarStyle;
 import com.carrotsearch.progresso.views.console.TaskStatusRecovery;
 import com.carrotsearch.progresso.views.console.TrackerFormatter;
@@ -44,7 +45,7 @@ import org.jline.utils.InfoCmp.Capability;
  *
  * <p>Experimental.
  */
-public final class JLineConsoleView implements ProgressView, Closeable {
+public final class JLineConsoleView implements ProgressView, LinePrinter, Closeable {
   private static final Logger LOG = Logger.getLogger(JLineConsoleView.class.getName());
 
   private final Terminal terminal;
@@ -87,11 +88,15 @@ public final class JLineConsoleView implements ProgressView, Closeable {
 
   public static JLineConsoleView open(Collection<? extends Task<?>> topTasks) throws IOException {
     Terminal terminal = JLineTerminals.system();
-    return new JLineConsoleView(
-        terminal,
-        topTasks,
-        AbstractConsoleView.defaultFormatters(progressBarStyle(terminal)),
-        hasColors(terminal));
+    JLineConsoleView view =
+        new JLineConsoleView(
+            terminal,
+            topTasks,
+            AbstractConsoleView.defaultFormatters(progressBarStyle(terminal)),
+            hasColors(terminal));
+    // Log lines and other console output go above the live area while this view is open.
+    JLineTerminals.viewOpened(view);
+    return view;
   }
 
   /**
@@ -164,6 +169,7 @@ public final class JLineConsoleView implements ProgressView, Closeable {
   }
 
   /** Prints a permanent line above the live block (log output, for example). */
+  @Override
   public synchronized void printLine(String line) {
     eraseLive();
     terminal.writer().println(line);
@@ -173,6 +179,7 @@ public final class JLineConsoleView implements ProgressView, Closeable {
   /** Finishes the live block: still running tasks are printed as permanent lines. */
   @Override
   public synchronized void close() throws IOException {
+    JLineTerminals.viewClosed(this);
     eraseLive();
     for (Task<?> task : running) {
       terminal.writer().println(render(task).toAnsi(terminal));

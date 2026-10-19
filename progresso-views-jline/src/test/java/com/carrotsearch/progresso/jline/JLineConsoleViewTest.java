@@ -8,6 +8,7 @@ import com.carrotsearch.progresso.Tasks;
 import com.carrotsearch.progresso.views.console.AbstractConsoleView;
 import com.carrotsearch.progresso.views.console.ConsoleAware;
 import com.carrotsearch.progresso.views.console.ConsoleViewSupplier;
+import com.carrotsearch.progresso.views.console.LinePrinter;
 import com.carrotsearch.progresso.views.console.PlainConsoleView;
 import com.carrotsearch.progresso.views.console.PlainConsoleViewSupplier;
 import com.carrotsearch.progresso.views.console.ProgressBarStyle;
@@ -15,6 +16,7 @@ import com.carrotsearch.randomizedtesting.RandomizedTest;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -81,6 +83,31 @@ public class JLineConsoleViewTest extends RandomizedTest {
       view.close();
       Assertions.assertThat(out.toString(StandardCharsets.UTF_8)).contains("second task");
     }
+  }
+
+  @Test
+  public void terminalPrinterFollowsTheLiveView() throws Exception {
+    List<String> outer = new ArrayList<>();
+    List<String> inner = new ArrayList<>();
+    LinePrinter outerView = outer::add;
+    LinePrinter innerView = inner::add;
+    LinePrinter printer = JLineTerminals.printer();
+
+    JLineTerminals.viewOpened(outerView);
+    printer.printLine("to outer");
+    JLineTerminals.viewOpened(innerView);
+    printer.printLine("to inner");
+    // The inner view closes: lines go back to the outer one.
+    JLineTerminals.viewClosed(innerView);
+    printer.printLine("back to outer");
+    // Out of order: the outer closes while the inner is live again.
+    JLineTerminals.viewOpened(innerView);
+    JLineTerminals.viewClosed(outerView);
+    printer.printLine("inner again");
+    JLineTerminals.viewClosed(innerView);
+
+    Assertions.assertThat(outer).containsExactly("to outer", "back to outer");
+    Assertions.assertThat(inner).containsExactly("to inner", "inner again");
   }
 
   @Test

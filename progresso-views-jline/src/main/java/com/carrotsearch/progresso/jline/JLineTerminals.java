@@ -1,7 +1,10 @@
 package com.carrotsearch.progresso.jline;
 
+import com.carrotsearch.progresso.views.console.ConsoleAware;
+import com.carrotsearch.progresso.views.console.LinePrinter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.ArrayDeque;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +31,52 @@ public final class JLineTerminals {
 
   private static Terminal system;
 
+  /**
+   * Views with a live area on the system terminal, the most recently opened last. Only one view
+   * draws at a time; printed lines go above the live area of the last one.
+   */
+  private static final ArrayDeque<LinePrinter> liveViews = new ArrayDeque<>();
+
+  /**
+   * The single printer installed in {@link ConsoleAware} for the system terminal: lines go to the
+   * live view, if any, else straight to the terminal.
+   */
+  private static final LinePrinter printer =
+      line -> {
+        LinePrinter view;
+        synchronized (liveViews) {
+          view = liveViews.peekLast();
+        }
+        if (view != null) {
+          view.printLine(line);
+        } else {
+          Terminal terminal = system();
+          terminal.writer().println(line);
+          terminal.flush();
+        }
+      };
+
   private JLineTerminals() {}
+
+  /** Makes the view the one that printed lines go through, until {@link #viewClosed}. */
+  static void viewOpened(LinePrinter view) {
+    synchronized (liveViews) {
+      liveViews.removeIf(v -> v == view);
+      liveViews.addLast(view);
+    }
+  }
+
+  /** Lines go to the view opened before this one, or straight to the terminal. */
+  static void viewClosed(LinePrinter view) {
+    synchronized (liveViews) {
+      liveViews.removeIf(v -> v == view);
+    }
+  }
+
+  /** The printer installed for the system terminal (visible for tests). */
+  static LinePrinter printer() {
+    return printer;
+  }
 
   /**
    * Returns the shared system terminal, opening it on first use. Without an interactive terminal
@@ -59,6 +107,11 @@ public final class JLineTerminals {
                   },
                   "progresso-views-jline terminal close"));
       system = terminal;
+      if (isInteractive(terminal)) {
+        // Console output (log lines) is routed through this terminal from now on, above the live
+        // area of whichever view is open.
+        ConsoleAware.installLinePrinter(printer);
+      }
     }
     return system;
   }
