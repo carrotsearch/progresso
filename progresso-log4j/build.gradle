@@ -1,0 +1,20 @@
+// Published as progresso-log4j2.
+base {
+  archivesName = 'progresso-log4j2'
+}
+
+dependencies {
+  api project(':progresso')
+  api libs.log4j.core
+
+  // Generates the Log4j2Plugins.dat plugin index.
+  annotationProcessor libs.log4j.core
+}
+
+// The log4j annotation processors want to know the artifact they generate metadata for.
+tasks.named('compileJava') {
+  options.compilerArgs.addAll([
+    '-Alog4j.graalvm.groupId=' + project.group,
+    '-Alog4j.graalvm.artifactId=' + base.archivesName.get()
+  ])
+}

@@ -1,6 +1,9 @@
 package com.carrotsearch.progresso.util;
 
-import static com.carrotsearch.progresso.util.UnitFormatters.*;
+import static com.carrotsearch.progresso.util.UnitFormatters.compactRounding;
+import static com.carrotsearch.progresso.util.UnitFormatters.formatUnits;
+import static com.carrotsearch.progresso.util.UnitFormatters.regularRounding;
+import static com.carrotsearch.progresso.util.UnitFormatters.splitToUnits;
 
 import com.carrotsearch.progresso.util.UnitFormatters.ByteFormatter;
 import com.carrotsearch.progresso.util.UnitFormatters.DecimalCompactFormatter;

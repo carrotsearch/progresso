@@ -1,6 +1,6 @@
 package com.carrotsearch.progresso.util;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.carrotsearch.progresso.util.UnitFormatters.ByteFormatter;
 import com.carrotsearch.progresso.util.UnitFormatters.DecimalCompactFormatter;

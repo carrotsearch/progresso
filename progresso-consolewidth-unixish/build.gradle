@@ -1,0 +1,4 @@
+dependencies {
+  api project(':progresso')
+  implementation libs.slf4j.api
+}

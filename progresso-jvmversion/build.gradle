@@ -1,0 +1,20 @@
+// JvmVersion must load on any JVM, including ancient ones (Java 6), which no modern javac can
+// target. The class file is therefore not compiled but checked in as a resource
+// (src/main/resources/.../JvmVersion.class, class file version 50) and only packaged here.
+// See src/main/java/.../JvmVersion.java for the source and how to regenerate the binary.
+sourceSets {
+  main {
+    java {
+      srcDirs = []
+    }
+  }
+}
+
+jar {
+  manifest {
+    attributes(
+    "Main-Class": "com.carrotsearch.progresso.jvmversion.JvmVersion",
+    // Not a JPMS module: its only class predates module descriptors.
+    "Automatic-Module-Name": "com.carrotsearch.progresso.jvmversion")
+  }
+}

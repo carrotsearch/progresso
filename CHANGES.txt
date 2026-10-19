@@ -1,41 +1,18 @@
 
 [2.0.0]
 
- PR-51: ConsoleWidthSupplier has a priority (default 0); suppliers are consulted from the
-        highest priority to the lowest and the first supported one provides the width.
-        The console.width system property is itself a supplier now, with the highest
-        priority; the Windows module uses PRIORITY_NATIVE (100) and the unixish one
-        PRIORITY_ENVIRONMENT (50). ConsoleAware.consoleWidthSupplier() tells which one
-        won and ConsoleAware.main prints it.
+ PR-52: The build moved from Maven to Gradle (./gradlew check); see README.txt. All artifacts
+        (except progresso-jvmversion, whose only class predates module descriptors) are
+        now JPMS modules.
 
  PR-51: New module progresso-consolewidth-windows detects the console width on Windows by
-        reading the console screen buffer through kernel32 (foreign function API), ported
-        from Lingo4G. Register it like progresso-consolewidth-unixish (it is a
-        ConsoleWidthSupplier service). The JVM must be started with
-        --enable-native-access=ALL-UNNAMED, otherwise the supplier stays inactive and says
-        so at debug level.
+        reading the console screen buffer through kernel32. It requires native access:
+        --enable-native-access=com.carrotsearch.progresso.windows
 
- PR-50: Building and running progresso now requires JDK 25 or later. Terminal detection calls
-        Console.isTerminal directly instead of through reflection, the output charset
-        comes from the stdout.encoding property (sun.stdout.encoding is no longer
-        consulted), progresso-consolewidth-unixish no longer goes through the removed
-        security manager's AccessController and the log4j appender prints stack traces
-        from LogEvent.getThrown instead of the deprecated throwable proxy.
+ PR-50: Building and running progresso now requires JDK 25 or later.
 
- PR-49: Progress bars can be drawn with fractional Unicode glyphs. Five styles are available
-        (ProgressBarStyle): ascii (the previous "[====>   ]" bar), shades (block shades,
-        encodable in OEM code pages), blocks (one-eighth blocks, the smoothest), line
-        (box drawing) and braille (dot patterns; neutral-width, so aligned even in
-        terminals that render ambiguous-width glyphs double-wide). The style is picked
-        automatically from the terminal, operating system, locale (braille in CJK
-        locales) and output encoding (ConsoleAware.progressBarStyle), and can be forced
-        with the console.progressbar system property or the PROGRESSO_PROGRESSBAR
-        environment variable. ConsoleAware.main reports the detected charset and style.
-
- PR-49: Progress output goes through System.out unless the console is an interactive
-        terminal. On JDK 22 and 23, System.console() is non-null even for redirected
-        output and its writer bypasses System.setOut, so IDE test runners and other
-        tools capturing standard output never saw the progress lines.
+ PR-49: Progress bars can be drawn with fractional Unicode glyphs. Five styles are available,
+        see ProgressBarStyle.
 
 [1.9.0]
 
@@ -119,7 +96,7 @@
  GH-16: Improve breakdown output for still running tasks and skipped/ never
         started tasks.
 
- GH-14: TaskStats breakdown can result in "IllegalArgumentException: Comparison 
+ GH-14: TaskStats breakdown can result in "IllegalArgumentException: Comparison
         method violates its general contract!"
 
  GH-15: Add an utility to format tabular outputs.
@@ -132,7 +109,7 @@
 
 [1.6.2]
 
-  GH-9: TaskStats.totalTimeString must throw an exception on an empty set of 
+  GH-9: TaskStats.totalTimeString must throw an exception on an empty set of
         tasks.
 
 [1.6.1]
@@ -166,7 +143,7 @@
 
   GH-1: Sort tasks by their start time in stats (breakdowns).
 
-  GH-2: Task implementations call super.start which makes overriding the 
+  GH-2: Task implementations call super.start which makes overriding the
         behavior of start(Tracker) impossible.
 
 [1.0.0]

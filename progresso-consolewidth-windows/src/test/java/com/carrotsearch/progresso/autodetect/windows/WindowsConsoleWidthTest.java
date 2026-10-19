@@ -1,4 +1,4 @@
-package com.carrotsearch.progresso.autodetect;
+package com.carrotsearch.progresso.autodetect.windows;
 
 import com.carrotsearch.progresso.util.OsDetection;
 import com.carrotsearch.progresso.views.console.ConsoleAware;

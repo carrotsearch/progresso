@@ -1,0 +1,7 @@
+include 'progresso'
+include 'progresso-log4j'
+include 'progresso-consolewidth-unixish'
+include 'progresso-consolewidth-windows'
+include 'progresso-jvmversion'
+
+rootProject.name = 'progresso'
