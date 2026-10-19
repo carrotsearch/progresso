@@ -1,0 +1,12 @@
+dependencies {
+  api project(':progresso')
+  implementation libs.slf4j.api
+
+  testRuntimeOnly libs.log4j.core
+  testRuntimeOnly libs.log4j.slf4j2
+}
+
+tasks.withType(Test).configureEach {
+  // The tests exercise the native calls (restricted methods); tests run on the class path.
+  jvmArgs '--enable-native-access=ALL-UNNAMED'
+}

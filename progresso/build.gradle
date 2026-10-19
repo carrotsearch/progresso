@@ -1,0 +1,11 @@
+// The demos (src/test/java/.../demos) are not unit tests: run them with
+//   ./gradlew :progresso:demos -Ptests.verbose=true
+tasks.register('demos', Test) {
+  description = 'Runs the console view demos (E0xx classes) with their output echoed.'
+  group = 'verification'
+  testClassesDirs = sourceSets.test.output.classesDirs
+  classpath = sourceSets.test.runtimeClasspath
+  setIncludes(['**/demos/E*.class'])
+  setExcludes([])
+  outputs.upToDateWhen { false }
+}

@@ -1,0 +1,75 @@
+plugins {
+  alias(libs.plugins.buildinfra)
+}
+
+// Configured in gradle/publishing/maven.gradle
+apply plugin: com.carrotsearch.gradle.buildinfra.publishing.mavencentral.MavenCentralPublishingPlugin
+
+apply from: file('gradle/dependencies.gradle')
+apply from: file('gradle/publishing/maven.gradle')
+
+apply plugin: 'base'
+
+allprojects {
+  apply plugin: 'idea'
+
+  group = "com.carrotsearch.progresso"
+  version = rootProject.libs.versions.progresso.get()
+
+  repositories {
+    mavenCentral()
+  }
+
+  idea {
+    module {
+      outputDir = file('build/idea/classes/main')
+      testOutputDir = file('build/idea/classes/test')
+      downloadSources = true
+    }
+  }
+}
+
+subprojects {
+  apply plugin: 'java-library'
+
+  tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << "-Xlint:deprecation"
+    options.encoding = "UTF-8"
+  }
+
+  // Every module (but the checked-in jvmversion class) is a JPMS module: record the version.
+  tasks.named('compileJava') {
+    options.compilerArgs.addAll([
+      '--module-version',
+      project.version
+    ])
+  }
+
+  tasks.withType(Jar).configureEach {
+    manifest {
+      attributes(
+      "Implementation-Title": project.name,
+      "Implementation-Version": project.version)
+    }
+  }
+
+  javadoc {
+    title = "${project.name} ${project.version} API Documentation"
+
+    options.addBooleanOption('html5', true)
+    options.addStringOption('Xdoclint:all,-missing', '-noindex')
+    options.encoding = 'UTF-8'
+  }
+
+  dependencies {
+    testImplementation rootProject.libs.randomizedtesting.runner
+    testImplementation rootProject.libs.junit
+    testImplementation rootProject.libs.assertj
+  }
+
+  // The same test class naming rules the Maven build used.
+  tasks.withType(Test).configureEach {
+    include '**/*Test.class', '**/*Tests.class', '**/Test*.class'
+    exclude '**/Abstract*.class', '**/*$*.class'
+  }
+}

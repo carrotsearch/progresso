@@ -1,7 +1,14 @@
-.settings/
+# Build outputs
+build/
+.gradle/
 target/
-.project
-.classpath
-*.versionsBackup
+
+# IDE files
 .idea/
 *.iml
+.settings/
+.project
+.classpath
+
+# Local build options (see buildinfra)
+build-options.local.properties

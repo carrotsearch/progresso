@@ -1,4 +1,4 @@
-package com.carrotsearch.progresso.autodetect;
+package com.carrotsearch.progresso.autodetect.windows;
 
 import static java.lang.foreign.ValueLayout.ADDRESS;
 import static java.lang.foreign.ValueLayout.JAVA_INT;

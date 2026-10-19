@@ -1,6 +1,15 @@
 
 [2.0.0]
 
+ The build moved from Maven to Gradle (./gradlew check); see README.txt. All artifacts
+        (except progresso-jvmversion, whose only class predates module descriptors) are
+        now JPMS modules: com.carrotsearch.progresso, com.carrotsearch.progresso.log4j,
+        com.carrotsearch.progresso.consolewidth_unixish and com.carrotsearch.progresso.windows.
+        The Windows console width supplier moved to the
+        com.carrotsearch.progresso.autodetect.windows package (modules may not share a
+        package); on the module path it needs
+        --enable-native-access=com.carrotsearch.progresso.windows.
+
  PR-51: ConsoleWidthSupplier has a priority (default 0); suppliers are consulted from the
         highest priority to the lowest and the first supported one provides the width.
         The console.width system property is itself a supplier now, with the highest

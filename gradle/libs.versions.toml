@@ -1,0 +1,23 @@
+[versions]
+# @keep This project's version.
+progresso = "2.0.0-SNAPSHOT"
+log4j = "2.25.4"
+slf4j = "2.0.20"
+randomizedtesting = "2.9.2"
+# @keep This is the minimum required Java version.
+minJava = "25"
+# @keep This is GJF version for spotless/ tidy.
+googleJavaFormat = "1.36.1"
+# @keep spotless formatting of groovy/gradle files
+greclipse = "4.26"
+
+[libraries]
+assertj = { module = "org.assertj:assertj-core", version = { strictly = "3.27.7" } }
+junit = { module = "junit:junit", version = { strictly = "4.13.2" } }
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+log4j-slf4j2 = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
+randomizedtesting-runner = { module = "com.carrotsearch.randomizedtesting:randomizedtesting-runner", version.ref = "randomizedtesting" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+
+[plugins]
+buildinfra = "com.carrotsearch.gradle.buildinfra:0.0.27"

@@ -1,6 +1,13 @@
 package com.carrotsearch.progresso.demos;
 
-import com.carrotsearch.progresso.*;
+import com.carrotsearch.progresso.CompositeTask;
+import com.carrotsearch.progresso.GenericTask;
+import com.carrotsearch.progresso.Progress;
+import com.carrotsearch.progresso.RangeTask;
+import com.carrotsearch.progresso.RangeTracker;
+import com.carrotsearch.progresso.TaskStats;
+import com.carrotsearch.progresso.Tasks;
+import com.carrotsearch.progresso.Tracker;
 import com.carrotsearch.progresso.views.console.ConsoleAware;
 import org.junit.Test;
 

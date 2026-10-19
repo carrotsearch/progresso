@@ -1,107 +1,122 @@
 name: on commit checks
 
-on:
+# The workflow_run trigger runs the checks after the Dependabot lock file update, on the head of
+# the Dependabot branch. It only runs the build with read permissions and no secrets, and only
+# for successful runs started by Dependabot on branches of this repository.
+on: # zizmor: ignore[dangerous-triggers]
+  workflow_dispatch:
+    # Allow manual dispatch.
+
   push:
     branches: [ "master" ]
+
   # Any pull request, whatever its base, so that stacked pull requests are checked too.
   pull_request:
+
+  workflow_run:
+    workflows: ["Dependabot PR lock file update"]
+    types:
+      - completed
 
 # The build only reads the repository.
 permissions:
   contents: read
 
-# A newer push to the same branch or pull request supersedes a run still in progress.
+# A newer push to the same branch or pull request supersedes a run still in progress. The event
+# name keeps workflow_run builds (whose github.ref is master) apart from builds of master itself.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.workflow_run.head_branch || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build with Maven
-    runs-on: ubuntu-latest
+  tests:
+    name: gradle check (JDK ${{ matrix.java }} on ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     permissions:
       contents: read
+    if: |
+      (github.event_name != 'workflow_run' && github.actor != 'dependabot[bot]') ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.actor.login == 'dependabot[bot]' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+
+    strategy:
+      matrix:
+        # Windows exercises the native console width detection for real.
+        os: [ ubuntu-latest, windows-latest ]
+        java: [ '25' ]
 
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      with:
-        persist-credentials: false
+      - name: Git checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # For workflow_run events, build the current head of the Dependabot branch (which
+          # includes the lock file commit, if one was pushed) instead of the default branch.
+          ref: ${{ github.event.workflow_run.head_branch || '' }}
+          persist-credentials: false
 
-    - name: Set up JDK
-      uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
-      with:
-        java-version: '25'
-        distribution: 'temurin'
-        cache: maven
+      - name: Set up JDK
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
+          java-package: jdk
 
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
 
-    - name: Upload built JAR
-      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-      with:
-        name: progresso-jar
-        path: progresso/target/progresso-*.jar
+      - name: Tests (./gradlew ... check)
+        run: ./gradlew check
+
+      - name: Store failed test outputs
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: failed-test-outputs-${{ matrix.os }}
+          path: '**/OUTPUT-*.txt'
 
   test-console-aware:
-    name: Test ConsoleAware (JDK ${{ matrix.java-version }})
+    name: Smoke test the published jar (JDK ${{ matrix.java-version }})
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: build
     permissions:
       contents: read
+    if: github.event_name != 'workflow_run'
     strategy:
       matrix:
         java-version: [25]
 
     steps:
-    - name: Download built JAR
-      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-      with:
-        name: progresso-jar
-        path: target/
-    - name: Set up JDK ${{ matrix.java-version }}
-      uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
-      with:
-        java-version: ${{ matrix.java-version }}
-        distribution: 'temurin'
-    - name: Test ConsoleAware invocation
-      # Passed through the environment rather than expanded into the script, see
-      # https://docs.zizmor.sh/audits/#template-injection
-      env:
-        JAVA_VERSION: ${{ matrix.java-version }}
-      run: |
-        OUTPUT=$(java -cp target/progresso-*.jar com.carrotsearch.progresso.views.console.ConsoleAware)
-        echo "Output: $OUTPUT"
-        if [[ $OUTPUT == Console* ]]; then
-          echo "✓ ConsoleAware test passed on JDK ${JAVA_VERSION}"
-        else
-          echo "✗ ConsoleAware test failed: output does not start with 'Console'"
-          echo "Actual output: $OUTPUT"
-          exit 1
-        fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-  test-console-width-windows:
-    name: Test console width detection (Windows)
-    runs-on: windows-latest
-    timeout-minutes: 30
-    permissions:
-      contents: read
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: 'temurin'
 
-    steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      with:
-        persist-credentials: false
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
 
-    - name: Set up JDK
-      uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
-      with:
-        java-version: '25'
-        distribution: 'temurin'
-        cache: maven
+      - name: Build the jar
+        run: ./gradlew :progresso:jar
 
-    # bash rather than pwsh: PowerShell splits -Dprop.name=value arguments at the dots.
-    - name: Build and test
-      shell: bash
-      run: mvn -B verify --file pom.xml -pl progresso-consolewidth-windows -am
+      - name: Test ConsoleAware invocation
+        # Passed through the environment rather than expanded into the script, see
+        # https://docs.zizmor.sh/audits/#template-injection
+        env:
+          JAVA_VERSION: ${{ matrix.java-version }}
+        run: |
+          OUTPUT=$(java -cp progresso/build/libs/progresso-*.jar com.carrotsearch.progresso.views.console.ConsoleAware)
+          echo "Output: $OUTPUT"
+          if [[ $OUTPUT == Console* ]]; then
+            echo "✓ ConsoleAware test passed on JDK ${JAVA_VERSION}"
+          else
+            echo "✗ ConsoleAware test failed: output does not start with 'Console'"
+            echo "Actual output: $OUTPUT"
+            exit 1
+          fi
