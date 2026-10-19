@@ -1,8 +1,10 @@
 include 'progresso'
-include 'progresso-log4j'
+include 'progresso-log4j2'
 include 'progresso-consolewidth-unixish'
 include 'progresso-consolewidth-windows'
 include 'progresso-jvmversion'
 include 'progresso-views-jline'
 
-rootProject.name = 'progresso'
+// Not 'progresso': in a composite build the root would clash with the ':progresso' module's
+// coordinates (both get the com.carrotsearch.progresso group).
+rootProject.name = 'progresso-parent'

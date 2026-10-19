@@ -14,6 +14,9 @@ configure(rootProject) {
     // Do not generate or publish gradle metadata files.
     gradleModuleMetadata = false
 
+    // The root project is progresso-parent; keep the bundle named after the library.
+    bundleName = 'progresso'
+
     pom {
       url = 'https://github.com/carrotsearch/progresso'
       inceptionYear = "2017"
@@ -47,7 +50,7 @@ configure(rootProject) {
 
     [
       ":progresso": "A task management/ reporting library with console progress tracking facilities.",
-      ":progresso-log4j": "Progresso (Log4j2 integration)",
+      ":progresso-log4j2": "Progresso (Log4j2 integration)",
       ":progresso-consolewidth-unixish": "Progresso (Console width detection, Unixish systems)",
       ":progresso-consolewidth-windows": "Progresso (Console width detection, Windows)",
       ":progresso-jvmversion": "Progresso (jvm version echo for scripts)",

@@ -1,6 +1,13 @@
 
 [2.0.0]
 
+ The log4j module's project directory is progresso-log4j2, like the artifact it publishes
+        (composite builds substitute it without extra rules). The JPMS module name stays
+        com.carrotsearch.progresso.log4j.
+
+ The Gradle root project is progresso-parent (as the Maven parent was), so that the root
+        and the progresso module do not share coordinates in composite builds.
+
  PR-52: The build moved from Maven to Gradle (./gradlew check); see README.txt. All artifacts
         (except progresso-jvmversion, whose only class predates module descriptors) are
         now JPMS modules.
