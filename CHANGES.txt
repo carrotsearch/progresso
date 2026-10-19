@@ -1,7 +1,7 @@
 
 [1.9.1]
 
- Building and running progresso now requires JDK 25 or later. Terminal detection calls
+ PR-50: Building and running progresso now requires JDK 25 or later. Terminal detection calls
         Console.isTerminal directly instead of through reflection, the output charset
         comes from the stdout.encoding property (sun.stdout.encoding is no longer
         consulted), progresso-consolewidth-unixish no longer goes through the removed
