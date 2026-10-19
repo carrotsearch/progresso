@@ -68,11 +68,6 @@ public class ConsoleAware {
     ProgressBarStyle.BRAILLE, ProgressBarStyle.ASCII
   };
 
-  /** Candidates in the legacy Windows console host: shades exist in the OEM code pages. */
-  private static final ProgressBarStyle[] CANDIDATES_WINDOWS_LEGACY = {
-    ProgressBarStyle.SHADES, ProgressBarStyle.ASCII
-  };
-
   private static ConsoleWriter consoleWriter;
   private static int globalWidthHint = CONSOLE_WIDTH_DEFAULT;
 
@@ -111,21 +106,16 @@ public class ConsoleAware {
    * heuristics, since no platform can tell whether the terminal's font actually has a glyph:
    *
    * <ul>
-   *   <li>If the output is not a terminal (see {@link #isUpdateable()}) or {@code TERM} is {@code
-   *       dumb}, {@link ProgressBarStyle#ASCII}.
+   *   <li>If the output is not a terminal (see {@link #isUpdateable()}), {@code TERM} is {@code
+   *       dumb} or the operating system is Windows (console code pages and glyph fallback vary too
+   *       much between hosts), {@link ProgressBarStyle#ASCII}.
    *   <li>Otherwise the candidates are, in order of preference, {@link ProgressBarStyle#BRAILLE},
    *       {@link ProgressBarStyle#BLOCKS}, {@link ProgressBarStyle#SHADES}, {@link
-   *       ProgressBarStyle#LINE} and {@link ProgressBarStyle#ASCII}, except:
-   *       <ul>
-   *         <li>in Chinese, Japanese and Korean locales ({@code LC_ALL}, {@code LC_CTYPE} or {@code
-   *             LANG}), terminals commonly render East Asian "ambiguous width" characters two
-   *             columns wide, which misaligns block elements and box drawing glyphs: only the
-   *             neutral-width {@link ProgressBarStyle#BRAILLE} or {@link ProgressBarStyle#ASCII};
-   *         <li>in the legacy Windows console host (no {@code WT_SESSION}, {@code ConEmuANSI},
-   *             {@code TERM} or {@code TERM_PROGRAM} variable), only {@link
-   *             ProgressBarStyle#SHADES}, whose glyphs exist in OEM code pages, or {@link
-   *             ProgressBarStyle#ASCII}.
-   *       </ul>
+   *       ProgressBarStyle#LINE} and {@link ProgressBarStyle#ASCII}; in Chinese, Japanese and
+   *       Korean locales ({@code LC_ALL}, {@code LC_CTYPE} or {@code LANG}), where terminals
+   *       commonly render East Asian "ambiguous width" characters two columns wide and misalign
+   *       block elements and box drawing glyphs, only the neutral-width {@link
+   *       ProgressBarStyle#BRAILLE} and {@link ProgressBarStyle#ASCII}.
    *   <li>The first candidate whose glyphs the output charset can encode is used; see {@link
    *       #outputCharset()} and {@link #supportedProgressBarStyles()}.
    * </ul>
@@ -170,25 +160,13 @@ public class ConsoleAware {
 
   static List<ProgressBarStyle> supportedProgressBarStyles(
       Map<String, String> env, boolean isTerminal, boolean isWindows, Charset charset) {
-    String term = env.get("TERM");
-    if (!isTerminal || "dumb".equals(term)) {
+    // Windows consoles and fonts are too unpredictable (code pages, glyph fallback): ASCII only,
+    // unless a style is requested explicitly.
+    if (!isTerminal || isWindows || "dumb".equals(env.get("TERM"))) {
       return List.of(ProgressBarStyle.ASCII);
     }
 
-    ProgressBarStyle[] candidates = CANDIDATES;
-    if (isCjkLocale(env)) {
-      candidates = CANDIDATES_CJK;
-    } else if (isWindows) {
-      boolean knownUnicodeHost =
-          env.containsKey("WT_SESSION")
-              || env.containsKey("ConEmuANSI")
-              || env.containsKey("TERM_PROGRAM")
-              || term != null;
-      if (!knownUnicodeHost) {
-        candidates = CANDIDATES_WINDOWS_LEGACY;
-      }
-    }
-
+    ProgressBarStyle[] candidates = isCjkLocale(env) ? CANDIDATES_CJK : CANDIDATES;
     List<ProgressBarStyle> supported =
         Arrays.stream(candidates).filter(style -> style.isEncodable(charset)).toList();
     return supported.isEmpty() ? List.of(ProgressBarStyle.ASCII) : supported;

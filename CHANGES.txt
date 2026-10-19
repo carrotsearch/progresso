@@ -7,6 +7,9 @@
 
  The console width modules log through java.util.logging and no longer depend on slf4j.
 
+ On Windows only the ascii progress bar is picked automatically (console code pages and
+        glyph fallback vary too much between hosts); other styles must be requested explicitly.
+
  Braille is the preferred progress bar style wherever the output charset can encode it;
         ConsoleAware.supportedProgressBarStyles() lists the usable styles and Demo skips
         the others.

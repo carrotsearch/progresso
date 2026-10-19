@@ -4,9 +4,9 @@ import com.carrotsearch.randomizedtesting.RandomizedTest;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
-import org.junit.Assume;
 import org.junit.Test;
 
 public class ProgressBarStyleDetectionTest extends RandomizedTest {
@@ -77,7 +77,7 @@ public class ProgressBarStyleDetectionTest extends RandomizedTest {
     // neutral-width styles are picked.
     Assertions.assertThat(detect(null, env("LANG", "ja_JP.UTF-8"), TERMINAL, UNIX, utf8()))
         .isEqualTo(ProgressBarStyle.BRAILLE);
-    Assertions.assertThat(detect(null, env("LANG", "zh_CN.UTF-8"), TERMINAL, WINDOWS, utf8()))
+    Assertions.assertThat(detect(null, env("LANG", "zh_CN.UTF-8"), TERMINAL, UNIX, utf8()))
         .isEqualTo(ProgressBarStyle.BRAILLE);
     Assertions.assertThat(detect(null, env("LC_CTYPE", "ko_KR.UTF-8"), TERMINAL, UNIX, utf8()))
         .isEqualTo(ProgressBarStyle.BRAILLE);
@@ -112,30 +112,21 @@ public class ProgressBarStyleDetectionTest extends RandomizedTest {
   }
 
   @Test
-  public void windows() {
-    // Known unicode-capable hosts.
-    Assertions.assertThat(detect(null, env("WT_SESSION", "x"), TERMINAL, WINDOWS, utf8()))
-        .isEqualTo(ProgressBarStyle.BRAILLE);
-    Assertions.assertThat(detect(null, env("ConEmuANSI", "ON"), TERMINAL, WINDOWS, utf8()))
-        .isEqualTo(ProgressBarStyle.BRAILLE);
-    Assertions.assertThat(detect(null, env("TERM", "xterm"), TERMINAL, WINDOWS, utf8()))
-        .isEqualTo(ProgressBarStyle.BRAILLE);
-
-    // Legacy console host: at most shades, even when the code page is UTF-8.
-    Assertions.assertThat(detect(null, env(), TERMINAL, WINDOWS, utf8()))
-        .isEqualTo(ProgressBarStyle.SHADES);
-
-    // Windows ANSI code page without block elements.
-    Assume.assumeTrue(Charset.isSupported("windows-1250"));
-    Assertions.assertThat(
-            detect(
-                null, env("WT_SESSION", "x"), TERMINAL, WINDOWS, Charset.forName("windows-1250")))
+  public void windowsIsAsciiOnly() {
+    for (Map<String, String> host :
+        List.of(env(), env("WT_SESSION", "x"), env("ConEmuANSI", "ON"), env("TERM", "xterm"))) {
+      for (Charset charset : List.of(utf8(), ascii())) {
+        Assertions.assertThat(detect(null, host, TERMINAL, WINDOWS, charset))
+            .as("%s, %s", host, charset)
+            .isEqualTo(ProgressBarStyle.ASCII);
+      }
+    }
+    Assertions.assertThat(detect(null, env("LANG", "ja_JP.UTF-8"), TERMINAL, WINDOWS, utf8()))
         .isEqualTo(ProgressBarStyle.ASCII);
 
-    // OEM code page: shades are available.
-    Assume.assumeTrue(Charset.isSupported("IBM437"));
-    Assertions.assertThat(detect(null, env(), TERMINAL, WINDOWS, Charset.forName("IBM437")))
-        .isEqualTo(ProgressBarStyle.SHADES);
+    // Explicit requests are honored.
+    Assertions.assertThat(detect("blocks", env(), TERMINAL, WINDOWS, utf8()))
+        .isEqualTo(ProgressBarStyle.BLOCKS);
   }
 
   @Test
@@ -159,8 +150,10 @@ public class ProgressBarStyleDetectionTest extends RandomizedTest {
             ConsoleAware.supportedProgressBarStyles(
                 env("LANG", "ja_JP.UTF-8"), TERMINAL, UNIX, utf8()))
         .containsExactly(ProgressBarStyle.BRAILLE, ProgressBarStyle.ASCII);
-    Assertions.assertThat(ConsoleAware.supportedProgressBarStyles(env(), TERMINAL, WINDOWS, utf8()))
-        .containsExactly(ProgressBarStyle.SHADES, ProgressBarStyle.ASCII);
+    Assertions.assertThat(
+            ConsoleAware.supportedProgressBarStyles(
+                env("WT_SESSION", "x"), TERMINAL, WINDOWS, utf8()))
+        .containsExactly(ProgressBarStyle.ASCII);
   }
 
   @Test
