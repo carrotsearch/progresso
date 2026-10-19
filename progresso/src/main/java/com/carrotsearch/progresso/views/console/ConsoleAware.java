@@ -10,12 +10,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -256,10 +254,11 @@ public class ConsoleAware {
    *     be expensive, does not run when a higher-priority one is supported.
    */
   public static Optional<ConsoleWidthSupplier> consoleWidthSupplier() {
-    List<ConsoleWidthSupplier> suppliers = new ArrayList<>();
-    ServiceLoader.load(ConsoleWidthSupplier.class).forEach(suppliers::add);
-    suppliers.sort(Comparator.comparingInt(ConsoleWidthSupplier::priority).reversed());
-    return suppliers.stream().filter(ConsoleWidthSupplier::isSupported).findFirst();
+    return ServiceLoader.load(ConsoleWidthSupplier.class).stream()
+        .map(ServiceLoader.Provider::get)
+        .sorted(Comparator.comparingInt(ConsoleWidthSupplier::priority).reversed())
+        .filter(ConsoleWidthSupplier::isSupported)
+        .findFirst();
   }
 
   /**
