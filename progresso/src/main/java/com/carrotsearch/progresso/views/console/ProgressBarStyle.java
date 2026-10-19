@@ -51,11 +51,11 @@ public enum ProgressBarStyle {
   },
 
   /**
-   * Shade blocks {@code [███▓░░░░]} (U+2591..U+2593, U+2588). Three fractional steps per cell.
-   * These glyphs are present in the IBM OEM code pages (437, 850, 852, ...) used by legacy Windows
+   * Shade blocks {@code [███▓ ]} (U+2591..U+2593, U+2588). Three fractional steps per cell. These
+   * glyphs are present in the IBM OEM code pages (437, 850, 852, ...) used by legacy Windows
    * consoles, so this style survives a non-UTF-8 console.
    */
-  SHADES("[", "]", '█', "▒▓", '░'),
+  SHADES("[", "]", '█', "░▒▓", ' '),
 
   /**
    * Left one-eighth blocks {@code [████▍ ]} (U+2588..U+258F). Seven fractional steps per cell; the

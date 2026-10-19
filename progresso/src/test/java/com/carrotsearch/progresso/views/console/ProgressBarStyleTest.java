@@ -26,8 +26,9 @@ public class ProgressBarStyleTest extends RandomizedTest {
     Assertions.assertThat(ProgressBarStyle.BLOCKS.render(12, 0.99)).isEqualTo("[█████████▉]");
     Assertions.assertThat(ProgressBarStyle.BLOCKS.render(12, 1)).isEqualTo("[██████████]");
 
-    Assertions.assertThat(ProgressBarStyle.SHADES.render(12, 0.25)).isEqualTo("[██▒░░░░░░░]");
-    Assertions.assertThat(ProgressBarStyle.SHADES.render(12, 0.28)).isEqualTo("[██▓░░░░░░░]");
+    Assertions.assertThat(ProgressBarStyle.SHADES.render(12, 0.23)).isEqualTo("[██░       ]");
+    Assertions.assertThat(ProgressBarStyle.SHADES.render(12, 0.25)).isEqualTo("[██▒       ]");
+    Assertions.assertThat(ProgressBarStyle.SHADES.render(12, 0.28)).isEqualTo("[██▓       ]");
     Assertions.assertThat(ProgressBarStyle.LINE.render(12, 0.25)).isEqualTo("[━━╸───────]");
     Assertions.assertThat(ProgressBarStyle.LINE.render(12, 0.24)).isEqualTo("[━━────────]");
   }
@@ -104,7 +105,7 @@ public class ProgressBarStyleTest extends RandomizedTest {
           break;
         }
         count++;
-      } else if (c != ' ' && c != '\u2591' && c != '\u2500') {
+      } else if (c != ' ' && c != '\u2500') {
         count++;
       }
     }
