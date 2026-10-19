@@ -1,4 +1,4 @@
-package com.carrotsearch.progresso.log4j;
+package com.carrotsearch.progresso.log4j2;
 
 import com.carrotsearch.progresso.views.console.ConsoleAware;
 import com.carrotsearch.progresso.views.console.ConsoleWriter;
