@@ -54,6 +54,7 @@ configure(rootProject) {
       ":progresso-consolewidth-unixish": "Progresso (Console width detection, Unixish systems)",
       ":progresso-consolewidth-windows": "Progresso (Console width detection, Windows)",
       ":progresso-jvmversion": "Progresso (jvm version echo for scripts)",
+      ":progresso-views-jline": "Progresso (JLine console views)",
     ].each { path, projectDescription ->
       project(path) {
         pom {
