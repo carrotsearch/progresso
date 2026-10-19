@@ -101,12 +101,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    # The core module's own tests run in the Linux build; here it is only installed as a
-    # dependency. bash rather than pwsh: PowerShell splits -Dprop.name=value arguments at the dots.
-    - name: Install dependencies
+    # bash rather than pwsh: PowerShell splits -Dprop.name=value arguments at the dots.
+    - name: Build and test
       shell: bash
-      run: mvn -B -Dskip.UTs=true install --file pom.xml -pl progresso-consolewidth-windows -am
-
-    - name: Test console width detection
-      shell: bash
-      run: mvn -B -Dtests.verbose=true verify --file pom.xml -pl progresso-consolewidth-windows
+      run: mvn -B verify --file pom.xml -pl progresso-consolewidth-windows -am
