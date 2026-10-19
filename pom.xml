@@ -101,6 +101,7 @@
     <module>progresso</module>
     <module>progresso-log4j</module>
     <module>progresso-consolewidth-unixish</module>
+    <module>progresso-consolewidth-windows</module>
     <module>progresso-jvmversion</module>
   </modules>
 

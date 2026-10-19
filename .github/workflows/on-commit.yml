@@ -81,3 +81,30 @@ jobs:
           echo "Actual output: $OUTPUT"
           exit 1
         fi
+
+  test-console-width-windows:
+    name: Test console width detection (Windows)
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Set up JDK
+      uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+      with:
+        java-version: '25'
+        distribution: 'temurin'
+        cache: maven
+
+    # Spotless is skipped: the Windows checkout converts line endings. The core module's own
+    # tests run in the Linux build; here it is only installed as a dependency.
+    - name: Install dependencies
+      run: mvn -B -Dskip.UTs=true -Dspotless.check.skip=true install --file pom.xml -pl progresso-consolewidth-windows -am
+
+    - name: Test console width detection
+      run: mvn -B -Dspotless.check.skip=true -Dtests.verbose=true verify --file pom.xml -pl progresso-consolewidth-windows
