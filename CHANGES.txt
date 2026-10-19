@@ -1,4 +1,14 @@
 
+[1.9.1]
+
+ Progress bars can be drawn with fractional Unicode glyphs. Four styles are available
+        (ProgressBarStyle): ascii (the previous "[====>   ]" bar), shades (block shades,
+        encodable in OEM code pages), blocks (one-eighth blocks, the smoothest) and line
+        (box drawing). The style is picked automatically from the terminal, operating
+        system and output encoding (ConsoleAware.progressBarStyle), and can be forced
+        with the console.progressbar system property or the PROGRESSO_PROGRESSBAR
+        environment variable. ConsoleAware.main reports the detected charset and style.
+
 [1.9.0]
 
  GH-45: Building progresso now requires JDK 21 or later; the produced artifacts require

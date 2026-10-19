@@ -26,44 +26,27 @@ public abstract class AbstractTrackerFormatter<T> implements TrackerFormatter {
     lf.cell(cols, cols, Alignment.LEFT, Trim.LEFT, LineFormatter.PRIORITY_OPTIONAL, value);
   }
 
+  /** Renders the classic ASCII progress bar; see {@link #dots(ProgressBarStyle, int, double)}. */
   protected static String dots(int lineWidth, double completedRatio) {
-    final int progressBarWidth;
+    return dots(ProgressBarStyle.ASCII, lineWidth, completedRatio);
+  }
+
+  /**
+   * Renders a progress bar in the given style. The bar's width depends on the available line width,
+   * see {@link #progressBarWidth(int)}.
+   */
+  protected static String dots(ProgressBarStyle style, int lineWidth, double completedRatio) {
+    return style.render(progressBarWidth(lineWidth), completedRatio);
+  }
+
+  /** Returns the width of the progress bar (including delimiters) for the given line width. */
+  protected static int progressBarWidth(int lineWidth) {
     if (lineWidth <= 80) {
-      progressBarWidth = 4 * 5 + 1;
+      return 4 * 5 + 1;
     } else if (lineWidth <= 120) {
-      progressBarWidth = 4 * 7 + 1;
+      return 4 * 7 + 1;
     } else {
-      progressBarWidth = 4 * 9 + 1;
+      return 4 * 9 + 1;
     }
-
-    final int tickModulo = (progressBarWidth - 1) / 4;
-
-    final StringBuilder out = new StringBuilder();
-    final int atColumn = (int) (completedRatio * (progressBarWidth - 1));
-    for (int i = 0; i < progressBarWidth; i++) {
-      final char chr;
-
-      if (i == 0) {
-        chr = '[';
-      } else if (i == progressBarWidth - 1) {
-        chr = ']';
-      } else if (i == atColumn) {
-        chr = '>';
-      } else {
-        if (i % tickModulo == 0) {
-          chr = ':';
-        } else {
-          if (i < atColumn) {
-            chr = '=';
-          } else {
-            chr = ' ';
-          }
-        }
-      }
-
-      out.append(chr);
-    }
-
-    return out.toString();
   }
 }
