@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 public class ConsoleWriter extends Writer {
-  public static final String LF = System.getProperty("line.separator");
+  public static final String LF = System.lineSeparator();
   private static final String CR = "\r";
 
   private final ColumnCounter cc;
