@@ -2,7 +2,6 @@ package com.carrotsearch.progresso.demos;
 
 import com.carrotsearch.progresso.Progress;
 import com.carrotsearch.progresso.RangeTracker;
-import com.carrotsearch.progresso.Tasks;
 import com.carrotsearch.progresso.views.console.AbstractConsoleView;
 import com.carrotsearch.progresso.views.console.ConsoleAware;
 import com.carrotsearch.progresso.views.console.ProgressBarStyle;
@@ -10,7 +9,15 @@ import com.carrotsearch.progresso.views.console.UpdateableConsoleView;
 import java.util.Collections;
 import org.junit.Test;
 
+/**
+ * Renders a task in each {@link ProgressBarStyle}, then one more with the automatically detected
+ * style. Views are driven by {@link Progress}, which polls them twice a second, so each task runs
+ * long enough to show a handful of redraws.
+ */
 public class E012_ProgressBarStyles extends AbstractExampleTest {
+  private static final int STEPS = 80;
+  private static final long STEP_MILLIS = 50;
+
   @Test
   public void allStyles() throws Exception {
     for (ProgressBarStyle style : ProgressBarStyle.values()) {
@@ -20,15 +27,9 @@ public class E012_ProgressBarStyles extends AbstractExampleTest {
               Collections.emptyList(),
               AbstractConsoleView.defaultFormatters(style));
 
-      int steps = 60;
-      try (RangeTracker t = Tasks.newRangeTask("Style " + style.name()).start(0, steps)) {
-        for (int i = 0; i < steps; i++) {
-          sleep(1000 / steps);
-          t.at(i);
-          view.update(Collections.singleton(t.task()));
-        }
-        t.close();
-        view.update(Collections.singleton(t.task()));
+      try (Progress progress = new Progress(view);
+          RangeTracker t = progress.newRangeSubtask("Style " + style.name()).start(0, STEPS)) {
+        runSteps(t);
       }
     }
   }
@@ -40,13 +41,17 @@ public class E012_ProgressBarStyles extends AbstractExampleTest {
             + ConsoleAware.progressBarStyle()
             + ", charset "
             + ConsoleAware.outputCharset());
-    int steps = 60;
+
     try (Progress progress = defaultProgress();
-        RangeTracker t = progress.newRangeSubtask("Autodetected").start(0, steps)) {
-      for (int i = 0; i < steps; i++) {
-        sleep(1000 / steps);
-        t.at(i);
-      }
+        RangeTracker t = progress.newRangeSubtask("Autodetected").start(0, STEPS)) {
+      runSteps(t);
+    }
+  }
+
+  private static void runSteps(RangeTracker t) {
+    for (int i = 0; i < STEPS; i++) {
+      sleep(STEP_MILLIS);
+      t.at(i);
     }
   }
 }
