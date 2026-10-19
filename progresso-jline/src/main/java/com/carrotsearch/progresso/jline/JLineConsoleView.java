@@ -8,12 +8,15 @@ import com.carrotsearch.progresso.util.ColumnCounter;
 import com.carrotsearch.progresso.util.LineFormatter;
 import com.carrotsearch.progresso.util.LineFormatter.Alignment;
 import com.carrotsearch.progresso.views.console.AbstractConsoleView;
+import com.carrotsearch.progresso.views.console.ConsoleAware;
+import com.carrotsearch.progresso.views.console.ProgressBarStyle;
 import com.carrotsearch.progresso.views.console.TaskStatusRecovery;
 import com.carrotsearch.progresso.views.console.TrackerFormatter;
 import com.carrotsearch.progresso.views.console.TrackerRateCalculator;
 import com.carrotsearch.progresso.views.console.ViewHelpers;
 import java.io.Closeable;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,7 +43,6 @@ import org.jline.utils.InfoCmp.Capability;
  */
 public final class JLineConsoleView implements ProgressView, Closeable {
   private final Terminal terminal;
-  private final boolean ownsTerminal;
   private final boolean colors;
   private final Display display;
   private final List<? extends TrackerFormatter> formatters;
@@ -51,15 +53,33 @@ public final class JLineConsoleView implements ProgressView, Closeable {
   private final LinkedHashSet<Task<?>> running = new LinkedHashSet<>();
   private List<AttributedString> live = List.of();
 
-  /** Opens the system terminal and owns it: {@link #close()} closes it. */
+  /** A view on the shared {@link JLineTerminals#system() system terminal}. */
   public static JLineConsoleView open() throws IOException {
     return open(Collections.emptyList());
   }
 
   public static JLineConsoleView open(Collection<? extends Task<?>> topTasks) throws IOException {
-    Terminal terminal = JLineTerminals.openSystem();
+    Terminal terminal = JLineTerminals.system();
     return new JLineConsoleView(
-        terminal, true, topTasks, AbstractConsoleView.defaultFormatters(), hasColors(terminal));
+        terminal,
+        topTasks,
+        AbstractConsoleView.defaultFormatters(progressBarStyle(terminal)),
+        hasColors(terminal));
+  }
+
+  /**
+   * The progress bar style for a JLine terminal: an explicit request wins, a dumb terminal gets
+   * ASCII, anything else the most preferred style encodable in UTF-8. JLine writes Unicode to the
+   * console itself (on Windows through the wide-character API, past the console code page), so the
+   * operating system gates of {@link ConsoleAware#progressBarStyle()} do not apply.
+   */
+  public static ProgressBarStyle progressBarStyle(Terminal terminal) {
+    return ConsoleAware.explicitProgressBarStyle()
+        .orElseGet(
+            () ->
+                JLineTerminals.isInteractive(terminal)
+                    ? ConsoleAware.supportedProgressBarStyles(StandardCharsets.UTF_8).get(0)
+                    : ProgressBarStyle.ASCII);
   }
 
   public JLineConsoleView(
@@ -67,17 +87,7 @@ public final class JLineConsoleView implements ProgressView, Closeable {
       Collection<? extends Task<?>> topTasks,
       List<? extends TrackerFormatter> formatters,
       boolean colors) {
-    this(terminal, false, topTasks, formatters, colors);
-  }
-
-  private JLineConsoleView(
-      Terminal terminal,
-      boolean ownsTerminal,
-      Collection<? extends Task<?>> topTasks,
-      List<? extends TrackerFormatter> formatters,
-      boolean colors) {
     this.terminal = terminal;
-    this.ownsTerminal = ownsTerminal;
     this.topTasks = new HashSet<>(topTasks);
     this.formatters = new ArrayList<>(formatters);
     this.colors = colors;
@@ -124,6 +134,7 @@ public final class JLineConsoleView implements ProgressView, Closeable {
     redrawLive();
   }
 
+  /** Finishes the live block: still running tasks are printed as permanent lines. */
   @Override
   public synchronized void close() throws IOException {
     eraseLive();
@@ -132,9 +143,6 @@ public final class JLineConsoleView implements ProgressView, Closeable {
     }
     running.clear();
     terminal.flush();
-    if (ownsTerminal) {
-      terminal.close();
-    }
   }
 
   private void eraseLive() {

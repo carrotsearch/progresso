@@ -1,19 +1,44 @@
 package com.carrotsearch.progresso.jline;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
-/** Opens JLine terminals the way progresso wants them. */
+/**
+ * The process's JLine system terminal, shared by everything in progresso that needs it. JLine
+ * attaches to the system terminal once: a second attempt while the first is open yields a dumb
+ * terminal, so the views and the width supplier must use the same instance. It is closed when the
+ * JVM exits.
+ */
 public final class JLineTerminals {
+  private static Terminal system;
+
   private JLineTerminals() {}
 
   /**
-   * Opens the system terminal. Falls back to a dumb terminal (type {@code dumb}) when the process
-   * has no interactive terminal, without JLine's warning about it.
+   * Returns the shared system terminal, opening it on first use. Without an interactive terminal
+   * (redirected streams, test runners) this is a dumb terminal (type {@code dumb}), without JLine's
+   * warning about it.
    */
-  public static Terminal openSystem() throws IOException {
-    return TerminalBuilder.builder().system(true).dumb(true).nativeSignals(false).build();
+  public static synchronized Terminal system() throws IOException {
+    if (system == null) {
+      Terminal terminal =
+          TerminalBuilder.builder().system(true).dumb(true).nativeSignals(false).build();
+      Runtime.getRuntime()
+          .addShutdownHook(
+              new Thread(
+                  () -> {
+                    try {
+                      terminal.close();
+                    } catch (IOException e) {
+                      throw new UncheckedIOException(e);
+                    }
+                  },
+                  "progresso-jline terminal close"));
+      system = terminal;
+    }
+    return system;
   }
 
   /** Returns true if the terminal is a real one, not JLine's fallback for redirected streams. */

@@ -137,15 +137,30 @@ public class ConsoleAware {
       boolean isTerminal,
       boolean isWindows,
       Charset charset) {
+    return explicitProgressBarStyle(propertyOverride, env)
+        .orElseGet(() -> supportedProgressBarStyles(env, isTerminal, isWindows, charset).get(0));
+  }
+
+  /**
+   * @return Returns the style requested explicitly with the {@link #PROGRESS_BAR_PROPERTY} system
+   *     property or the {@link #PROGRESS_BAR_ENV} environment variable, if any ({@code auto} and
+   *     blank values count as none).
+   * @throws IllegalArgumentException if the requested style is unknown.
+   */
+  public static Optional<ProgressBarStyle> explicitProgressBarStyle() {
+    return explicitProgressBarStyle(System.getProperty(PROGRESS_BAR_PROPERTY), System.getenv());
+  }
+
+  static Optional<ProgressBarStyle> explicitProgressBarStyle(
+      String propertyOverride, Map<String, String> env) {
     String override = propertyOverride != null ? propertyOverride : env.get(PROGRESS_BAR_ENV);
     if (override != null) {
       override = override.trim();
       if (!override.isEmpty() && !override.equalsIgnoreCase(PROGRESS_BAR_AUTO)) {
-        return ProgressBarStyle.parse(override);
+        return Optional.of(ProgressBarStyle.parse(override));
       }
     }
-
-    return supportedProgressBarStyles(env, isTerminal, isWindows, charset).get(0);
+    return Optional.empty();
   }
 
   /**
@@ -165,7 +180,23 @@ public class ConsoleAware {
     if (!isTerminal || isWindows || "dumb".equals(env.get("TERM"))) {
       return List.of(ProgressBarStyle.ASCII);
     }
+    return supportedProgressBarStyles(env, charset);
+  }
 
+  /**
+   * @return Returns the styles usable on a terminal known to display Unicode and written in the
+   *     given charset, the most preferred first; the list always ends with {@link
+   *     ProgressBarStyle#ASCII}. Unlike {@link #supportedProgressBarStyles()}, this does not look
+   *     at the operating system or at whether the output is a terminal, only at the charset and the
+   *     locale (CJK locales get neutral-width styles only). Meant for terminal libraries
+   *     (progresso-jline) that bypass the console code page.
+   */
+  public static List<ProgressBarStyle> supportedProgressBarStyles(Charset charset) {
+    return supportedProgressBarStyles(System.getenv(), charset);
+  }
+
+  static List<ProgressBarStyle> supportedProgressBarStyles(
+      Map<String, String> env, Charset charset) {
     ProgressBarStyle[] candidates = isCjkLocale(env) ? CANDIDATES_CJK : CANDIDATES;
     List<ProgressBarStyle> supported =
         Arrays.stream(candidates).filter(style -> style.isEncodable(charset)).toList();

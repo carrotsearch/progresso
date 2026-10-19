@@ -40,7 +40,8 @@ public final class JLineConsoleWidth implements ConsoleWidthSupplier {
    *     not determine the size.
    */
   static int detectWidth() {
-    try (Terminal terminal = JLineTerminals.openSystem()) {
+    try {
+      Terminal terminal = JLineTerminals.system();
       if (!JLineTerminals.isInteractive(terminal)) {
         LOG.fine("No interactive terminal (JLine type: " + terminal.getType() + ").");
         return 0;

@@ -9,7 +9,9 @@
 
  PR-55: Experimental progresso-jline module: JLineConsoleView shows every running task on its own
         live line (colors when available, log lines scroll above), JLineConsoleWidth reads the
-        terminal size through JLine. See ./gradlew :progresso-jline:demo.
+        terminal size through JLine. The view picks the bar style from the terminal, not
+        the operating system (JLine writes Unicode past the Windows console code page).
+        See ./gradlew :progresso-jline:demo.
 
  On Windows only the ascii progress bar is picked automatically (console code pages and
         glyph fallback vary too much between hosts); other styles must be requested explicitly.

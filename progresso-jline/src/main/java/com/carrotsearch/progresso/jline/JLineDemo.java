@@ -34,7 +34,7 @@ public final class JLineDemo {
               ConsoleAware.consoleWidthSupplier()
                   .map(s -> s.getClass().getSimpleName())
                   .orElse("default"),
-              ConsoleAware.progressBarStyle().name().toLowerCase(Locale.ROOT)));
+              JLineConsoleView.progressBarStyle(terminal).name().toLowerCase(Locale.ROOT)));
 
       try (Progress progress = new Progress(view)) {
         RangeTracker download = progress.newByteRangeSubtask("Download").start(0, 40_000_000L);
