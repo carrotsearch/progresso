@@ -42,6 +42,9 @@ tasks.register('demo', Sync) {
   from configurations.demo
   into layout.buildDirectory.dir('demo')
 
+  // Always run, so that the command line below is printed even when the jars are current.
+  outputs.upToDateWhen { false }
+
   def demoDir = rootProject.relativePath(layout.buildDirectory.dir('demo').get())
   doLast {
     println """

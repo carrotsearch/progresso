@@ -76,16 +76,36 @@ public class ConsoleAware {
     return console != null && console.isTerminal();
   }
 
+  /**
+   * Returns the console view for this process: from the supported {@link ConsoleViewSupplier} with
+   * the highest priority. The core supplies {@link UpdateableConsoleView} on an interactive console
+   * and {@link PlainConsoleView} otherwise; modules on the class or module path may supply richer
+   * views for the terminals they support.
+   */
   public static ProgressView newConsoleProgressView() {
     return newConsoleProgressView(Collections.emptyList());
   }
 
+  /**
+   * @param topLevelSteps The top-level tasks, for the overall progress counter; may be empty.
+   * @see #newConsoleProgressView()
+   */
   public static ProgressView newConsoleProgressView(Collection<Task<?>> topLevelSteps) {
-    if (isUpdateable()) {
-      return new UpdateableConsoleView(writer(), topLevelSteps);
-    } else {
-      return new PlainConsoleView(writer(), topLevelSteps);
-    }
+    return consoleViewSupplier()
+        .map(supplier -> supplier.newConsoleProgressView(topLevelSteps))
+        .orElseGet(() -> new PlainConsoleView(writer(), topLevelSteps));
+  }
+
+  /**
+   * @return Returns the supported {@link ConsoleViewSupplier} with the highest priority, if any
+   *     (there always is one if the core's own services are visible).
+   */
+  public static Optional<ConsoleViewSupplier> consoleViewSupplier() {
+    return ServiceLoader.load(ConsoleViewSupplier.class).stream()
+        .map(ServiceLoader.Provider::get)
+        .sorted(Comparator.comparingInt(ConsoleViewSupplier::priority).reversed())
+        .filter(ConsoleViewSupplier::isSupported)
+        .findFirst();
   }
 
   public static boolean isUpdateable() {
@@ -137,15 +157,30 @@ public class ConsoleAware {
       boolean isTerminal,
       boolean isWindows,
       Charset charset) {
+    return explicitProgressBarStyle(propertyOverride, env)
+        .orElseGet(() -> supportedProgressBarStyles(env, isTerminal, isWindows, charset).get(0));
+  }
+
+  /**
+   * @return Returns the style requested explicitly with the {@link #PROGRESS_BAR_PROPERTY} system
+   *     property or the {@link #PROGRESS_BAR_ENV} environment variable, if any ({@code auto} and
+   *     blank values count as none).
+   * @throws IllegalArgumentException if the requested style is unknown.
+   */
+  public static Optional<ProgressBarStyle> explicitProgressBarStyle() {
+    return explicitProgressBarStyle(System.getProperty(PROGRESS_BAR_PROPERTY), System.getenv());
+  }
+
+  static Optional<ProgressBarStyle> explicitProgressBarStyle(
+      String propertyOverride, Map<String, String> env) {
     String override = propertyOverride != null ? propertyOverride : env.get(PROGRESS_BAR_ENV);
     if (override != null) {
       override = override.trim();
       if (!override.isEmpty() && !override.equalsIgnoreCase(PROGRESS_BAR_AUTO)) {
-        return ProgressBarStyle.parse(override);
+        return Optional.of(ProgressBarStyle.parse(override));
       }
     }
-
-    return supportedProgressBarStyles(env, isTerminal, isWindows, charset).get(0);
+    return Optional.empty();
   }
 
   /**
@@ -165,7 +200,23 @@ public class ConsoleAware {
     if (!isTerminal || isWindows || "dumb".equals(env.get("TERM"))) {
       return List.of(ProgressBarStyle.ASCII);
     }
+    return supportedProgressBarStyles(env, charset);
+  }
 
+  /**
+   * @return Returns the styles usable on a terminal known to display Unicode and written in the
+   *     given charset, the most preferred first; the list always ends with {@link
+   *     ProgressBarStyle#ASCII}. Unlike {@link #supportedProgressBarStyles()}, this does not look
+   *     at the operating system or at whether the output is a terminal, only at the charset and the
+   *     locale (CJK locales get neutral-width styles only). Meant for terminal libraries
+   *     (progresso-views-jline) that bypass the console code page.
+   */
+  public static List<ProgressBarStyle> supportedProgressBarStyles(Charset charset) {
+    return supportedProgressBarStyles(System.getenv(), charset);
+  }
+
+  static List<ProgressBarStyle> supportedProgressBarStyles(
+      Map<String, String> env, Charset charset) {
     ProgressBarStyle[] candidates = isCjkLocale(env) ? CANDIDATES_CJK : CANDIDATES;
     List<ProgressBarStyle> supported =
         Arrays.stream(candidates).filter(style -> style.isEncodable(charset)).toList();
@@ -283,8 +334,11 @@ public class ConsoleAware {
       w.printLine(
           String.format(
               Locale.ROOT,
-              "Console %s, width: %s (%s), charset: %s, progress bar: %s.",
+              "Console %s, view: %s, width: %s (%s), charset: %s, progress bar: %s.",
               ConsoleAware.isUpdateable() ? "is updateable" : "is not updateable",
+              ConsoleAware.consoleViewSupplier()
+                  .map(supplier -> supplier.getClass().getSimpleName())
+                  .orElse("none"),
               ConsoleAware.consoleWidth(),
               ConsoleAware.consoleWidthSupplier()
                   .map(supplier -> supplier.getClass().getSimpleName())

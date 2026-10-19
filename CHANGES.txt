@@ -7,6 +7,21 @@
 
  The console width modules log through java.util.logging and no longer depend on slf4j.
 
+ PR-55: Experimental progresso-views-jline module: JLineConsoleView shows every running task
+        on its own live line (colors when available, log lines scroll above),
+        JLineConsoleWidth reads the terminal size through JLine. The view picks the bar
+        style from the terminal, not the operating system (JLine writes Unicode past the
+        Windows console code page). Only stdout counts as the terminal: when it is
+        redirected (a pipe, tee, a file) the view is not supported and JLineConsoleWidth
+        still reports the width of the terminal on stderr, if any.
+        See ./gradlew :progresso-views-jline:demo.
+
+ Console views are pluggable, like console width suppliers:
+        ConsoleAware.newConsoleProgressView() picks the supported ConsoleViewSupplier with
+        the highest priority (ServiceLoader). The core supplies UpdateableConsoleView on an
+        interactive console and PlainConsoleView otherwise; progresso-views-jline supplies
+        JLineConsoleView on interactive terminals.
+
  On Windows only the ascii progress bar is picked automatically (console code pages and
         glyph fallback vary too much between hosts); other styles must be requested explicitly.
 

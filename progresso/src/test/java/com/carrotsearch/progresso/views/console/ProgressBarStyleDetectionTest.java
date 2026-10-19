@@ -157,6 +157,35 @@ public class ProgressBarStyleDetectionTest extends RandomizedTest {
   }
 
   @Test
+  public void terminalIndependentStyles() {
+    // Charset and locale only: no OS, no terminal check.
+    Assertions.assertThat(ConsoleAware.supportedProgressBarStyles(env(), utf8()))
+        .containsExactly(
+            ProgressBarStyle.BRAILLE,
+            ProgressBarStyle.BLOCKS,
+            ProgressBarStyle.SHADES,
+            ProgressBarStyle.LINE,
+            ProgressBarStyle.ASCII);
+    Assertions.assertThat(ConsoleAware.supportedProgressBarStyles(env(), ascii()))
+        .containsExactly(ProgressBarStyle.ASCII);
+    Assertions.assertThat(
+            ConsoleAware.supportedProgressBarStyles(env("LANG", "ko_KR.UTF-8"), utf8()))
+        .containsExactly(ProgressBarStyle.BRAILLE, ProgressBarStyle.ASCII);
+  }
+
+  @Test
+  public void explicitStyle() {
+    Assertions.assertThat(ConsoleAware.explicitProgressBarStyle("line", env()))
+        .contains(ProgressBarStyle.LINE);
+    Assertions.assertThat(
+            ConsoleAware.explicitProgressBarStyle(null, env("PROGRESSO_PROGRESSBAR", "shades")))
+        .contains(ProgressBarStyle.SHADES);
+    Assertions.assertThat(ConsoleAware.explicitProgressBarStyle("auto", env())).isEmpty();
+    Assertions.assertThat(ConsoleAware.explicitProgressBarStyle(" ", env())).isEmpty();
+    Assertions.assertThat(ConsoleAware.explicitProgressBarStyle(null, env())).isEmpty();
+  }
+
+  @Test
   public void liveDetectionDoesNotThrow() {
     // Whatever the test environment, auto-detection must produce something.
     Assertions.assertThat(ConsoleAware.progressBarStyle()).isNotNull();
