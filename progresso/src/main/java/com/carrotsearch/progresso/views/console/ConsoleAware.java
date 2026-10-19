@@ -9,17 +9,13 @@ import java.io.Console;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.ServiceLoader;
-import java.util.function.Predicate;
 
 @SuppressForbidden("Legitimate use of System.out and properties.")
 public class ConsoleAware {
@@ -68,34 +64,9 @@ public class ConsoleAware {
   private static ConsoleWriter consoleWriter;
   private static int globalWidthHint = CONSOLE_WIDTH_DEFAULT;
 
-  /**
-   * Assume the terminal is updateable if system console is available and - on newer JDKs - the
-   * isTerminal method returns true.
-   */
-  private static final Predicate<Console> consoleIsTerminal;
-
-  static {
-    Predicate<Console> predicate = null;
-    try {
-      // Only available on JDK22+.
-      Method isTerminal = Console.class.getMethod("isTerminal");
-      predicate =
-          (console) -> {
-            try {
-              return console != null && (boolean) isTerminal.invoke(console);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-              return false;
-            }
-          };
-    } catch (NoSuchMethodException e) {
-      // ignore.
-    }
-
-    if (predicate == null) {
-      predicate = Objects::nonNull;
-    }
-
-    consoleIsTerminal = predicate;
+  /** Returns true if the given console is attached to an interactive terminal. */
+  private static boolean isTerminal(Console console) {
+    return console != null && console.isTerminal();
   }
 
   public static ProgressView newConsoleProgressView() {
@@ -115,7 +86,7 @@ public class ConsoleAware {
     if (System.getProperty(CONSOLE_UPDATEABLE_PROPERTY) != null) {
       consoleUpdateable = Boolean.parseBoolean(System.getProperty(CONSOLE_UPDATEABLE_PROPERTY));
     } else {
-      consoleUpdateable = consoleIsTerminal.test(System.console());
+      consoleUpdateable = isTerminal(System.console());
     }
     return consoleUpdateable;
   }
@@ -213,8 +184,8 @@ public class ConsoleAware {
 
   /**
    * Returns the charset of the console output: the console's charset if a console is attached,
-   * otherwise the JVM's standard output encoding ({@code stdout.encoding} on JDK 19+, {@code
-   * sun.stdout.encoding} on older JDKs) or, failing that, the default charset.
+   * otherwise the JVM's standard output encoding ({@code stdout.encoding}) or, failing that, the
+   * default charset.
    */
   public static Charset outputCharset() {
     Console console = System.console();
@@ -222,14 +193,12 @@ public class ConsoleAware {
       return console.charset();
     }
 
-    for (String property : new String[] {"stdout.encoding", "sun.stdout.encoding"}) {
-      String encoding = System.getProperty(property);
-      if (encoding != null) {
-        try {
-          return Charset.forName(encoding);
-        } catch (IllegalArgumentException e) {
-          // Unknown or illegal name; fall through.
-        }
+    String encoding = System.getProperty("stdout.encoding");
+    if (encoding != null) {
+      try {
+        return Charset.forName(encoding);
+      } catch (IllegalArgumentException e) {
+        // Unknown or illegal name; fall through.
       }
     }
 
@@ -255,7 +224,7 @@ public class ConsoleAware {
    */
   static Writer outputWriter() {
     Console console = System.console();
-    if (consoleIsTerminal.test(console)) {
+    if (isTerminal(console)) {
       return console.writer();
     } else {
       return new OutputStreamWriter(System.out, outputCharset());

@@ -3,6 +3,8 @@ package com.carrotsearch.progresso.log4j;
 import com.carrotsearch.progresso.views.console.ConsoleAware;
 import com.carrotsearch.progresso.views.console.ConsoleWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UncheckedIOException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Filter;
@@ -13,7 +15,6 @@ import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
-import org.apache.logging.log4j.core.impl.ThrowableProxy;
 
 /**
  * A log4j appender that is compatible with progresso console views so that if a task is being
@@ -56,10 +57,12 @@ public class ProgressAwareAppender extends AbstractAppender {
     builder.append(event.getMessage().getFormattedMessage());
 
     if (printStackTraces) {
-      ThrowableProxy thrownProxy = event.getThrownProxy();
-      if (thrownProxy != null) {
+      Throwable thrown = event.getThrown();
+      if (thrown != null) {
+        StringWriter stackTrace = new StringWriter();
+        thrown.printStackTrace(new PrintWriter(stackTrace));
         builder.append(ConsoleWriter.LF);
-        builder.append(thrownProxy.getCauseStackTraceAsString(""));
+        builder.append(stackTrace.toString().stripTrailing());
       }
     }
 
