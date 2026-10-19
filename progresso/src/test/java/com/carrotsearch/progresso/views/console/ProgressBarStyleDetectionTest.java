@@ -46,6 +46,10 @@ public class ProgressBarStyleDetectionTest extends RandomizedTest {
     Assertions.assertThat(detect(" ", env("PROGRESSO_PROGRESSBAR", "AUTO"), TERMINAL, UNIX, utf8()))
         .isEqualTo(ProgressBarStyle.BLOCKS);
 
+    // Braille is never auto-detected, only requested.
+    Assertions.assertThat(detect("braille", env(), TERMINAL, UNIX, utf8()))
+        .isEqualTo(ProgressBarStyle.BRAILLE);
+
     Assertions.assertThatThrownBy(() -> detect("fancy", env(), TERMINAL, UNIX, utf8()))
         .isInstanceOf(IllegalArgumentException.class);
   }

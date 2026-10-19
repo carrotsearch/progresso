@@ -31,6 +31,12 @@ public class ProgressBarStyleTest extends RandomizedTest {
     Assertions.assertThat(ProgressBarStyle.SHADES.render(12, 0.28)).isEqualTo("[██▓       ]");
     Assertions.assertThat(ProgressBarStyle.LINE.render(12, 0.25)).isEqualTo("[━━╸───────]");
     Assertions.assertThat(ProgressBarStyle.LINE.render(12, 0.24)).isEqualTo("[━━────────]");
+
+    Assertions.assertThat(ProgressBarStyle.BRAILLE.render(12, 0)).isEqualTo("[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]");
+    Assertions.assertThat(ProgressBarStyle.BRAILLE.render(12, 0.03)).isEqualTo("[⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀]");
+    Assertions.assertThat(ProgressBarStyle.BRAILLE.render(12, 0.25)).isEqualTo("[⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀]");
+    Assertions.assertThat(ProgressBarStyle.BRAILLE.render(12, 0.99)).isEqualTo("[⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷]");
+    Assertions.assertThat(ProgressBarStyle.BRAILLE.render(12, 1)).isEqualTo("[⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿]");
   }
 
   @Test
@@ -79,6 +85,7 @@ public class ProgressBarStyleTest extends RandomizedTest {
     Assertions.assertThat(ProgressBarStyle.SHADES.isEncodable(cp437)).isTrue();
     Assertions.assertThat(ProgressBarStyle.BLOCKS.isEncodable(cp437)).isFalse();
     Assertions.assertThat(ProgressBarStyle.LINE.isEncodable(cp437)).isFalse();
+    Assertions.assertThat(ProgressBarStyle.BRAILLE.isEncodable(cp437)).isFalse();
   }
 
   @Test
@@ -105,7 +112,7 @@ public class ProgressBarStyleTest extends RandomizedTest {
           break;
         }
         count++;
-      } else if (c != ' ' && c != '\u2500') {
+      } else if (c != ' ' && c != '\u2500' && c != '\u2800') {
         count++;
       }
     }

@@ -8,9 +8,11 @@ import java.util.Locale;
  * Glyph sets used to draw the progress bar of tasks that report a completion ratio.
  *
  * <p>All styles render a bar of exactly the requested width (in code points) and all glyphs occupy
- * a single terminal column in the usual fonts. Block elements are "ambiguous width" characters in
- * Unicode's East Asian Width classification, so terminals configured for CJK locales may render
- * them two columns wide; use {@link #ASCII} there.
+ * a single terminal column in the usual fonts. Block elements and box drawing glyphs are "ambiguous
+ * width" characters in Unicode's East Asian Width classification, so terminals configured to render
+ * those two columns wide (a common setting in CJK locales) misalign {@link #BLOCKS}, {@link
+ * #SHADES} and {@link #LINE}. {@link #BRAILLE} and {@link #ASCII} use only neutral-width characters
+ * and are safe there.
  *
  * @see ConsoleAware#progressBarStyle()
  */
@@ -68,7 +70,17 @@ public enum ProgressBarStyle {
    * Thin heavy line {@code [━━━━╸────]} drawn with box drawing glyphs (U+2501, U+2578, U+2500). One
    * fractional step per cell.
    */
-  LINE("[", "]", '━', "╸", '─');
+  LINE("[", "]", '━', "╸", '─'),
+
+  /**
+   * Braille patterns {@code [⣿⣿⣇⠀⠀⠀⠀]} (U+2800..U+28FF). Seven fractional steps per cell: the left
+   * column of dots fills bottom-up, then the right one. Unlike block elements, braille patterns
+   * have neutral East Asian Width, so the bar stays aligned in terminals that render
+   * ambiguous-width characters double-wide. The background is the braille blank (U+2800), not a
+   * space, so the whole bar comes from one font. Slightly fewer monospace fonts cover this range
+   * than the block elements, hence it is not picked automatically.
+   */
+  BRAILLE("[", "]", '⣿', "⡀⡄⡆⡇⣇⣧⣷", '⠀');
 
   private final String left;
   private final String right;
