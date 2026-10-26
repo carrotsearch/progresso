@@ -43,16 +43,21 @@ public final class JLineTerminals {
    */
   private static final LinePrinter printer =
       line -> {
-        LinePrinter view;
-        synchronized (liveViews) {
-          view = liveViews.peekLast();
-        }
-        if (view != null) {
-          view.printLine(line);
-        } else {
-          Terminal terminal = system();
-          terminal.writer().println(line);
-          terminal.flush();
+        try {
+          LinePrinter view;
+          synchronized (liveViews) {
+            view = liveViews.peekLast();
+          }
+          if (view != null) {
+            view.printLine(line);
+          } else {
+            Terminal terminal = system();
+            terminal.writer().println(line);
+            terminal.flush();
+          }
+        } catch (IllegalStateException e) {
+          // The terminal has been closed (JVM shutdown); fall through to the default writer.
+          ConsoleAware.writer().printLine(line);
         }
       };
 

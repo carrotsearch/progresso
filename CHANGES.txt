@@ -1,4 +1,10 @@
 
+[2.0.1]
+
+ GH-56: progresso-views-jline: log lines printed after the JLine terminal is closed (another
+        shutdown hook logging on Ctrl-C) no longer fail with "Terminal has been closed";
+        they go to the default console writer.
+
 [2.0.0]
 
  PR-52: The build moved from Maven to Gradle (./gradlew check); see README.txt. All artifacts
