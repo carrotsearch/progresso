@@ -15,18 +15,17 @@ concurrency:
 jobs:
   update-lockfile:
     name: Update the Gradle lock file
-    # The actor check is intentional: the push below (made with the automation token) triggers
-    # a second synchronize event with a different actor, which must not run this job again.
+    # The actor check is intentional: this job only updates the lock file on Dependabot's pull
+    # requests. The push below uses GITHUB_TOKEN, so it does not trigger any further workflow runs.
     if: ${{ github.actor == 'dependabot[bot]' }} # zizmor: ignore[bot-conditions]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       contents: write # commits the regenerated lock file back to the pull request branch
     steps:
-      # Credentials are persisted deliberately: the final step pushes with this token.
+      # Credentials are persisted deliberately: the final step pushes with the default GITHUB_TOKEN.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with: # zizmor: ignore[artipacked]
-          token: ${{ secrets.DEPENDABOT_AUTOMATION_TOKEN }}
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Set up JDK
